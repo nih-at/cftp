@@ -32,7 +32,6 @@ P configure.in: add -posix for NeXTStep
 B propagate errors (conn hung or eof?) up to fn_gettags
 F cftp.texi: introduction, invoking, cftprc
 F user options
-P util.cw: (basename) conflicting with unistd.h on linux (const char * arg)
 C fn_basic.cw: docu for bind
 ----------------------------------------------- done
 Jun 25 (0.5a)
