@@ -1,6 +1,5 @@
 ! check for sockaddr_t and typedef to int if missing
 ! check alarm clock abort on download (Solaris, IRIX, HPUX)
-! keyname has name conflict with libtermcap (Solaris, IRIX)
 ! O_NONBLOCK undefined on NextSTEP
 ! getnameinfo undefined on Darwin
 ! abort not working on OSF1?

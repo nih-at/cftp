@@ -27,7 +27,7 @@
 #include <ctype.h>
 #include "keys.h"
 
-struct keyname keyname[] = {
+struct keyname key_name[] = {
     { 8, "bs", "backspace" },
     { 9, "tab", NULL },
     { 13, "ret", "return" },
@@ -85,21 +85,21 @@ print_key(int key, int longp)
     static char buf[64];
 	
     if (key < 256) {
-	for (i=0; (key&127)>keyname[i].key; i++)
+	for (i=0; (key&127)>key_name[i].key; i++)
 	    ;
-	if ((key&127) == keyname[i].key) {
+	if ((key&127) == key_name[i].key) {
 	    if (key > 128) {
 		sprintf(buf, "%s%s",
 			(longp ? "meta " : "M-"),
-			((longp && keyname[i].longname) ? 
-			 keyname[i].longname
-			 : keyname[i].name));
+			((longp && key_name[i].longname) ? 
+			 key_name[i].longname
+			 : key_name[i].name));
 		return buf;
 	    }
 	    else
-		return ((longp && keyname[i].longname) ? 
-			keyname[i].longname
-			: keyname[i].name);
+		return ((longp && key_name[i].longname) ? 
+			key_name[i].longname
+			: key_name[i].name);
 	}
 	if ((key&127) < 32) {
 	    sprintf(buf, "%s%s%c",
@@ -158,11 +158,11 @@ parse_key(char *kn)
 	return (k | 0x80);
     }
 
-    for (i=0; keyname[i].key < 255; i++) {
-	if (strcasecmp(kn, keyname[i].name) == 0
-	    || (keyname[i].longname
-		&& strcasecmp(kn, keyname[i].longname) == 0))
-	    return keyname[i].key;
+    for (i=0; key_name[i].key < 255; i++) {
+	if (strcasecmp(kn, key_name[i].name) == 0
+	    || (key_name[i].longname
+		&& strcasecmp(kn, key_name[i].longname) == 0))
+	    return key_name[i].key;
     }
 
     for (i=0; i<max_fnkey; i++) {

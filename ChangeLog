@@ -1,5 +1,8 @@
 2001-08-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* keys.c, keys.h: rename keyname to key_name to avoid conflict
+	with some termcap libraries.
+
 	* strdup.c: include <stdlib.h> for malloc() prototype.
 
 	* tty.c (tty_putp): buf is only used with tparam, so only define

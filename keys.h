@@ -35,7 +35,7 @@ struct fnkey {
     char *cap, *seq;
 };
 
-extern struct keyname keyname[];
+extern struct keyname key_name[];
 extern struct fnkey fnkey[];
 extern int max_fnkey;
 
