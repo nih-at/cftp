@@ -88,7 +88,7 @@ then
 	AC_CHECK_FUNCS(tparm, , [AC_LIBOBJ(tparam)])
 fi
 
-AC_CHECK_FUNCS(getopt_long, , [AC_LIBOBJ(getopt1) AC_LIBOBJ(getopt1)])
+AC_CHECK_FUNCS(getopt_long, , [AC_LIBOBJ(getopt) AC_LIBOBJ(getopt1)])
 
 need_snprintf=no
 AC_CHECK_FUNCS(snprintf vsnprintf vasprintf, , [need_snprintf=yes])
