@@ -1,7 +1,7 @@
 dnl -*- text -*-
 
 dnl  options.op -- definition and documentation for user settable options
-dnl  Copyright (C) 1996, 1997 Dieter Baron
+dnl  Copyright (C) 1996, 1997, 1998 Dieter Baron
 dnl
 dnl  This file is part of cftp, a fullscreen ftp client
 dnl  The author can be contacted at <dillo@giga.or.at>

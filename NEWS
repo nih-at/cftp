@@ -1,3 +1,6 @@
+New in 0.9.2:
+* if directory given on command line is file, download it
+
 New in 0.9.1:
 * passive mode
 
