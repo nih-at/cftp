@@ -176,7 +176,7 @@ list_refill(struct list *list, int top, int n)
 
     end = top+n;
 
-    for (i=top; i<end; i++)
+    for (i=top; i<end && i<list->len; i++)
 	list_line(list, i, list->cur == i);
 }
 
