@@ -4,6 +4,7 @@
 ! sftp: lost connection not reported
 ! sftp: ^c kills ssh subprocess (how to avoid?!)
 ! test ftp_cat error cases
+! sftp: have child send error package
 - fix --disable-sftp
 - avoid magic numbers in sftp xfer
 - finish _sftp_log_packet
