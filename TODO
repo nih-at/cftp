@@ -38,6 +38,7 @@ B ftp.c: (ftp_abort) abort on ascii connections hangs sometimes
 C fn_select.c: use :-syntax throughout
 B fn_basic.c: (fn_shell) command with args doesn't work when given via args
 F main.c: (parse_url) urldecode parts
+B if port is numerical, don't tell me service unknown.
 ----------------------------------------------- done
 F main.c: (parse_url) support for user:passwd syntax
 F ftp.c: (ftp_abort, ftp_cat) abort transfer via SIGINT
