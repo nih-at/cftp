@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: sockets.c,v 1.23 2001/12/11 14:37:41 dillo Exp $
 
   sockets -- auxiliary socket functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -39,8 +39,6 @@
 #include "display.h"
 #include "sockets.h"
 
-extern char *prg;
-
 
 
 int
@@ -55,12 +53,8 @@ sopen(char *host, char *service, int family)
     hints.ai_socktype = SOCK_STREAM;
     
     if ((err=getaddrinfo(host, service, &hints, &res0)) != 0) {
-	if (disp_active)
-	    disp_status("cannot get host/service %s/%s: %s\n",
-			host, service, gai_strerror(err));
-	else
-	    fprintf(stderr, "%s: can't get host/service %s/%s: %s\n",
-		    prg, host, service, gai_strerror(err));
+	disp_status(DISP_ERROR, "cannot get host/service %s/%s: %s\n",
+		    host, service, gai_strerror(err));
 	return -1;
     }
 
@@ -82,13 +76,9 @@ sopen(char *host, char *service, int family)
 	/* okay we got one */
 	break;
     }
-    if (s < 0) {
-	if (disp_active)
-	    disp_status("cannot %s: %s", cause, strerror(errno));
-	else
-	    fprintf(stderr, "%s: cannot %s: %s\n",
-		    prg, cause, strerror(errno));
-    }
+    if (s < 0)
+	disp_status(DISP_ERROR, "cannot %s: %s", cause, strerror(errno));
+
     freeaddrinfo(res0);
 
     return s;
@@ -109,12 +99,8 @@ spassive(int family, struct sockaddr *addr, int *lenp)
     hints.ai_flags = AI_PASSIVE;
 
     if (getaddrinfo(NULL, "0", &hints, &res0) != 0) {
-	if (disp_active)
-	    disp_status("cannot get address info: %s\n",
-			gai_strerror(errno));
-	else
-	    fprintf(stderr, "%s: cannot get address info: %s\n",
-		    prg, gai_strerror(errno));
+	disp_status(DISP_ERROR, "cannot get address info: %s\n",
+		    gai_strerror(errno));
 	return -1;
     }
 	
@@ -149,11 +135,7 @@ spassive(int family, struct sockaddr *addr, int *lenp)
     
     freeaddrinfo(res0);
 
-    if (disp_active)
-	disp_status("cannot %s: %s", cause, strerror(errno));
-    else
-	fprintf(stderr, "%s: cannot %s: %s",
-		prg, cause, strerror(errno));
+    disp_status(DISP_ERROR, "cannot %s: %s", cause, strerror(errno));
     return -1;
 }
 

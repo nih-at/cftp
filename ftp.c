@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.64 2001/12/14 08:09:43 dillo Exp $
+  $NiH: ftp.c,v 1.65 2001/12/17 05:44:43 dillo Exp $
 
   ftp -- ftp protocol functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -62,8 +62,6 @@ char *basename(char *);
 #include "bindings.h"
 #include "status.h"
 #include "signals.h"
-
-extern char *prg;
 
 
 
@@ -262,7 +260,7 @@ ftp_reconnect(void)
 
     ftp_close();
 
-    disp_status("connecting. . .");
+    disp_status(DISP_INFO, "connecting. . .");
 
     if (ftp_open(NULL, NULL, NULL, NULL) == -1) {
 	/* Error printed in ftp_open or sopen. */
@@ -575,7 +573,7 @@ ftp_gets(FILE *f)
 	}
 	l += strlen(buf);
 	if ((line=realloc(line, l+1)) == NULL) {
-	    disp_status("malloc failure");
+	    disp_status(DISP_ERROR, "malloc failure");
 	    return NULL;
 	}
 	strcpy(line+l, buf);
@@ -597,7 +595,7 @@ ftp_put(char *fmt, ...)
     va_list argp;
     
     if (conout == NULL) {
-	disp_status("not connected");
+	disp_status(DISP_ERROR, "not connected");
 	return -1;
     }
     
@@ -605,18 +603,15 @@ ftp_put(char *fmt, ...)
     vsprintf(buf, fmt, argp);
     va_end(argp);
     
-    if (strncmp(buf, "pass ", 5) == 0 && _ftp_anon == 0) {
-	disp_status("-> pass ********");
-	ftp_hist(strdup("-> pass ********"));
-    }
-    else {
-	disp_status("-> %s", buf);
-	ftp_histf("-> %s", buf);
-    }
+    if (strncmp(buf, "pass ", 5) == 0 && _ftp_anon == 0)
+	disp_status(DISP_PROTO, "-> pass ********");
+    else
+	disp_status(DISP_PROTO, "-> %s", buf);
     fprintf(conout, "%s\r\n", buf);
     
     if (fflush(conout) || ferror(conout)) {
-	disp_status("error writing to server: %s", strerror(errno));
+	disp_status(DISP_ERROR, "error writing to server: %s",
+		    strerror(errno));
 	return -1;
     }
     
@@ -642,18 +637,24 @@ ftp_abort(FILE *fin)
 	return 0;
     
     /* do abort */
-    disp_status("-> <attention>");
-    ftp_hist(strdup("-> <attention>"));
+    disp_status(DISP_PROTO, "-> <attention>");
 	     
     if (send(fileno(conout), "\377\364\377" /* IAC IP IAC */, 3,
-	     MSG_OOB) != 3)
+	     MSG_OOB) != 3) {
+	disp_status(DISP_ERROR, "cannot send attention: %s",
+		    strerror(errno));
 	return -1;
+    }
 
-    if (fputc('\362' /* DM */, conout) == EOF)
+    if (fputc('\362' /* DM */, conout) == EOF) {
+	disp_status(DISP_ERROR, "cannot send attention: %s",
+		    strerror(errno));
 	return -1;
+    }
 
     ftp_put("abor");
 
+    /* XXX: what about uploads? */
     /* read remaining bytes from data connection */
     while (fread(buf, 4096, 1, fin) > 0)
 	;
@@ -678,7 +679,7 @@ ftp_abort(FILE *fin)
     else if (resp == 426) {
 	resp = ftp_resp();
     	ftp_unresp(426);
-	disp_status("426 Transfer aborted.");
+	disp_status(DISP_STATUS, "426 Transfer aborted.");
 	    
 	return resp == 226;
     }
@@ -702,35 +703,38 @@ ftp_resp(void)
     }
 
     if (conin == NULL) {
-	disp_status("not connected");
+	disp_status(DISP_ERROR, "not connected");
 	return -1;
     }
 
     clearerr(conin);
     if ((line=ftp_gets(conin)) == NULL) {
 	if (ferror(conin))
-	    disp_status("read error from server: %s", strerror(errno));
+	    disp_status(DISP_ERROR, "read error from server: %s",
+			strerror(errno));
 	else
-	    disp_status("connection to server lost");
+	    disp_status(DISP_ERROR, "connection to server lost");
 	return -1;
     }
 
+    /* XXX: DISP_PROTO should be used for first line */
     resp = atoi(line);
-    disp_status("%s", line);
+    disp_status(DISP_STATUS, "%s", line);
     free(ftp_last_resp);
     ftp_last_resp = strdup(line);
 
     while (!(isdigit(line[0]) && isdigit(line[1]) &&
 	     isdigit(line[2]) && line[3] == ' ')) {
-	ftp_hist(line);
+	disp_status(DISP_HIST, "%s", line);
 	
 	if ((line=ftp_gets(conin)) == NULL) {
-	    disp_status("read error from server: %s", strerror(errno));
+	    disp_status(DISP_ERROR, "read error from server: %s",
+			strerror(errno));
 	    return -1;
 	}
     }
 
-    ftp_hist(line);
+    disp_status(DISP_HIST, "%s", line);
     
     return resp;
 }
@@ -1050,10 +1054,10 @@ ftp_cat(void *fin, void *fout, long start, long size, int upload)
 	rftp_xfer_stop((upload ? fin : fout), 0);
 	switch (error_cause) {
 	case ERR_FIN:
-	    disp_status("read error: %s", strerror(errno_copy));
+	    disp_status(DISP_ERROR, "read error: %s", strerror(errno_copy));
 	    break;
 	case ERR_FOUT:
-	    disp_status("write error: %s", strerror(errno_copy));
+	    disp_status(DISP_ERROR, "write error: %s", strerror(errno_copy));
 	    break;
 	default:
 	    ;
@@ -1098,18 +1102,21 @@ _ftp_update_transfer(struct _ftp_transfer_stats *tr, long got, int secs)
 	    / ((double)(secs < tr->ncur-1 ? secs : tr->ncur-1)*1024));
 
     if (secs-tr->stall_sec > opt_stall) {
-	disp_status("stalled for more than %d seconds, aborting.");
+	disp_status(DISP_ERROR, "stalled for more than %d seconds, aborting.");
 	sig_intr = 1;
     }
     else if (secs-tr->stall_sec > tr->ncur) {
-	disp_status("transferred %ld/%ld (total: %.2fkb/s, stalled: %ds)",
+	disp_status(DISP_STATUS,
+		    "transferred %ld/%ld (total: %.2fkb/s, stalled: %ds)",
 		    got, tr->size, rtot, secs-tr->stall_sec);
     }
     else if (tr->size != -1)
-	disp_status("transferred %ld/%ld (total: %.2fkb/s, current: %.2fkb/s)",
+	disp_status(DISP_STATUS,
+		    "transferred %ld/%ld (total: %.2fkb/s, current: %.2fkb/s)",
 		    got, tr->size, rtot, rcur);
     else
-	disp_status("transferred %ld (total: %.2fkb/s, current: %.2fkb/s)",
+	disp_status(DISP_STATUS,
+		    "transferred %ld (total: %.2fkb/s, current: %.2fkb/s)",
 		    got, rtot, rcur);
 }
 
@@ -1151,13 +1158,8 @@ ftp_gethostaddr(int fd)
 	
     len = sizeof(_ftp_addr);
     if (getsockname(fd, ftp_addr, &len) == -1) {
-	if (disp_active)
-	    disp_status("can't get host address: %s",
-			strerror(errno));
-	else
-	    fprintf(stderr, "%s: can't get host addres: %s\n",
-		    prg, strerror(errno));
-	
+	disp_status(DISP_ERROR, "can't get host address: %s",
+		    strerror(errno));
 	return -1;
     }
     

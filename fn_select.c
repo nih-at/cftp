@@ -1,5 +1,5 @@
 /*
-  $NiH: fn_select.c,v 1.22 2001/12/11 14:37:31 dillo Exp $
+  $NiH: fn_select.c,v 1.23 2001/12/13 21:14:50 dillo Exp $
 
   fn_select -- bindable functions: selecting
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -98,7 +98,7 @@ aux_download(char *name, long size, int restart)
 	mode = "w";
     
     if ((fout=fopen(basename(name), mode)) == NULL) {
-	disp_status("can't %s `%s': %s",
+	disp_status(DISP_STATUS, "can't %s `%s': %s",
 		    (*mode == 'a' ? "append to" : "create"),
 		    basename(name), strerror(errno));
 	return -2;
@@ -112,7 +112,7 @@ aux_download(char *name, long size, int restart)
     err |= ftp_fclose(fin);
     
     if (fclose(fout)) {
-	disp_status("error closing `%s': %s",
+	disp_status(DISP_STATUS, "error closing `%s': %s",
 		    basename(name), strerror(errno));
 	return -2;
     }
@@ -156,7 +156,7 @@ aux_upload(char *name)
     void *fout;
 
     if ((fin=fopen(name, "r")) == NULL) {
-	disp_status("can't open `%s': %s", name, strerror(errno));
+	disp_status(DISP_STATUS, "can't open `%s': %s", name, strerror(errno));
 	return -2;
     }
 
@@ -173,7 +173,8 @@ aux_upload(char *name)
     err |= ftp_fclose(fout);
     
     if (fclose(fin)) {
-	disp_status("error closing `%s': %s", name, strerror(errno));
+	disp_status(DISP_STATUS, "error closing `%s': %s",
+		    name, strerror(errno));
 	return -2;
     }
 
@@ -212,7 +213,7 @@ fn_enter_get(char **args)
 	    aux_download(name, size, 0);
 	break;
     default:
-	disp_status("Can't download special files.");
+	disp_status(DISP_STATUS, "Can't download special files.");
     }
 }
 
@@ -245,7 +246,7 @@ fn_enter_view(char **args)
 	    aux_view(name);
 	break;
     default:
-	disp_status("Can't view special files.");
+	disp_status(DISP_STATUS, "Can't view special files.");
     }
 }
 
@@ -268,7 +269,7 @@ void fn_enter(char **args) { char *name; int type;
 	aux_enter(name);
 	break;
     default:
-	disp_status("Can enter only directories.");
+	disp_status(DISP_STATUS, "Can enter only directories.");
     }
 }
 
@@ -325,7 +326,7 @@ fn_get(char **args)
 	aux_download(name, size, 0);
 	break;
     default:
-	disp_status("Can only download plain files.");
+	disp_status(DISP_STATUS, "Can only download plain files.");
     }
 }
 
@@ -352,7 +353,7 @@ fn_view(char **args)
 	aux_view(name);
 	break;
     default:
-	disp_status("Can only view plain files.");
+	disp_status(DISP_STATUS, "Can only view plain files.");
     }
 }
 
@@ -422,7 +423,7 @@ fn_pipe(char **args)
 	if (freecmdp)
 	    free(cmd);
 	free(line);
-	disp_status("");
+	disp_status(DISP_STATUS, "");
 	return;
     }
 
@@ -432,7 +433,7 @@ fn_pipe(char **args)
 	aux_pipe(name, size, 0, cmd, quietp);
 	break;
     default:
-	disp_status("Can only view plain files.");
+	disp_status(DISP_STATUS, "Can only view plain files.");
     }
 }
 
@@ -478,7 +479,7 @@ fn_cd(char **args)
 	path = read_string("directory: ", 1);
 	
     if (path[0] == '\0') {
-	disp_status("");
+	disp_status(DISP_STATUS, "");
 	return;
     }
 

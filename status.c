@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: status.c,v 1.16 2001/12/11 14:37:41 dillo Exp $
 
   status.h -- status line
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -179,11 +179,11 @@ enter_state(enum state state)
 	break;
 
     case bs_local:
-	disp_status("state <local> not implemented yet");
+	disp_status(DISP_STATUS, "state <local> not implemented yet");
 
     case bs_tag:
 	if (!tag_anytags()) {
-	    disp_status("no tags");
+	    disp_status(DISP_STATUS, "no tags");
 	    break;
 	}
 	if (binding_state != bs_tag)
@@ -195,10 +195,10 @@ enter_state(enum state state)
 	break;
 
     case bs_none:
-	disp_status("can't enter state <global>");
+	disp_status(DISP_STATUS, "can't enter state <global>");
 	break;
 
     default:
-	disp_status("no such state: %s", state);
+	disp_status(DISP_STATUS, "no such state: %s", state);
     }
 }

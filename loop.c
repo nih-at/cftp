@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: loop.c,v 1.14 2001/12/11 14:37:35 dillo Exp $
 
   loop -- main loop
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -62,7 +62,7 @@ loop()
 		return;
 
 	    if (f->type != FN_PRE)
-		disp_status("");
+		disp_status(DISP_STATUS, "");
 
 	    if (f->type != FN_EXIT)
 		f->fn(binding->args);
@@ -71,7 +71,7 @@ loop()
 		void_prefix();
 	}
 	else {
-	    disp_status("");
+	    disp_status(DISP_STATUS, "");
 	    void_prefix();
 	}
 

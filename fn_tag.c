@@ -1,5 +1,5 @@
  /*
-  $NiH$
+  $NiH: fn_tag.c,v 1.27 2001/12/11 14:37:31 dillo Exp $
 
   fn_tag -- bindable functions: 
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -129,13 +129,13 @@ fn_tag(char **args)
     }
 	
     if (tagged < -1)
-	disp_status("%d files untagged", -tagged);
+	disp_status(DISP_STATUS, "%d files untagged", -tagged);
     else if (tagged == -1)
-	disp_status("1 file untagged");
+	disp_status(DISP_STATUS, "1 file untagged");
     else if (tagged == 1)
-	disp_status("1 file tagged");
+	disp_status(DISP_STATUS, "1 file tagged");
     else if (tagged > 1)
-	disp_status("%d files tagged", tagged);
+	disp_status(DISP_STATUS, "%d files tagged", tagged);
 }
 
 
@@ -154,7 +154,7 @@ fn_cleartags(char **args)
 		list_reline(i);
 	}
 
-    disp_status("all tags cleared");
+    disp_status(DISP_STATUS, "all tags cleared");
 }
     
 
@@ -170,7 +170,7 @@ fn_gettags(char **args)
     int restart;
 
     if (!tag_anytags()) {
-	disp_status("no tags");
+	disp_status(DISP_STATUS, "no tags");
 	return;
     }
 
@@ -229,7 +229,7 @@ fn_savetags(char **args)
     save_as_url = 0;
     
     if (!tag_anytags()) {
-	disp_status("no tags");
+	disp_status(DISP_STATUS, "no tags");
 	return;
     }
 
@@ -243,13 +243,14 @@ fn_savetags(char **args)
     else {
 	name = read_string("File: ", 1);
 	if (name == NULL || name[0] == '\0') {
-	    disp_status("");
+	    disp_status(DISP_STATUS, "");
 	    return;
 	}
     }
 	    
     if ((f=fopen(name, "w")) == NULL) {
-	disp_status("can't create `%s': %s", name, strerror(errno));
+	disp_status(DISP_STATUS, "can't create `%s': %s",
+		    name, strerror(errno));
 	return;
     }
 
@@ -265,9 +266,10 @@ fn_savetags(char **args)
 			tags.line[i].name);
 
     if (ferror(f))
-	disp_status("write error on `%s': %s", name, strerror(errno));
+	disp_status(DISP_STATUS, "write error on `%s': %s",
+		    name, strerror(errno));
     else
-	disp_status("%d tag%s saved to `%s'%s", tags.len,
+	disp_status(DISP_STATUS, "%d tag%s saved to `%s'%s", tags.len,
 		    (tags.len == 1 ? "" : "s"), name,
 		    (save_as_url ? " (as URL)" : ""));
 
@@ -294,13 +296,14 @@ fn_loadtag(char **args)
     else {
 	fname = read_string("File: ", 1);
 	if (fname == NULL || fname[0] == '\0') {
-	    disp_status("");
+	    disp_status(DISP_STATUS, "");
 	    return;
 	}
     }
 
     if ((f=fopen(fname, "r")) == NULL) {
-	disp_status("can't open `%s': %s", fname, strerror(errno));
+	disp_status(DISP_STATUS, "can't open `%s': %s",
+		    fname, strerror(errno));
 	return;
     }
 
@@ -349,10 +352,11 @@ fn_loadtag(char **args)
     }
 
     if (ferror(f))
-	disp_status("read error: %s\n", strerror(errno));
+	disp_status(DISP_STATUS, "read error: %s\n", strerror(errno));
     else
-	disp_status("%d file%s tagged", count, (count == 1 ? "" : "s"));
-
+	disp_status(DISP_STATUS,
+		    (count == 1 ? "%d file tagged" : "%d files tagged"),
+		    count);
     fclose(f);
 }
 
@@ -366,7 +370,7 @@ fn_saveurls(char **args)
     int i, n, len;
 
     if (!tag_anytags()) {
-	disp_status("no tags");
+	disp_status(DISP_STATUS, "no tags");
 	return;
     }
 
@@ -375,13 +379,14 @@ fn_saveurls(char **args)
     else {
 	name = read_string("File: ", 1);
 	if (name == NULL || name[0] == '\0') {
-	    disp_status("");
+	    disp_status(DISP_STATUS, "");
 	    return;
 	}
     }
 	    
     if ((f=fopen(name, "w")) == NULL) {
-	disp_status("can't create `%s': %s", name, strerror(errno));
+	disp_status(DISP_STATUS, "can't create `%s': %s",
+		    name, strerror(errno));
 	return;
     }
 
@@ -403,9 +408,11 @@ fn_saveurls(char **args)
     free(host);
 
     if (ferror(f))
-	disp_status("write error on `%s': %s", name, strerror(errno));
+	disp_status(DISP_STATUS, "write error on `%s': %s",
+		    name, strerror(errno));
     else
-	disp_status((tags.len == 1 ? "%d URL saved" : "%d URLs saved"),
+	disp_status(DISP_STATUS,
+		    (tags.len == 1 ? "%d URL saved" : "%d URLs saved"),
 		    tags.len);
 
     fclose(f);

@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: fn_bind.c,v 1.10 2001/12/11 14:37:31 dillo Exp $
 
   fn_bind -- bindable functions: bind
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -64,7 +64,7 @@ fn_bind(char **args)
 	line = p = read_string("bind ", 1);
 
 	if ((kname=rc_token(&p)) == NULL) {
-	    disp_status("no key");
+	    disp_status(DISP_STATUS, "no key");
 	    free(line);
 	    return;
 	}
@@ -73,7 +73,7 @@ fn_bind(char **args)
 	    state = s2;
 
 	    if ((kname=rc_token(&p)) == NULL) {
-		disp_status("no key");
+		disp_status(DISP_STATUS, "no key");
 		free(line);
 		return;
 	    }
@@ -82,14 +82,20 @@ fn_bind(char **args)
     }
 
     if (state == bs_unknown) {
-	(rc_inrc ? rc_error : disp_status)("unknown state: %s", staten);
+	if (rc_inrc)
+	    rc_error("unknown state: %s", staten);
+	else
+	    disp_status(DISP_STATUS, "unknown state: %s", staten);
 	if (line)
 	    free(line);
 	return;
     }
 
     if ((key=parse_key(kname)) < 0) {
-	(rc_inrc ? rc_error : disp_status)("unknown key: %s", kname);
+	if (rc_inrc)
+	    rc_error("unknown key: %s", kname);
+	else
+	    disp_status(DISP_STATUS, "unknown key: %s", kname);
 	if (line)
 	    free(line);
 	return;
@@ -97,7 +103,10 @@ fn_bind(char **args)
 	
     if (cmd) {
 	if ((fn=find_function(cmd)) < 0) {
-	    (rc_inrc ? rc_error : disp_status)("unknown function: %s", cmd);
+	    if (rc_inrc)
+		rc_error("unknown function: %s", cmd);
+	    else
+		disp_status(DISP_STATUS, "unknown function: %s", cmd);
 	    if (line)
 		free(line);
 	    return;
@@ -105,7 +114,7 @@ fn_bind(char **args)
     }
 
     if (!rc_inrc)
-	disp_status("");
+	disp_status(DISP_STATUS, "");
 	
     b = get_function(key, state);
 

@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: functions.c,v 1.11 2001/12/11 14:37:32 dillo Exp $
 
   functions -- auxiliary functions for bindable function handling
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -100,7 +100,7 @@ void
 show_prefix(void)
 {
 
-	disp_status(": %d", prefix_arg);
+	disp_status(DISP_STATUS, ": %d", prefix_arg);
 }
 
 

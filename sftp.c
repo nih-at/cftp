@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.12 2001/12/17 20:52:30 dillo Exp $
+  $NiH: sftp.c,v 1.13 2001/12/17 21:27:05 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001 Dieter Baron
@@ -200,11 +200,11 @@ static int _sftp_nerr = sizeof(_sftp_errlist) / sizeof(_sftp_errlist[0]);
 static int _sftp_nextid;
 static pid_t _sftp_ssh_pid;
 
-extern char *prg;
-
 /* XXX: shared with ftp.c */
 
 extern FILE *conin, *conout;
+
+extern char *prg;
 
 #ifdef DEBUG_XFER
 static FILE *flog;
@@ -283,7 +283,7 @@ _sftp_read_dir(struct handle *hnd)
 	    }
 
 	    if ((newt=time(NULL)) != oldt) {
-		disp_status("listed %d", n);
+		disp_status(DISP_STATUS, "listed %d", n);
 		oldt = newt;
 	    }
 	}
@@ -428,8 +428,7 @@ _sftp_log_packet(int dir, int type, char *data, int len)
 
     }
     
-    disp_status("%s", buf);
-    ftp_hist(strdup(buf));
+    disp_status(DISP_PROTO, "%s", buf);
 }
 
 
@@ -711,20 +710,14 @@ sftp_open(char *host, char *port, char *user, char *pass)
     ftp_remember_user(user, pass);
 
     if (pipe(pin) != 0 || pipe(pout) != 0) {
-	if (disp_active)
-	    disp_status("cannot create pipes: %s", strerror(errno));
-	else
-	    fprintf(stderr, "%s: cannot create pipes: %s",
-		    prg, strerror(errno));
+	disp_status(DISP_ERROR, "cannot create pipes: %s",
+		    strerror(errno));
 	return -1;
     }
 
     switch ((pid=fork())) {
     case -1:
-	if (disp_active)
-	    disp_status("cannot fork: %s", strerror(errno));
-	else
-	    fprintf(stderr, "%s: cannot fork: %s", prg, strerror(errno));
+	disp_status(DISP_ERROR, "cannot fork: %s", strerror(errno));
 	return -1;
 
     case 0:
@@ -741,21 +734,15 @@ sftp_open(char *host, char *port, char *user, char *pass)
 
 	conin = conout = NULL;
 	if ((conin=fdopen(pin[0], "rb")) == NULL) {
-	    if (disp_active)
-		disp_status("cannot fdopen input pipe: %s", strerror(errno));
-	    else
-		fprintf(stderr, "cannot fdopen input pipe: %s",
-			prg, strerror(errno));
+	    disp_status(DISP_ERROR, "cannot fdopen input pipe: %s",
+			strerror(errno));
 	    close(pout[1]);
 	    sftp_close();
 	    return -1;
 	}
 	if ((conout=fdopen(pout[1], "wb")) == NULL) {
-	    if (disp_active)
-		disp_status("cannot fdopen output pipe: %s", strerror(errno));
-	    else
-		fprintf(stderr, "cannot fdopen output pipe: %s",
-			prg, strerror(errno));
+	    disp_status(DISP_ERROR, "cannot fdopen output pipe: %s",
+			strerror(errno));
 	    sftp_close();
 	    return -1;
 	}
@@ -834,29 +821,18 @@ sftp_close(void)
     }
     if (_sftp_ssh_pid != 0) {
 	if (waitpid(_sftp_ssh_pid, &status, 0) == -1) {
-	    if (disp_active)
-		disp_status("cannot wait on ssh (pid %d): %s",
-			    (int)_sftp_ssh_pid, strerror(errno));
-	    else
-		fprintf(stderr, "%s: cannot wait on ssh (pid %d): %s\n",
-			prg, (int)_sftp_ssh_pid, strerror(errno));
+	    disp_status(DISP_ERROR, "cannot wait on ssh (pid %d): %s",
+			(int)_sftp_ssh_pid, strerror(errno));
 	    return -1;
 	}
 	if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
-	    if (disp_active)
-		disp_status("ssh exited with %d", WEXITSTATUS(status));
-	    else
-		fprintf(stderr, "%s: ssh exited with %d\n",
-			prg, WEXITSTATUS(status));
+	    disp_status(DISP_ERROR, "ssh exited with %d",
+			WEXITSTATUS(status));
 	    return -1;
 	}
 	else if (WIFSIGNALED(status)) {
-	    if (disp_active)
-		disp_status("ssh exited due to signal %d",
-			    WTERMSIG(status));
-	    else
-		fprintf(stderr, "%s: ssh exited due to signal %d\n",
-			prg, WTERMSIG(status));
+	    disp_status(DISP_ERROR, "ssh exited due to signal %d",
+			WTERMSIG(status));
 	    return -1;
 	}
     }

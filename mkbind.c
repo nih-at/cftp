@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: mkbind.c,v 1.18 2001/12/11 14:37:38 dillo Exp $
 
   mkbind -- make binding table
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -412,8 +412,9 @@ vpath_open(char *name)
 /* dummy functions needed by fn_bind */
 
 void
-disp_status(char *fmt, ...)
+disp_status(int flags, char *fmt, ...)
 {
+    /* XXX: honour DISP_STDERR */
     return;
 }
 

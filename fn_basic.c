@@ -1,5 +1,5 @@
 /*
-  $NiH: fn_basic.c,v 1.25 2001/12/11 19:52:05 dillo Exp $
+  $NiH: fn_basic.c,v 1.26 2001/12/13 21:14:49 dillo Exp $
 
   fn_basic -- bindable functions: basics
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -49,7 +49,7 @@ extern char version[];
 
 void fn_version(char **args)
 {
-	disp_status("%s", version);
+	disp_status(DISP_STATUS, "%s", version);
 }
 
 
@@ -72,31 +72,31 @@ fn_showname(char **args)
     if (args && strcmp(args[0], "-u") == 0) {
 	switch (binding_state) {
 	case bs_remote:
-	    disp_status("ftp://%s%s%s%s",
+	    disp_status(DISP_STATUS, "ftp://%s%s%s%s",
 			status.host, curdir->path,
 			(strcmp(curdir->path, "/") == 0 ? "" : "/"),
 			LIST_LINE(list, list->cur)->name);
 	    break;
 	case bs_tag:
-	    disp_status("ftp://%s%s", status.host,
+	    disp_status(DISP_STATUS, "ftp://%s%s", status.host,
 			LIST_LINE(list, list->cur)->name);
 	    break;
 	default:
-	    disp_status("");
+	    disp_status(DISP_STATUS, "");
 	}
     }
     else if (args && strcmp(args[0], "-l") == 0) {
 	switch (binding_state) {
 	case bs_remote:
 	    tmp = ((direntry *)LIST_LINE(list, list->cur))->link;
-	    disp_status("%s", tmp ? tmp : "");
+	    disp_status(DISP_STATUS, "%s", tmp ? tmp : "");
 	    break;
 	default:
-	    disp_status("");
+	    disp_status(DISP_STATUS, "");
 	}
     }
     else 
-	disp_status("%s", LIST_LINE(list, list->cur)->name);
+	disp_status(DISP_STATUS, "%s", LIST_LINE(list, list->cur)->name);
 }
 
 
@@ -118,14 +118,15 @@ void fn_help(char **args)
 	s = read_string("Function: ", 1);
 	if (s == NULL || s[0] == '\0') {
 	    free(s);
-	    disp_status("");
+	    disp_status(DISP_STATUS, "");
 	    return;
 	}
 	    
 	if ((i=find_function(s)) == -1)
-	    disp_status("no such function: %s", s);
+	    disp_status(DISP_STATUS, "no such function: %s", s);
 	else
-	    disp_status("%s: %s", functions[i].name, functions[i].help);
+	    disp_status(DISP_STATUS, "%s: %s",
+			functions[i].name, functions[i].help);
 
 	free(s);
 	break;
@@ -139,7 +140,7 @@ void fn_help(char **args)
 	}
 
 	disp_close(f, 1);
-	disp_status("");
+	disp_status(DISP_STATUS, "");
 	break;
 
     case 'k':
@@ -147,7 +148,7 @@ void fn_help(char **args)
 
 	b = get_function(c, bs_none);
 	if ((i=b->fn) == -1)
-	    disp_status("[%s%s] key is unbound",
+	    disp_status(DISP_STATUS, "[%s%s] key is unbound",
 			(binding_state != bs_none ?
 			 binding_statename[binding_state] : ""),
 			print_key(c, 0));
@@ -180,7 +181,7 @@ void fn_help(char **args)
 		    }
 	    }
 
-	    disp_status(buf);
+	    disp_status(DISP_STATUS, "%s", buf);
 	    free(buf);
 	}
 	break;
@@ -209,14 +210,14 @@ void fn_help(char **args)
 	}
 
 	disp_close(f, 1);
-	disp_status("");
+	disp_status(DISP_STATUS, "");
 	break;
 
     case 'o':
 	s = read_string("Option: ", 1);
 	if (s == NULL || s[0] == '\0') {
 	    free(s);
-	    disp_status("");
+	    disp_status(DISP_STATUS, "");
 	    return;
 	}
 	    
@@ -226,7 +227,7 @@ void fn_help(char **args)
 		break;
 	
 	if (option[i].name == NULL)
-	    disp_status("no such option: %s", s);
+	    disp_status(DISP_STATUS, "no such option: %s", s);
 	else {
 	    char *buf;
 	    
@@ -271,7 +272,7 @@ void fn_help(char **args)
 	    if (buf == NULL)
 		break;
 
-	    disp_status("%s (%s) [%s]: %s", 
+	    disp_status(DISP_STATUS, "%s (%s) [%s]: %s", 
 			option[i].name, option[i].shrt,
 			buf, option[i].help);
 	}
@@ -316,10 +317,10 @@ void fn_help(char **args)
 	}
 
 	disp_close(f, 1);
-	disp_status("");
+	disp_status(DISP_STATUS, "");
 	
     default:
-	disp_status("");
+	disp_status(DISP_STATUS, "");
     }
 }
 
@@ -354,7 +355,7 @@ void fn_lcd(char **args)
 
 	if (!rc_inrc) {
 	    lwd = getcwd(NULL, 1024);
-	    disp_status("Current local directory: %s", lwd);
+	    disp_status(DISP_STATUS, "Current local directory: %s", lwd);
 	    free(lwd);
 	}
 }
@@ -379,7 +380,7 @@ void fn_shell(char **args)
 	}
 	else
 		system("$SHELL -i");
-	disp_status("");
+	disp_status(DISP_STATUS, "");
 	reenter_disp();
 }
 
@@ -398,18 +399,18 @@ void fn_colon(char **args)
 	    line = p = read_string(": ", 1);
 	    if (line == NULL || line[0] == '\0') {
 		free(line);
-		disp_status("");
+		disp_status(DISP_STATUS, "");
 		return;
 	    }
 
 	    if ((cmd=rc_token(&p)) == NULL) {
-		disp_status("no function");
+		disp_status(DISP_STATUS, "no function");
 		return;
 	    }
 	}
 	
 	if ((i=find_function(cmd)) < 0) {
-	    disp_status("unknown function: %s", cmd);
+	    disp_status(DISP_STATUS, "unknown function: %s", cmd);
 	    if (line)
 		free(line);
 	    return;
@@ -419,7 +420,7 @@ void fn_colon(char **args)
 	    args = rc_list(p);
 	}
 
-	disp_status("");
+	disp_status(DISP_STATUS, "");
 	
 	if (functions[i].fn)
 	    functions[i].fn(args);
@@ -451,7 +452,7 @@ void fn_site(char **args)
 	line = read_string("site ", 1);
 	if (line == NULL || line[0] == '\0') {
 	    free(line);
-	    disp_status("");
+	    disp_status(DISP_STATUS, "");
 	    return;
 	}
     }
@@ -478,7 +479,7 @@ void fn_response(char **args)
     FILE *f;
 
     if (ftp_history == NULL) {
-	disp_status("no exchange available");
+	disp_status(DISP_STATUS, "no exchange available");
 	return;
     }
     
@@ -545,14 +546,14 @@ void fn_set(char **args)
 	p = line = read_string("set ", 1);
 	opt = rc_token(&p);
 	if (opt == NULL) {
-	    disp_status("");
+	    disp_status(DISP_STATUS, "");
 	    return;
 	}
 	value = rc_token(&p);
     }
 
     if (opt == NULL || opt[0] == '\0') {
-	disp_status("no option.");
+	disp_status(DISP_STATUS, "no option.");
 	return;
     }
 
@@ -565,7 +566,7 @@ void fn_set(char **args)
 	if (rc_inrc)
 	    rc_error("unknown option: %s", opt);
 	else
-	    disp_status("unknown option: %s", opt);
+	    disp_status(DISP_STATUS, "unknown option: %s", opt);
 	return;
     }
 
@@ -580,7 +581,7 @@ void fn_set(char **args)
 	}
 	
 	if (!rc_inrc)
-	    disp_status("%s set to %d", option[i].name,
+	    disp_status(DISP_STATUS, "%s set to %d", option[i].name,
 			*(option[i].var.i));
 	break;
 
@@ -594,7 +595,7 @@ void fn_set(char **args)
 	}
 	
 	if (!rc_inrc)
-	    disp_status("%s set to `%c'", option[i].name,
+	    disp_status(DISP_STATUS, "%s set to `%c'", option[i].name,
 			*(option[i].var.i));
 	break;
 
@@ -607,7 +608,7 @@ void fn_set(char **args)
 	}
 	
 	if (!rc_inrc)
-	    disp_status("%s set to `%s'", option[i].name,
+	    disp_status(DISP_STATUS, "%s set to `%s'", option[i].name,
 			*(option[i].var.s));
 	break;
 	
@@ -627,7 +628,7 @@ void fn_set(char **args)
 	}
 
 	if (!rc_inrc)
-	    disp_status("%s set to %s", option[i].name,
+	    disp_status(DISP_STATUS, "%s set to %s", option[i].name,
 			(*(option[i].var.i) ? "on" : "off"));
 	break;
 
@@ -638,7 +639,7 @@ void fn_set(char **args)
 		    break;
 	    }
 	    if (option[i].values[ival] == NULL && !rc_inrc) {
-		disp_status("unknown value %s for option %s",
+		disp_status(DISP_STATUS, "unknown value %s for option %s",
 			    value, option[i].name);
 		break;
 	    }
@@ -650,7 +651,7 @@ void fn_set(char **args)
 	}
 
 	if (!rc_inrc)
-	    disp_status("%s set to %s", option[i].name,
+	    disp_status(DISP_STATUS, "%s set to %s", option[i].name,
 			option[i].values[(*(option[i].var.i))]);
 	break;
     }
@@ -716,7 +717,7 @@ void
 fn_leave_tag(char **args)
 {
     if (binding_state != bs_tag) {
-	disp_status("not in <tag> mode");
+	disp_status(DISP_STATUS, "not in <tag> mode");
 	return;
     }
 
@@ -733,7 +734,7 @@ fn_mkdir(char **args)
     if (args == NULL) {
 	name = read_string("Directory: ", 1);
 	if (name == NULL || name[0] == '\0') {
-	    disp_status("");
+	    disp_status(DISP_STATUS, "");
 	    free(name);
 	    return;
 	}
@@ -760,7 +761,7 @@ fn_rmdir(char **args)
     if (args == NULL) {
 	name = read_string("Directory: ", 1);
 	if (name == NULL || name[0] == '\0') {
-	    disp_status("");
+	    disp_status(DISP_STATUS, "");
 	    free(name);
 	    return;
 	}

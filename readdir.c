@@ -83,7 +83,7 @@ read_dir(FILE *f)
 	free(line);
 
 	if ((newt=time(NULL)) != oldt) {
-	    disp_status("listed %d", n);
+	    disp_status(DISP_STATUS, "listed %d", n);
 	    oldt = newt;
 	}
     }

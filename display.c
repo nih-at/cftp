@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: display.c,v 1.20 2001/12/11 14:37:30 dillo Exp $
 
   display -- display functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -42,6 +42,8 @@
 int disp_quiet = 0;
 int disp_active = 0;
 char d_status[8192];
+
+extern char *prg;
 
 
 
@@ -138,7 +140,7 @@ read_string(char *prompt, int echop)
     line = (char *)malloc(tty_cols+1);
 	
     tty_showcrsr();
-    disp_status("%s", prompt);
+    disp_status(DISP_STATUS, "%s", prompt);
     x = strlen(prompt);
 
     i = 0;
@@ -191,7 +193,7 @@ read_char(char *prompt)
 	int c;
 
 	tty_showcrsr();
-	disp_status("%s", prompt);
+	disp_status(DISP_STATUS, "%s", prompt);
 	
 	c = tty_readkey();
 	printf(print_key(c, 0));
@@ -220,15 +222,29 @@ disp_prompt_char(void)
 
 
 void
-disp_status(char *fmt, ...)
+disp_status(int flags, char *fmt, ...)
 {
+    /* XXX: rewrite without static buffer */
+    char buf[8192];
     va_list argp;
 
+    if (flags == 0)
+	return;
+
     va_start(argp, fmt);
-    vsprintf(d_status, fmt, argp);
+    vsprintf(buf, fmt, argp);
     va_end(argp);
-	
-    disp_restat();
+
+    if ((flags & DISP_STATUS) && disp_active) {
+	strcpy(d_status, buf);
+	disp_restat();
+    }
+    if (flags & DISP_HIST)
+	ftp_hist(strdup(buf));
+    if ((flags & DISP_STDERR) && !disp_active) {
+	/* XXX: only if disp not started yet */
+	fprintf(stderr, "%s: %s\n", prg, buf);
+    }
 }	
 
 

@@ -1,3 +1,7 @@
+2001-12-19  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* display.c (disp_status): add flags argument; adapt callers.
+
 2001-12-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* util.c (set_file_blocking): new function.
