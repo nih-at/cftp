@@ -31,5 +31,6 @@ char *local_exp(char *path);
 int parse_url(char *url, char **user, char **pass,
 	      char **host, char **port, char **dir);
 char *args_to_string(char **args);
+char *get_anon_passwd(void);
 
 #endif /* util.h */
