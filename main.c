@@ -107,8 +107,9 @@ main(int argc, char **argv)
 
     directory *dir;
     char *host, *user = NULL, *port = NULL, *pass = NULL, *wdir = NULL;
+    char *poss_fn;
     int keep_pass = 1;
-    int c;
+    int c, sel;
     char *b, *b2;
     int check_alias;
 
@@ -250,13 +251,31 @@ main(int argc, char **argv)
     }
 	
     if ((dir=ftp_cd(wdir, 0)) == NULL) {
-	if ((wdir=ftp_pwd()) == NULL)
-	    wdir = strdup("/");
-	if ((dir=ftp_cd(wdir, 0)) == NULL) {
-	    escape_disp(0);
-	    ftp_close();
-	    exit_disp();
-	    exit(1);
+	if ((poss_fn=strrchr(wdir, '/')) != NULL) {
+	    *(poss_fn++)=0;
+	    if ((dir=ftp_cd(strlen(wdir)?wdir:"/", 0)) != NULL) {
+		curdir = dir;
+		list = (struct list *)curdir;
+		if ((sel=dir_find(curdir, poss_fn)) >= 0) {
+		    aux_scroll(sel-(win_lines/2), sel, 0);
+		    if (curdir->line[sel].type == 'f'
+			|| curdir->line[sel].type == 'l')
+			aux_download(curdir->line[sel].name,
+				     curdir->line[sel].size, 0);
+		}
+		else
+		    disp_status("can't find file `%s'", poss_fn);
+	    }
+	}
+	if (dir == NULL) {
+	    if ((wdir=ftp_pwd()) == NULL)
+		wdir = strdup("/");
+	    if ((dir=ftp_cd(wdir, 0)) == NULL) {
+		escape_disp(0);
+		ftp_close();
+		exit_disp();
+		exit(1);
+	    }
 	}
     }
 
