@@ -2,6 +2,8 @@
 #define HAD_KEYS_H
 
 /*
+  $NiH$
+
   keys.h -- parse and print key specifications
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
 

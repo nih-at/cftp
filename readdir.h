@@ -2,6 +2,8 @@
 #define HAD_READDIR_H
 
 /*
+  $NiH$
+
   readdir.h -- read directory listing
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
 

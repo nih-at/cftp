@@ -2,6 +2,8 @@
 #define HAD_SOCKET_H
 
 /*
+  $NiH$
+
   sockets.h -- auxiliary socket functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
 

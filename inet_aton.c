@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   inet_aton -- replacement function (using inet_addr)
   Copyright (C) 2000, 2001 Dieter Baron
 

@@ -2,6 +2,8 @@
 #define HAD_FTP_H
 
 /*
+  $NiH$
+
   ftp.h -- ftp protocol functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
 

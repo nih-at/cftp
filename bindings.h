@@ -2,6 +2,8 @@
 #define HAD_BINDINGS_H
 
 /*
+  $NiH$
+
   bindings.h -- key bindings
   Copyright (C) 1996, 1997, 1998, 2000, 2001 Dieter Baron
 

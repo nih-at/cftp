@@ -2,6 +2,8 @@
 #define HAD_RC_H
 
 /*
+  $NiH$
+
   rc.h -- auxiliary functions for parsing .cftprc file
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
 

@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   tty -- lowlevel tty handling
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
 

@@ -2,6 +2,8 @@
 #define _HAD_SIGNALS_H
 
 /*
+  $NiH$
+
   signals.h -- signal handling functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
 

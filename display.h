@@ -2,6 +2,8 @@
 #define HAD_DISPLAY_H
 
 /*
+  $NiH$
+
   display.h -- display functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
 

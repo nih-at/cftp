@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   getaddrinfo -- nodename-to-address translation in protocol-independent manner
   Copyright (C) 2000, 2001 Dieter Baron
 
