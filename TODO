@@ -1,3 +1,4 @@
+* termcap.h or similar (for -Wall): which one?!
 * clean up code for -Wall (fn_select - zzzz)
 * handle 8 bit keys
 * direct commands (site, etc.)
