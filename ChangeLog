@@ -1,3 +1,7 @@
+1999-02-08  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* readrc.c (readrc): remember password when part of alias url.
+
 1998-12-31  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (ftp_retr): place size from 150 response in *sizep (new

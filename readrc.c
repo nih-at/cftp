@@ -90,6 +90,10 @@ readrc(char **userp, char **passp, char **hostp, char **portp, char **wdirp,
 		    *userp = user;
 		else
 		    free(user);
+		if (!*passp)
+		    *passp = pass;
+		else
+		    free(pass);
 		free(*hostp);
 		*hostp = host;
 		if (!*portp)
