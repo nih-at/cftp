@@ -242,3 +242,22 @@ tag_freefile(filetags *f)
 
     return NULL;
 }
+
+
+@ checking if any tags exist.
+
+@d<prototypes@>
+int tag_anytags(void);
+
+@u
+int
+tag_anytags(void)
+{
+    dirtags *d;
+
+    for (d=tags.next; d; d=d->next)
+	if (d->tags && d->tags->next)
+	    return 1;
+
+    return 0;
+}
