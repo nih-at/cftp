@@ -1,5 +1,9 @@
 2000-12-11  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* Makefile.am, configure.in: remove getdomainname replacement.
+	main.c (get_anon_passwd): if the system doesn't provide
+	getdomainname, don't use it.
+
 	* Makefile.am, mkfntab-c.m4, mkfntab-h.m4: merge .proto files into
 	m4 files.
 

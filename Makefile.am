@@ -55,6 +55,3 @@ options.c: options.op $(srcdir)/mkoptab-c.m4
 
 options.h: options.op mkoptab-h.m4
 	m4 $(srcdir)/mkoptab-h.m4 $(srcdir)/options.op > options.h
-
-getdomainname.o: getdomainname.c
-	$(CC) $(CFLAGS) -DDOMAINNAME=\"@DOMAINNAME@\" -c getdomainname.c

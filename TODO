@@ -7,7 +7,6 @@
 * complete getaddrinfo replacement
 * check warnings on NextSTEP
 * rethink directory format auto detection logic
-* remove broken getdomain replacement, use user@
 * improve check wheter lib{socket,nsl,resolv} are needed
 * ^[[O triggers bindings for left and O
 * fix transfer rate display

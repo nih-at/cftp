@@ -14,7 +14,6 @@ AC_PROG_CC
 dnl # If we're using gcc and the user hasn't specified CFLAGS, add -O to CFLAGS.
 dnl test -n "$GCC" && test -n "$auto_cflags" && CFLAGS="$CFLAGS -O"
 
-AC_SUBST(DOMAINNAME)dnl
 
 
 dnl programs
@@ -72,7 +71,9 @@ dnl compiler characteristics
 
 dnl library functions
 
-AC_REPLACE_FUNCS(strdup getcwd getdomainname strerror basename fputchar fnmatch inet_aton getaddrinfo)
+AC_REPLACE_FUNCS(basename fnmatch fputchar getaddrinfo getcwd inet_aton \
+		 strdup strerror)
+AC_CHECK_FUNCS(getdomainname)
 
 AC_CHECK_FUNCS(tparam, [tparam=1], [tparam=0])
 if test "$tparam" -ne 1
@@ -82,18 +83,6 @@ fi
 
 AC_CHECK_FUNCS(getopt_long, , [LIBOBJS="$LIBOBJS getopt1.o getopt.o"])
 
-if test `expr "$LIBOBJS" : getdomainname` -ne 0
-then
-AC_CHECK_PROG(DOMAINNAME_PRG, domainname, YES, NO)
-if test "$DOMAINNAME_PRG" = "YES"
-then
-	DOMAINNAME=`domainname`
-else
-	DOMAINNAME=""
-fi
-else
-	DOMAINNAME=""
-fi
 
 dnl system services
 
