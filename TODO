@@ -1,3 +1,4 @@
+* rethink directory format auto detection logic
 * don't require GNU m4
 * ^[[O triggers bindings for left and O
 * detect hung data connection

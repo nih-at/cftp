@@ -72,7 +72,7 @@ read_dir(FILE *f)
 	}
 	while ((ret=pfunc[pf](list+n, line)) == -1) {
 	    pf++;
-	    if (pf > npfunc) {
+	    if (pf >= npfunc) {
 		pf = 0;
 		ret = 1;
 		break;
@@ -116,7 +116,8 @@ parse_unix(direntry *de, char *line)
     if (strncmp(line, "total ", 6) == 0)
 	return 1;
 
-    if (strcspn(line, " ") != 10)
+    if (strcspn(line, " ") < 10
+	|| (line[10]!=' ' && !isdigit(line[10])))
 	return -1;
 
     if ((de->line=(char *)malloc(strlen(line)+2)) == NULL)

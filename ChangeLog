@@ -1,3 +1,11 @@
+2000-11-26  Dieter Baron  <dillo@danbala.ifoer.tuwien.ac.at>
+
+	* readdir.c (read_dir): don't call pfunc[npfunc], as it doesn't
+	exist.
+	(parse_unix): recognize lines where there is no space between
+	permissions and number of links (as is the case on some servers on
+	files with more than 99 links).
+
 2000-10-19  Dieter Baron  <dillo@danbala.ifoer.tuwien.ac.at>
 
 	* configure.in: search for tgetent in libc (needed on Darvin).
