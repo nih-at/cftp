@@ -1,3 +1,4 @@
+* sftp support
 * declare replacement functions (to avoid warnings)
 * find bug when viewing or piping rfc-index.txt
 * host specific rc file sections
