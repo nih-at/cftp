@@ -1,3 +1,8 @@
+2001-10-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* ftp.c (ftp_cat): rewrite error detection/reporting:
+	don't rely on ferror(), only consult errno in case of error.
+
 2001-09-15  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* configure.in: stepped version to 0.11.1.
