@@ -21,10 +21,12 @@ P display.cw: check for missing capabilities
 B tty.cw: (tty_readkey) don't discard chars by failed multibyte code
 F display.cw: (disp_redir) don't clear screen, overwrite
 P configure.in: add -posix for NeXTStep
-F queit if in background
+F quiet if in background
 F option: ring bell when finished (download)
-- fn_select.cw: handle args
+B read_dir.cw: handle no space between permissions and links
+B fn_basic.cw: (fn_shell) get key at end hangs term
 ----------------------------------------------- done
+- fn_select.cw: handle args
 B rc.cw: (rc_token) bug at end of line detection
 F fn_colon
 F arguments for bindable functions

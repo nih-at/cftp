@@ -16,18 +16,33 @@
 @<local prototypes@>
 
 
+@ basename (this should probably go somewhere else. . .)
+
+@d<local prototypes@>
+char *basename(char *name);
+
+@u
+char *
+basename(char *name)
+{
+    char *p = strrchr(name, '/');
+
+    return (p ? p : name);
+}
+
+
 @ entering a directory.
 
 @d<local prototypes@>
-int aux_enter(void);
+int aux_enter(char *name);
 
 @u
 int
-aux_enter(void)
+aux_enter(char *name)
 {
 	directory *d;
 
-	d = ftp_cd(curdir->list[cursel].name);
+	d = ftp_cd(name);
 
 	if (d == NULL)
 		return -1;
@@ -44,20 +59,19 @@ aux_enter(void)
 @ downloading a file.
 
 @d<local prototypes@>
-int aux_download(void);
+int aux_download(char *name, long size);
 
 @u
 int
-aux_download(void)
+aux_download(char *name, long size)
 {
 	int err;
 	FILE *f;
 
-	if ((f=fopen(curdir->list[cursel].name, "w")) == NULL)
+	if ((f=fopen(basename(name), "w")) == NULL)
 		return -2;
 	
-	err = ftp_retr(curdir->list[cursel].name, f,
-		       curdir->list[cursel].size, opt_mode);
+	err = ftp_retr(name, f, size, opt_mode);
 	fclose(f);
 
 	return err;
@@ -67,11 +81,11 @@ aux_download(void)
 @ viewing a flie.
 
 @d<local prototypes@>
-int aux_view(void);
+int aux_view(char *name);
 
 @u
 int
-aux_view(void){
+aux_view(char *name){
 	int err;
 	FILE *f;
 	
@@ -80,8 +94,7 @@ aux_view(void){
 
 	escape_disp(1);
 	
-	err = ftp_retr(curdir->list[cursel].name, f,
-		       curdir->list[cursel].size, 'a');
+	err = ftp_retr(name, f, 0, 'a');
 	pclose(f);
 
 	reenter_disp();
@@ -99,20 +112,35 @@ aux_view(void){
 void
 fn_enter_get(char **args)
 {
-	switch (curdir->list[cursel].type) {
-	case 'd':
-		aux_enter();
-		break;
-	case 'f':
-		aux_download();
-		break;
-	case 'l':
-		if (aux_enter() == -1)
-			aux_download();
-		break;
-	default:
-		disp_status("Can't download special files.");
-	}
+    char *name;
+    int type;
+    long size;
+
+    if (args) {
+	name = args[0];
+	type = 'l';
+	size = 0;
+    }
+    else {
+	name = curdir->list[cursel].name;
+	type = curdir->list[cursel].type;
+	size = curdir->list[cursel].size;
+    }
+
+    switch (type) {
+    case 'd':
+	aux_enter(name);
+	break;
+    case 'f':
+	aux_download(name, size);
+	break;
+    case 'l':
+	if (aux_enter(name) == -1)
+	    aux_download(name, size);
+	break;
+    default:
+	disp_status("Can't download special files.");
+    }
 }
 
 
@@ -125,20 +153,32 @@ fn_enter_get(char **args)
 void
 fn_enter_view(char **args)
 {
-	switch (curdir->list[cursel].type) {
-	case 'd':
-		aux_enter();
-		break;
-	case 'f':
-		aux_view();
-		break;
-	case 'l':
-		if (aux_enter() == -1)
-			aux_view();
-		break;
-	default:
-		disp_status("Can't view special files.");
-	}
+    char *name;
+    int type;
+
+    if (args) {
+	name = args[0];
+	type = 'l';
+    }
+    else {
+	name = curdir->list[cursel].name;
+	type = curdir->list[cursel].type;
+    }
+
+    switch (type) {
+    case 'd':
+	aux_enter(name);
+	break;
+    case 'f':
+	aux_view(name);
+	break;
+    case 'l':
+	if (aux_enter(name) == -1)
+	    aux_view(name);
+	break;
+    default:
+	disp_status("Can't view special files.");
+    }
 }
 
 
@@ -151,14 +191,26 @@ fn_enter_view(char **args)
 void
 fn_enter(char **args)
 {
-	switch (curdir->list[cursel].type) {
-	case 'd':
-	case 'l':
-		aux_enter();
-		break;
-	default:
-		disp_status("Can enter only directories.");
-	}
+    char *name;
+    int type;
+
+    if (args) {
+	name = args[0];
+	type = 'l';
+    }
+    else {
+	name = curdir->list[cursel].name;
+	type = curdir->list[cursel].type;
+    }
+
+    switch (type) {
+    case 'd':
+    case 'l':
+	aux_enter(name);
+	break;
+    default:
+	disp_status("Can enter only directories.");
+    }
 }
 
 
@@ -171,14 +223,29 @@ fn_enter(char **args)
 void
 fn_get(char **args)
 {
-	switch (curdir->list[cursel].type) {
-	case 'f':
-	case 'l':
-		aux_download();
-		break;
-	default:
-		disp_status("Can only download plain files.\n");
-	}
+    char *name;
+    int type;
+    long size;
+
+    if (args) {
+	name = args[0];
+	type = 'l';
+	size = 0;
+    }
+    else {
+	name = curdir->list[cursel].name;
+	type = curdir->list[cursel].type;
+	size = curdir->list[cursel].size;
+    }
+
+    switch (type) {
+    case 'f':
+    case 'l':
+	aux_download(name, size);
+	break;
+    default:
+	disp_status("Can only download plain files.\n");
+    }
 }
 
 @ viewing a file.
@@ -190,14 +257,26 @@ fn_get(char **args)
 void
 fn_view(char **args)
 {
-	switch (curdir->list[cursel].type) {
-	case 'f':
-	case 'l':
-		aux_view();
-		break;
-	default:
-		disp_status("Can only view plain files.\n");
-	}
+    char *name;
+    int type;
+
+    if (args) {
+	name = args[0];
+	type = 'l';
+    }
+    else {
+	name = curdir->list[cursel].name;
+	type = curdir->list[cursel].type;
+    }
+
+    switch (type) {
+    case 'f':
+    case 'l':
+	aux_view(name);
+	break;
+    default:
+	disp_status("Can only view plain files.\n");
+    }
 }
 
 
@@ -247,20 +326,25 @@ fn_cdup(char **args)
 void
 fn_cd(char **args)
 {
-	char *path;
-	directory *d;
+    char *path;
+    directory *d;
 
+    if (args)
+	path = args[0];
+    else
 	path = read_string("directory: ");
 	
-	d = ftp_cd(path);
+    d = ftp_cd(path);
+
+    if (!args)
 	free(path);
 		
-	if (d == NULL)
-		return;
+    if (d == NULL)
+	return;
 
-	curdir = d;
-	cursel = curtop = 0;
-
-	disp_dir(curdir, curtop, cursel, 1);
+    curdir = d;
+    cursel = curtop = 0;
+    
+    disp_dir(curdir, curtop, cursel, 1);
 }
 
