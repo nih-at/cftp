@@ -1,5 +1,10 @@
 2001-08-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* strdup.c: include <stdlib.h> for malloc() prototype.
+
+	* tty.c (tty_putp): buf is only used with tparam, so only define
+	it in that case.
+
 	* fn_tag.c (fn_tag): strcmp returns int, so compare with 0.
 
 	* tty.c: if we're using tparam replacement, declare it.
@@ -10,8 +15,6 @@
 
 	* tty.c: if present, include termcap.h.  Adapt for gratuitous
 	differences of termcap implementations.
-	* fputchar.c (fputchar): make return type dependent on termcap
-	library we're using.
 	* configure.in: check for termcap.h if using libtermcap.  Set one
 	of USE_TERMCAP, USE_CURSES, or USE_NCURSES to indicate which lib
 	we're using.

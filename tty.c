@@ -40,14 +40,12 @@ short ospeed;
 #endif
 
 #ifndef HAVE_FPUTCHAR
-#ifndef USE_NCURSES
-void fputchar();
-#else
-int fputchar();
+int fputchar(int c);
 #endif
-#endif
+
 #if !defined(HAVE_TPARAM) && !defined(HAVE_TPARM)
-char *tparam();
+char *tparam (char *string, char *outstring, int len,
+	      int arg0, int arg1, int arg2, int arg3);
 #endif
 
 #include "keys.h"
@@ -526,7 +524,9 @@ _tty_capinit()
 void
 tty_putp(char *cap, int lines, int arg0, int arg1, int arg2, int arg3)
 {
+#ifndef HAVE_TPARM
     static char buf[40];
+#endif
     char *s;
 
 #ifndef HAVE_TPARM
