@@ -1,4 +1,3 @@
-* on startup: don't list dir if downloading file
 * find bug when viewing or piping rfc-index.txt
 * host specific rc file sections
 * run time disabling of IPv6
