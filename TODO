@@ -1,6 +1,8 @@
+! sftp: lost connection during download causes tight loop
 ! tagging segfaults on linux
 ! abort doesn't work
 ! stop when local disk is full during download
++ display transfer rate at end of transfer
 + fix buffer overflows
 + sftp: ^c kills ssh subprocess (how to avoid?!)
 + test ftp_cat error cases

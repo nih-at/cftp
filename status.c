@@ -1,5 +1,5 @@
 /*
-  $NiH: status.c,v 1.18 2001/12/23 03:08:47 dillo Exp $
+  $NiH: status.c,v 1.19 2002/09/16 12:42:43 dillo Exp $
 
   status.c -- status line
   Copyright (C) 1996-2002 Dieter Baron
@@ -138,7 +138,7 @@ status_do(enum state when)
 	    break;
 	    
 	case bs_tag:
-	    strcpy(status_line+cols-15, "<tag>-----");
+	    strncpy(status_line+cols-15, "<tag>-----", 10);
 	    break;
 
 	default:

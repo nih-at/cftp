@@ -1,3 +1,7 @@
+2003-12-04  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* status.c (status_do): don't overwrite percentage in tag mode.
+
 2003-07-12  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* sftp.c (sftp_close, _sftp_close): move part shared with signal
@@ -13,7 +17,7 @@
 2003-05-16  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* configure.in, INSTALL, install-sh, missing, mkinstalldirs:
-	update to autoconf 2.50 and automke 2.7.
+	update to autoconf 2.50 and automake 1.7.
 	* configure.in: check for vasprintf.
 	* snprintf.c: add vasprintf replacement.
 
