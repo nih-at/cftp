@@ -82,5 +82,7 @@ sig_remember(int i)
     case SIGALRM:
 	sig_alarm++;
     }
+    signal(i, sig_remember);
 }
 	
+
