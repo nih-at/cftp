@@ -48,6 +48,8 @@ init_disp(void)
 	if (err=tty_setup())
 	    return err;
 
+	tty_redraw = disp_redraw;
+
 	tty_clear();
 	tty_hidecrsr();
 }

@@ -1,6 +1,7 @@
 @ low level tty handling stuff.
 
 @u
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -55,7 +56,10 @@ int
 tty_init(void)
 {
 	char *term, *pc;
-
+#ifdef SIGWINCH
+	struct winsize ws;
+#endif
+	
 	/* get termcap entry */
 	if ((term=getenv("TERM")) == NULL) {
 		fprintf(stderr, "%s: no terminal type specified\n",
@@ -103,6 +107,13 @@ tty_init(void)
 	/* screen size */
 	tty_cols = tgetnum("co");
 	tty_lines = tgetnum("li");
+#ifdef SIGWINCH
+	if (ioctl(0, TIOCGWINSZ, &ws) == 0) {
+	    tty_cols = ws.ws_col;
+	    tty_lines = ws.ws_row;
+	}
+	signal(SIGWINCH, tty_winch);
+#endif
 
 	/* erase, werase, kill */
 	if ((tty_verase=tty_tio.c_cc[VERASE]) == _POSIX_VDISABLED)
@@ -393,3 +404,37 @@ tty_iscap(char *name)
 {
     return (tgetflag(name) == 1);
 }
+
+
+@ handling screen size changes
+
+@d<local prototypes@>
+#ifdef SIGWINCH
+void tty_winch(int s);
+#endif
+
+@d<globals@>
+extern void (*tty_redraw)(void);
+
+@d<local globals@>
+void (*tty_redraw)(void) = NULL;
+
+@u
+#ifdef SIGWINCH
+void
+tty_winch(int s)
+{
+    int change = 0;
+    struct winsize ws;
+
+    if (ioctl(0, TIOCGWINSZ, &ws) == 0) {
+	if (tty_cols != ws.ws_col
+	    || tty_lines != ws.ws_row)
+	    change = 1;
+	tty_cols = ws.ws_col;
+	tty_lines = ws.ws_row;
+    }
+    if (change && tty_redraw)
+	tty_redraw();
+}
+#endif
