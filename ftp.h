@@ -59,6 +59,6 @@ int ftp_site(char *cmd);
 int ftp_noop(void);
 char *ftp_pwd(void);
 char *ftp_gets(FILE *f);
-int ftp_cat(FILE *fin, FILE *fout, long start, long size);
+int ftp_cat(FILE *fin, FILE *fout, long start, long size, int upload);
 
 #endif /* ftp.h */

@@ -104,7 +104,7 @@ aux_download(char *name, long size, int restart)
     if (size == -1)
 	size = rsize;
 
-    err = ftp_cat(fin, fout, start, size);
+    err = ftp_cat(fin, fout, start, size, 0);
 
     err |= ftp_fclose(fin);
     
@@ -131,7 +131,7 @@ aux_pipe(char *name, long size, int mode, char *cmd, int quietp)
     if ((fout=disp_open(cmd, quietp)) == NULL)
 	return -2;
 
-    err = ftp_cat(fin, fout, 0, size);
+    err = ftp_cat(fin, fout, 0, size, 0);
 
     err |= ftp_fclose(fin);
 
@@ -163,7 +163,7 @@ aux_upload(char *name)
     else
 	size = -1;
     
-    err = ftp_cat(fin, fout, 0, size);
+    err = ftp_cat(fin, fout, 0, size, 1);
 
     err |= ftp_fclose(fout);
     

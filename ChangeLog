@@ -1,3 +1,11 @@
+2001-03-29  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* ftp.c (ftp_cat): new parameter (upload: direction of ASCII
+	conversion); changed callers.
+	(_ftp_host2ascii): new function.
+	(ftp_cat, _ftp_ascii2host): use two buffers in ASCII<->host
+	conversion.  chose ASCII conversion based on transfer direction.
+
 2001-03-20  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (_ftp_ascii2host): new function

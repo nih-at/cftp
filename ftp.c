@@ -107,7 +107,8 @@ int ftp_cwd(char *path);
 int ftp_gethostaddr(int fd);
 void ftp_histf(char *fmt, ...);
 void ftp_hist(char *line);
-static int _ftp_ascii2host(char *buf, int n, int *trail_cr);
+static int _ftp_ascii2host(char *buf, char *buf2, int n, int *trail_cr);
+static int _ftp_host2ascii(char *buf, char *buf2, int n, int *trail_cr);
 
 #define ENABLE_TRANSFER_RATE
 
@@ -938,9 +939,9 @@ ftp_cwd(char *path)
 
 #ifdef ENABLE_TRANSFER_RATE
 int
-ftp_cat(FILE *fin, FILE *fout, long start, long size)
+ftp_cat(FILE *fin, FILE *fout, long start, long size, int upload)
 {
-    char buf[4098], fmt[4096];
+    char buf[4096], buf2[8192], fmt[4096], *p;
     int nread, nwritten, err, trail_cr;
     long got;
     struct itimerval itv;
@@ -991,9 +992,16 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size)
 		if ((nread=fread(buf, 1, 4096, fin)) > 0) {
 		    do_read = 0;
 		    nwritten = 0;
-		    if (ftp_curmode == 'a') {
-			/* XXX: direction? */
-			nread = _ftp_ascii2host(buf, nread, &trail_cr);
+		    if (ftp_curmode == 'i')
+			p = buf;
+		    else {
+			p = buf2;
+			if (upload)
+			    nread = _ftp_host2ascii(buf, buf2, nread,
+						    &trail_cr);
+			else
+			    nread = _ftp_ascii2host(buf, buf2, nread,
+						    &trail_cr);
 		    }
 		}
 		else if (errno != EAGAIN)
@@ -1006,7 +1014,7 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size)
 	    
 	    if (ret != -1 && FD_ISSET(fileno(fin), &fds)) {
 		errno = 0;
-		if ((err=fwrite(buf+nwritten, 1, nread-nwritten,
+		if ((err=fwrite(p+nwritten, 1, nread-nwritten,
 				fout)) < 0 && errno != EAGAIN)
 		    break;
 		nwritten += err;
@@ -1056,7 +1064,7 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size)
 #ifndef ENABLE_TRANSFER_RATE
 
 int
-ftp_cat(FILE *fin, FILE *fout, long start, long size)
+ftp_cat(FILE *fin, FILE *fout, long start, long size, int upload)
 {
     char buf[4096], fmt[4096];
     int c, n, err;
@@ -1386,7 +1394,7 @@ ftp_anon(void)
 
 
 static int
-_ftp_ascii2host(char *buf, int n, int *trail_cr)
+_ftp_ascii2host(char *buf, char *buf2, int n, int *trail_cr)
 {
     char *s, *t;
     int cr;
@@ -1394,7 +1402,8 @@ _ftp_ascii2host(char *buf, int n, int *trail_cr)
     if (n == 0)
 	return 0;
 
-    t = s = buf;
+    s = buf;
+    t = buf2;
     cr = *trail_cr;
 
     for (; n; --n,s++) {
@@ -1411,5 +1420,32 @@ _ftp_ascii2host(char *buf, int n, int *trail_cr)
 
     *trail_cr = cr;
     
-    return t-buf;
+    return t-buf2;
+}
+
+
+
+static int
+_ftp_host2ascii(char *buf, char *buf2, int n, int *trail_cr)
+{
+    char *s, *t;
+    int cr;
+
+    if (n == 0)
+	return 0;
+
+    s = buf;
+    t = buf2;
+    cr = *trail_cr;
+
+    for (; n; --n,s++) {
+	if (*s == '\n' && !cr)
+	    *t++ = '\r';
+	cr = (*s == '\r');
+	*t++ = *s;
+    }
+
+    *trail_cr = cr;
+    
+    return t-buf2;
 }
