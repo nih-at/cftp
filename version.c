@@ -1,3 +1,3 @@
 #include "config.h"
 
-char version[] = "cftp (version " VERSION ")";
+char version[] = "cftp " VERSION;

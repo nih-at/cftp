@@ -55,7 +55,9 @@ char help[] = "\
   -h, --help        display this help message\n\
   -V, --version     display version number\n\
   -p, --port PORT   specify port\n\
-  -u, --user USER   specify user\n";
+  -u, --user USER   specify user\n\
+\n\
+Report bugs to <dillo@giga.or.at>.\n";
 
 #define OPTIONS	"hVp:u:"
 
@@ -126,6 +128,11 @@ main(int argc, char **argv)
 	    break;
 	case 'V':
 	    printf("%s\n", version);
+	    printf("Copyright (C) 1997 Dieter Baron\n\
+cftp comes with ABSOLUTELY NO WARRANTY.\n\
+You may redistribute copies of cftp under the terms of the\n\
+GNU General Public License.\n\
+For more information about these matters, see the files named COPYING.\n");
 	    exit(0);
 	case 'h':
 	    printf(help_head, version);
@@ -339,12 +346,14 @@ get_annon_passwd(void)
     gethostname(host, 1023);
     getdomainname(domain, 1023);
 
-    if (strcmp(domain, "(none)") != 0) {
+    if (strcmp(domain, "(none)") != 0 && domain[0] != '\0') {
 	if (domain[0] != '.')
 	    sprintf(pass+strlen(pass), "%s.%s", host, domain);
 	else
 	    sprintf(pass+strlen(pass), "%s%s", host, domain);
     }
+    else if (strchr(host, '.'))
+	strcat(pass, host);
     
     return strdup(pass);
 }

@@ -115,19 +115,13 @@ you can easily choose what to get or where to go.
 @chapter Invoking @sc{cftp}
 @cindex Invokation
 
-There are two ways to specify the connection:
+There are two ways to specify the destination:
 
 @itemize @bullet
 @item cftp [-u @var{user}] [-p @var{port}] @{@var{host}|@var{alias}@} @var{directory}
 @item cftp @var{url}
 @end itemize
 @c XXX das mach ich schon
-
-
-@include functions.texi
-
-
-@include options.texi
 
 
 @c ********************************************************************
@@ -147,12 +141,13 @@ There are two ways to specify the connection:
 @cindex .cftprc
 @cindex cftprc
 
-On startup @sc{cftp} reads @file{.cftprc} (in your home directory) if it
-exists.  This file contains @sc{cftp} functions (optionally with
-arguments), just as in the @code{bind} function.  Put @sc{cftp} commands
-in it you want to be executed every time @sc{cftp} starts.  Not all
-functions are allowed in @file{.cftprc}, however.
+On startup @sc{cftp} reads the file @file{.cftprc} (in your home
+directory) if it exists.  It contains @sc{cftp} functions invocations
+(optionally with arguments), just as in the @code{bind} function.  Put
+@sc{cftp} commands in it you want to be executed every time @sc{cftp}
+starts.  Not all functions are allowed in @file{.cftprc}, however.
 
+@c XXX: alias
 @c XXX: include all allowed commands
 
 
@@ -171,6 +166,12 @@ In addition to its own config file @file{.cftprc}, see @ref{cftprc},
 @item @code{macdef init} definition for @code{cd} commands (used as
 initial directory)
 @end itemize
+
+
+@include functions.texi
+
+
+@include options.texi
 
 
 @c *********************************************************************
