@@ -1,3 +1,10 @@
+2001-09-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* getaddrinfo.c: adapt to new define name HAVE_DECL_H_ERRNO.
+	* configure.in (LIBS): use NIH_CHECK_DECL to check for h_errno in
+	netdb.h and ospeed in termcap.h.
+	* acinclude.m4 (NIH_CEHCK_DECL): new macro.
+
 2001-09-12  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* configure.in: stepped version to 0.11.
