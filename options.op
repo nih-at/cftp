@@ -40,7 +40,7 @@ option(hist-size, hs, ftp_hist_size, ftp_set_hist_size, i, 200,
 with the ftp server to remember.  Remembered lines can be displayed
 with @code{response}.  @xref{response}})
 
-option(beep, bp, opt_beep, NULL, c, 0,
+option(beep, bp, opt_beep, NULL, b, 0,
  {beep after some commands},
  {Tells cftp to beep after completing some commands, e. g. downloading
 tagged files.})

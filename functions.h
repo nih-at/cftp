@@ -3,7 +3,7 @@
 
 /*
   functions.h -- auxiliary functions for bindable function handling
-  Copyright (C) 1996 Dieter Baron
+  Copyright (C) 1996, 1997 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -23,6 +23,8 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include "directory.h"
+
 
 
 typedef struct function {
@@ -35,6 +37,7 @@ typedef struct function {
 extern function functions[];
 
 #define FN_PRE	1
+#define FN_RC   2
 #define FN_EXIT	-1
 
 

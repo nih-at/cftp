@@ -1,6 +1,6 @@
 /*
   rc -- auxiliary functions for parsing .cftprc file
-  Copyright (C) 1996 Dieter Baron
+  Copyright (C) 1996, 1997 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 #include "rc.h"
 
 
@@ -106,4 +107,21 @@ rc_list(char *line)
     }
 
     return list;
+}
+
+
+
+int rc_inrc = 0;
+int rc_lineno;
+
+extern char *prg;
+
+void rc_error(char *fmt, ...) {
+    va_list argp;
+
+    fprintf(stderr, "%s:.cftprc:%d: ", prg, rc_lineno);
+    va_start(argp, fmt);
+    vfprintf(stderr, fmt, argp);
+    va_end(argp);
+    fputc('\n', stderr);
 }

@@ -28,6 +28,9 @@
 char *rc_token(char **linep);
 char **rc_list(char *line);
 
+extern int rc_inrc;
+extern int rc_lineno;
+
+void rc_error(char *fmt, ...);
+
 #endif /* rc.h */
-
-

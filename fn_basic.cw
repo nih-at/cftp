@@ -300,7 +300,7 @@ fn_prefix(char **args)
 @ binding keys
 
 @d<functions@>
-function(bind, {key [cmd [args @@dots{}]]}, fn_bind, 0,
+function(bind, {key [cmd [args @@dots{}]]}, fn_bind, FN_RC,
 	 {bind key},
  {})
 
@@ -323,6 +323,10 @@ fn_bind(char **args)
 	    args += 2;
     }
     else {
+	if (rc_inrc) {
+	    rc_error("bind: no arguments given");
+	    return;
+	}
 	line = p = read_string("bind ", 1);
 
 	if ((kname=rc_token(&p)) == NULL) {
@@ -334,7 +338,7 @@ fn_bind(char **args)
     }
 
     if ((key=parse_key(kname)) < 0) {
-	disp_status("unknown key: %s", kname);
+	(rc_inrc ? rc_error : disp_status)("unknown key: %s", kname);
 	if (line)
 	    free(line);
 	return;
@@ -342,14 +346,15 @@ fn_bind(char **args)
 	
     if (cmd) {
 	if ((fn=find_function(cmd)) < 0) {
-	    disp_status("unknown function: %s", cmd);
+	    (rc_inrc ? rc_error : disp_status)("unknown function: %s", cmd);
 	    if (line)
 		free(line);
 	    return;
 	}
     }
 
-    disp_status("");
+    if (!rc_inrc)
+	disp_status("");
 	
     if (binding[key] > -1) {
 	binding[key] = -1;
@@ -386,7 +391,7 @@ fn_bind(char **args)
 @ setting user options.
 
 @d<functions@>
-function(set, [option [value]], fn_set, 0,
+function(set, [option [value]], fn_set, FN_RC,
 	 {set option},
  {Set user option.})
 
@@ -403,22 +408,26 @@ void fn_set(char **args)
 	if (args[1])
 	    value = args[1];
 	else {
-	    sprintf(prompt, "set %s ", opt);
-	    p = line = read_string(prompt, 1);
-	    if (line[0] == '\0') {
-		disp_status("");
+	    if (rc_inrc) {
+		rc_error("no option value given");
 		return;
 	    }
+	    sprintf(prompt, "set %s to: ", opt);
+	    p = line = read_string(prompt, 1);
 	    value = rc_token(&p);
 	}
     }
     else {
+	if (rc_inrc) {
+	    rc_error("no option value given");
+	    return;
+	}
 	p = line = read_string("set ", 1);
-	if (line[0] == '\0') {
+	opt = rc_token(&p);
+	if (opt == NULL) {
 	    disp_status("");
 	    return;
 	}
-	opt = rc_token(&p);
 	value = rc_token(&p);
     }
 
@@ -433,40 +442,73 @@ void fn_set(char **args)
 	    break;
 
     if (option[i].name == NULL) {
-	disp_status("unknown option: %s", opt);
+	if (rc_inrc)
+	    rc_error("unknown option: %s", opt);
+	else
+	    disp_status("unknown option: %s", opt);
 	return;
     }
-    if (value == NULL)
-	value = "";
 
     switch (option[i].type) {
     case OPT_INT:
-	ival = atoi(value);
-	if (option[i].func)
-	    option[i].func(ival, option[i].var.i);
-	else
-	    *(option[i].var.i) = ival;
-
-	disp_status("%s set to %d", option[i].name, *(option[i].var.i));
+	if (value) {
+	    ival = atoi(value);
+	    if (option[i].func)
+		option[i].func(ival, option[i].var.i);
+	    else
+		*(option[i].var.i) = ival;
+	}
+	
+	if (!rc_inrc)
+	    disp_status("%s set to %d", option[i].name,
+			*(option[i].var.i));
 	break;
 
     case OPT_CHR:
-	ival = value[0];
-	if (option[i].func)
-	    option[i].func(ival, option[i].var.i);
-	else
-	    *(option[i].var.i) = ival;
-
-	disp_status("%s set to `%c'", option[i].name, *(option[i].var.i));
+	if (value) {
+	    ival = value[0];
+	    if (option[i].func)
+		option[i].func(ival, option[i].var.i);
+	    else
+		*(option[i].var.i) = ival;
+	}
+	
+	if (!rc_inrc)
+	    disp_status("%s set to `%c'", option[i].name,
+			*(option[i].var.i));
 	break;
 
     case OPT_STR:
-	if (option[i].func)
-	    option[i].func(strdup(value), option[i].var.s);
-	else
-	    *(option[i].var.s) = strdup(value);
+	if (value) {
+	    if (option[i].func)
+		option[i].func(strdup(value), option[i].var.s);
+	    else
+		*(option[i].var.s) = strdup(value);
+	}
+	
+	if (!rc_inrc)
+	    disp_status("%s set to `%s'", option[i].name,
+			*(option[i].var.s));
+	break;
+	
+    case OPT_BOOL:
+	if (value) {
+	    if (value[0] == 't')
+		ival = !*(option[i].var.i);
+	    else if (value[0] == '0' || value[0] == 'n'
+		|| strcasecmp(value, "off") == 0)
+		ival = 0;
+	    else
+		ival = 1;
+	    if (option[i].func)
+		option[i].func(ival, option[i].var.i);
+	    else
+		*(option[i].var.i) = ival;
+	}
 
-	disp_status("%s set to `%s'", option[i].name, *(option[i].var.s));
+	if (!rc_inrc)
+	    disp_status("%s set to %s", option[i].name,
+			(*(option[i].var.i) ? "on" : "off"));
 	break;
     }
 

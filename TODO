@@ -8,7 +8,7 @@ F tty.c: (tty_readkey) make VTIME value user setable
 F readdir.c: support other dir listing formats (vms, dos, descritpive, ...)
 F tag files: edit/clear tags, detached download
 F tag: if tagged is directory, try .tar.gz, .tar.Z, .tar
-F fn_tag.c: (fn_gettags) display tags list while downloading
+F fn_tag.cw: (fn_gettags) display tags list while downloading
 F use `size' to determine unkown size (of links and tags)
 F quiet if in background
 F automatically deidle connection
@@ -16,6 +16,7 @@ C functions.texi: fix bad next pointer in last section (to first command)
 F if url is file, download
 C display.c: (disp_prompt_char) return after first key, not after newline
 F functions.texi: include default bindings
+B util.c: (canonical) check current for non-NULL before accessing
 ---------------------------------------------------------------- till beta
 F abort transfer
 F fn_search
@@ -29,12 +30,12 @@ F display.c: (disp_redir) don't clear screen, overwrite
 P configure.in: add -posix for NeXTStep
 B propagate errors (conn hung or eof?) up to fn_gettags
 F cftp.texi: introduction, invoking, cftprc
-C fn_basic.c: docu for bind
-F fn_basic.c: (fn_help) help for `f'unktions, `k'eys, and `o'ptions
+C fn_basic.cw: docu for bind
+F fn_basic.cw: (fn_help) help for `f'unktions, `k'eys, and `o'ptions
 C untangle fn_* files
 F (fn_isearch) search backwards
 B (fn_isearch) repeaded search sets start to wrong match
-B segfaults if called `cftp -u user host relative-dir'
+F long options
 ----------------------------------------------- done
 B main.c: (main) canonify pathname if not starting with `/'
 B tty.c: (tty_init) sanity checks on screen size detecion

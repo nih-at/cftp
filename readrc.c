@@ -1,6 +1,6 @@
 /*
   readrc -- read .cftprc file
-  Copyright (C) 1996 Dieter Baron
+  Copyright (C) 1996, 1997 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -27,6 +27,7 @@
 #include <string.h>
 #include <errno.h>
 
+#include "functions.h"
 #include "rc.h"
 
 int
@@ -47,7 +48,12 @@ readrc(char **userp, char **passp, char **hostp, char **portp, char **wdirp,
 	return -1;
     }
 
+    rc_inrc = 1;
+    rc_lineno = 0;
+
     while (fgets(b, 8192, f)) {
+	rc_lineno++;
+	
 	p = b;
 	if ((tok=rc_token(&p)) == NULL)
 	    continue;
@@ -103,11 +109,29 @@ readrc(char **userp, char **passp, char **hostp, char **portp, char **wdirp,
 		}
 	    }
 	}
+	else {
+	    int func;
+	    char **args;
+	    
+	    if ((func=find_function(tok)) == -1) {
+		rc_error("unknown command: %s", tok);
+		continue;
+	    }
 
-	/* XXX: other commands */
+	    if (functions[func].type & FN_RC == 0) {
+		rc_error("command %s not allowed in rc file", tok);
+		continue;
+	    }
+
+	    args = rc_list(p);
+
+	    functions[func].fn(args);
+	}
     }
 
     fclose(f);
+
+    rc_inrc = 0;
 
     return 0;
 }

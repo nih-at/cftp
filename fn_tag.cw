@@ -170,7 +170,9 @@ fn_gettags(char **args)
     dirtags *d, *od;
     filetags *t, *o;
     char name[8192];
-    int i;
+    int i, beepp;
+
+    beepp = (tags.next != NULL);
 
     for (d=&tags; d->next;) {
 	for (t=d->next->tags; t->next;) {
@@ -204,8 +206,9 @@ fn_gettags(char **args)
 	else
 	    d = d->next;
     }
-    if (tags.next && opt_beep) {
+    if (beepp && opt_beep) {
 	fputc('\a', stdout);
+	fflush(stdout);
     }
 }
 

@@ -23,15 +23,15 @@ struct option {
     void (*func)();
 };
 
-define(type,dnl t, i, c, s
-{ifelse({$1}, i, {$2}, {$1}, c, {$3}, {$4})})
+define(type,dnl t, (i)nt, (c)har, (s)tring, (b)oolean
+{ifelse({$1}, i, {$2}, {$1}, c, {$3}, {$1}, s, {$4}, {$5})})
 
 define(option,dnl name, short, variable, function, type, default, help, doku
 {divert(1)dnl
   "{$1}" , "{$2}", "{$7}",
-    type({$5}, OPT_INT, OPT_CHR, OPT_STR), (void *)&{$3}, {$4},
+    type({$5}, OPT_INT, OPT_CHR, OPT_STR, OPT_BOOL), (void *)&{$3}, {$4},
 divert(0)dnl
-type({$5}, {int }, {int }, {char *}){$3} = {$6};
+type({$5}, {int }, {int }, {char *}, {int }){$3} = {$6};
 ifelse({$4}, NULL, , extern void {$4}{()};
 )
 divert(-1)})
