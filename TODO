@@ -1,10 +1,13 @@
-! fix or disable transfer rate display
+! disable transfer rate display
 * feature recognition and handling
 * complete getaddrinfo replacement
 * check warnings on NextSTEP
 * rethink directory format auto detection logic
-* don't require GNU m4
+* remove broken getdomain replacement, use user@
+* move fntable.[ch].proto into mkfntab-[ch].m4
+* improve check wheter lib{socket,nsl,resolv} are needed
 * ^[[O triggers bindings for left and O
+* fix transfer rate display
 * detect hung data connection
 * ftp_retr: check 150 format on different servers
 * termcap.h or similar (for -Wall): which one?!
