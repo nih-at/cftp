@@ -27,7 +27,7 @@ EXTRA_DIST=	bindings.desc \
 		mkfntexi.m4 mkfntab-c.m4 mkfntab-h.m4 fntable.fn \
 		mkoptexi.m4 mkoptab-c.m4 mkoptab-h.m4 options.op
 
-BUILT_SOURCES=	bindings.c fntable.c fntable.h options.c options.h
+BUILT_SOURCES=	fntable.c fntable.h options.c options.h bindings.c
 
 # extra rules
 
