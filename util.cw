@@ -87,7 +87,7 @@ dirname(char *name)
 
     if ((dir=(char *)malloc(p-name+1)) != NULL) {
 	strncpy(dir, name, p-name);
-	dir[p-name+1] = '\0';
+	dir[p-name] = '\0';
     }
 
     return dir;
