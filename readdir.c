@@ -31,8 +31,16 @@
 #include "options.h"
 
 static int parse_unix(direntry *de, char *line);
+static int parse_ms(direntry *de, char *line);
 static void init_parse_time(void);
 static time_t parse_time(char *date);
+
+typedef int (*parse_func)(direntry *, char *);
+
+parse_func pfunc[] = {
+    parse_unix, parse_ms
+};
+int npfunc = sizeof(pfunc)/sizeof(pfunc[0]);
 
 
 
@@ -43,12 +51,14 @@ read_dir(FILE *f)
 {
     directory *dir;
     direntry *list;
-    int i, n, sz;
+    int i, n, sz, pf, ret;
     char *line;
 
     dir = malloc(sizeof(directory));
     list = NULL;
     sz = n = 0;
+
+    pf = 0;
 
     init_parse_time();
 
@@ -60,10 +70,19 @@ read_dir(FILE *f)
 	    else
 		list = realloc(list, sizeof(direntry)*sz);
 	}
-	if (parse_unix(list+n, line) == 0) {
+	while ((ret=pfunc[pf](list+n, line)) == -1) {
+	    pf++;
+	    if (pf > npfunc) {
+		pf = 0;
+		ret = 1;
+		break;
+	    }
+	}
+	if (ret == 0) {
 	    list[n].pos = n;
 	    n++;
 	}
+	free(line);
     }
 
     if (n == 0) {
@@ -96,6 +115,9 @@ parse_unix(direntry *de, char *line)
 	
     if (strncmp(line, "total ", 6) == 0)
 	return 1;
+
+    if (strcspn(line, " ") != 10)
+	return -1;
 
     if ((de->line=(char *)malloc(strlen(line)+2)) == NULL)
 	return 1;
@@ -162,8 +184,6 @@ parse_unix(direntry *de, char *line)
 	de->name = strdup(p);
 	de->link = NULL;
     }
-
-    free(line);	
 
     if (de->type == 'd' && (strcmp(de->name, "..")==0 ||
 			    strcmp(de->name, ".")==0)) {
@@ -233,3 +253,54 @@ parse_time(char *date)
 
     return mktime(&tm);
 }
+
+
+
+static int
+parse_ms(direntry *de, char *line)
+{
+    struct tm tm;
+	
+    if (!(isdigit(line[0]) && isdigit(line[1]) && line[2] == '-'
+	  && isdigit(line[3]) && isdigit(line[4]) && line[5] == '-'
+	  && isdigit(line[6]) && isdigit(line[7]) && line[8] == ' '))
+	return -1;
+
+    if ((de->line=(char *)malloc(strlen(line)+2)) == NULL)
+	return 1;
+    
+    de->line[0] = ' ';
+    strcpy(de->line+1, line);
+
+    if (strncmp(line+23, " <DIR>  ", 8) == 0) {
+	de->type = 'd';
+	de->size = -1;
+    }
+    else {
+	de->type = 'f';
+	de->size = strtol(line+17, NULL, 10);
+    }
+
+    /* time */
+    
+    tm.tm_sec = tm.tm_wday = tm.tm_yday = 0;
+    tm.tm_mon = atoi(line);
+    tm.tm_mday = atoi(line+3);
+    tm.tm_year = atoi(line+6);
+    if (tm.tm_year < 50) {
+	/* y2.05k problem */
+	tm.tm_year += 100;
+    }
+    tm.tm_min = atoi(line+13);
+    tm.tm_hour = atoi(line+10) % 12;
+    if (line[15] == 'P')	
+	tm.tm_hour += 12;
+    
+    
+    de->mtime = mktime(&tm);
+
+    de->name = strdup(line+39);
+
+    return 0;
+}
+

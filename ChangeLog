@@ -1,3 +1,11 @@
+1999-04-09  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* readdir.c (parse_ms): new function.
+	(read_dir): loop over parser functions until accepted.  free line
+	here.
+	(parse_unix): reject line if strcspn(line, " ") != 10.  don't free
+	line.
+
 1999-02-08  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* added 1999 to copyright notices.
