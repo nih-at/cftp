@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.70 2001/12/23 02:54:19 dillo Exp $
+  $NiH: ftp.c,v 1.71 2002/03/12 07:40:38 dillo Exp $
 
   ftp -- ftp protocol functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -1077,9 +1077,9 @@ static void
 _ftp_update_transfer(struct _ftp_transfer_stats *tr, long got, int secs)
 {
     long base, step;
-    int nsec, i, stsec;
-    double rtot, rcur;
-    char b[256];
+    int nsec, i, stsec, eta;
+    double rtot, rcur, rbps;
+    char b[512];
 
     nsec = secs-tr->secs;
 
@@ -1102,6 +1102,12 @@ _ftp_update_transfer(struct _ftp_transfer_stats *tr, long got, int secs)
     rtot = (got-tr->start)/(double)(secs*1024);
     rcur = ((tr->cur[tr->ccur] - tr->cur[(tr->ccur+1)%tr->ncur])
 	    / ((double)(secs < tr->ncur-1 ? secs : tr->ncur-1)*1024));
+    if (got == tr->start)
+	eta = -1;
+    else {
+	rbps = (got-tr->start)/(double)secs;
+	eta = (tr->size-got) / rbps;
+    }
 
     stsec = secs - tr->stall_sec;
     if (stsec > opt_stall) {
@@ -1111,20 +1117,31 @@ _ftp_update_transfer(struct _ftp_transfer_stats *tr, long got, int secs)
     else {
 	if (stsec > tr->ncur) {
 	    if (stsec >= 60)
-		sprintf(b, "stalled: %d:%ds", stsec/60, stsec%60);
+		sprintf(b, "stalled: %d:%02ds", stsec/60, stsec%60);
 	    else
 		sprintf(b, "stalled: %ds", stsec);
 	}
 	else
-	    sprintf(b, "current: %.2fkb/s", rcur);
+	    sprintf(b, "cur: %.2fkb/s", rcur);
+	    
+	if (eta != -1) {
+	    if (eta > 60*60)
+		sprintf(b+strlen(b), ", eta: %d:%02d:%02ds",
+			eta/(60*60), (eta/60)%60, eta%60);
+	    else if (eta > 60)
+		sprintf(b+strlen(b), ", eta: %d:%02ds",
+			eta/60, eta%60);
+	    else
+		sprintf(b+strlen(b), ", eta: %ds", eta);
+	}
 
 	if (tr->size != -1)
 	    disp_status(DISP_STATUS,
-			"transferred %ld/%ld (total: %.2fkb/s, %s)",
+			"transferred %ld/%ld (tot: %.2fkb/s, %s)",
 			got, tr->size, rtot, b);
 	else
 	    disp_status(DISP_STATUS,
-			"transferred %ld (total: %.2fkb/s, %s)",
+			"transferred %ld (tot: %.2fkb/s, %s)",
 			got, rtot, b);
     }
 }
