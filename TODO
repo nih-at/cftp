@@ -33,6 +33,7 @@ B propagate errors (conn hung or eof?) up to fn_gettags
 F cftp.texi: introduction, invoking, cftprc
 F user options
 C fn_basic.cw: docu for bind
+B show cursor on linux console
 ----------------------------------------------- done
 Jun 25 (0.5a)
 F fn_basic.cw: (fn_bind) new function
