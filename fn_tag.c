@@ -71,10 +71,11 @@ fn_tag(char **args)
 	
     tagged = tag_file(dir, file, size, type, TAG_TOGGLE);
 
-    if (tagged && i >= 0 && binding_state == bs_remote) {
+    if (tagged && i >= 0) {
 	curdir->line[curdir->cur].line[0] =
 	    (tagged < 0 ? ' ' : opt_tagchar);
-	list_reline(i);
+	if (binding_state == bs_remote)
+	    list_reline(i);
     }
 
     if (tagged < -1)
@@ -100,12 +101,12 @@ fn_cleartags(char **args)
 
     tag_clear();
 
-    for (i=0; i<curdir->len; i++) {
+    for (i=0; i<curdir->len; i++)
 	if (curdir->line[i].line[0] != ' ') {
-	    curdir->line[i].line[0] == ' ';
-	    list_reline(i);
+	    curdir->line[i].line[0] = ' ';
+	    if (binding_state == bs_remote)
+		list_reline(i);
 	}
-    }
 
     disp_status("all tags cleared");
 }
