@@ -20,6 +20,9 @@
 * .cftprc 
 * display.cw: (disp_dir) make max no of lines to scroll user setable
 * tty.cw (tty_readkey) make VTIME value user setable
+* display.cw: (disp_dir) problem with lines of length tty_lines-1
+* display.cw: (disp_dir) problem with dirs of lenght win_lines+1 (e.g.
+	ftp.giga.or.at /)
 ----------------------------------------------- done
 * support cursor keys
 * display.cw: (read_string) use ERASE, WERASE, KILL instead of '\b' etc.
