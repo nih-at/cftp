@@ -30,6 +30,8 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/time.h>
+#include <unistd.h>
 #include <netinet/in.h>
 #include "directory.h"
 #include "display.h"
@@ -150,10 +152,14 @@ ftp_reconnect(void)
     if (ftp_host == NULL || ftp_prt == NULL || ftp_user == NULL)
 	return -1;
 
-    if (conin)
+    if (conin) {
 	fclose(conin);
-    if (conout)
+	conin = NULL;
+    }
+    if (conout) {
 	fclose(conout);
+	conout = NULL;
+    }
 
     if (pass == NULL) {
 	char *b;
@@ -164,11 +170,15 @@ ftp_reconnect(void)
 	free(b);
     }
 
-    if (ftp_open(ftp_host, ftp_prt) == -1)
+    if (ftp_open(ftp_host, ftp_prt) == -1) {
+	disp_status("can't connect to host");
 	return -1;
+    }
 
-    if (ftp_login(ftp_host, ftp_user, pass) == -1)
+    if (ftp_login(ftp_host, ftp_user, pass) == -1) {
+	disp_status("can't log in");
 	return -1;
+    }
 
     status.remote.path = strdup(ftp_lcwd);
     status_do(bs_remote);
@@ -370,8 +380,10 @@ ftp_gets(FILE *f)
 			return NULL;
 		}
 		l += strlen(buf);
-		if ((line=realloc(line, l+1)) == NULL)
+		if ((line=realloc(line, l+1)) == NULL) {
+		    disp_status("malloc failure");
 		    return NULL;
+		}
 		strcpy(line+l, buf);
 	}
 	if (line[l-2] == '\r')
@@ -403,7 +415,13 @@ ftp_put(char *fmt, ...)
 		ftp_histf("-> %s", buf);
 	}
 	fprintf(conout, "%s\r\n", buf);
-	fflush(conout);
+
+	if (fflush(conout) || ferror(conout)) {
+	    disp_status("error writing to server: %s", strerror(errno));
+	    return -1;
+	}
+
+	return 0;
 }	
 
 
@@ -412,7 +430,18 @@ int
 ftp_abort(void)
 {
     int resp;
+    fd_set ready;
+    struct timeval poll;
     
+    /* check wether abort is necessary (no data on control connection) */
+    poll.tv_sec = poll.tv_usec = 0;
+    FD_ZERO(&ready);
+    FD_SET(fileno(conout), &ready);
+    /* XXX: error ignored */
+    if (select(fileno(conout)+1, &ready, NULL, NULL, &poll) == 1)
+	return;
+    
+    /* do abort */
     disp_status("-> <attention>");
     ftp_hist(strdup("-> <attention>"));
 	     
@@ -425,13 +454,16 @@ ftp_abort(void)
 
     ftp_put("abor");
 
-    if (ftp_resp() == 226) {
+    resp = ftp_resp();
+
+    if (resp == 226) {
 	ftp_unresp(226);
 	return 0;
     }
-    else if (ftp_resp() == 426) {
+    else if (resp == 426) {
 	resp = ftp_resp();
     	ftp_unresp(426);
+	disp_status("426 Transfer aborted.");
 	    
 	return resp == 226;
     }
@@ -451,12 +483,15 @@ ftp_resp(void)
     
     if (_ftp_keptresp != -1) {
 	resp = _ftp_keptresp;
-	_ftp_keptresp = 1;
+	_ftp_keptresp = -1;
 	return resp;
     }
 
-    if ((line=ftp_gets(conin)) == NULL)
+    clearerr(conin);
+    if ((line=ftp_gets(conin)) == NULL) {
+	disp_status("read error from server: %s", strerror(errno));
 	return -1;
+    }
 
     resp = atoi(line);
     disp_status("%s", line);
@@ -467,8 +502,10 @@ ftp_resp(void)
 	     isdigit(line[2]) && line[3] == ' ')) {
 	ftp_hist(line);
 	
-	if ((line=ftp_gets(conin)) == NULL)
+	if ((line=ftp_gets(conin)) == NULL) {
+	    disp_status("read error from server: %s", strerror(errno));
 	    return -1;
+	}
     }
 
     ftp_hist(line);
@@ -601,8 +638,10 @@ ftp_cat(FILE *fin, FILE *fout, long size)
 	    else {
 		putc(c, fout);
 	    }
-	    if (ferror(fout))
+	    if (ferror(fout)) {
+		ftp_histf("ftp_cat: write error: %s", strerror(errno));
 		break;
+	    }
 
 	    if (got%512 == 0 && (newt=time(NULL)) != oldt) {
 		disp_status(fmt, got);
@@ -614,12 +653,14 @@ ftp_cat(FILE *fin, FILE *fout, long size)
     signal(SIGINT, sig_end);
 
     if (ferror(fin) || sig_intr) {
+	errno = 0;
 	sig_intr = 0;
 	ftp_abort();
 	return -1;
     }
     else if (ferror(fout)) {
 	err = errno;
+	errno = 0;
 	ftp_abort();
 	disp_status("write error: %s", strerror(err));
 	return -1;

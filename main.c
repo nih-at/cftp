@@ -97,7 +97,7 @@ main(int argc, char **argv)
 
     prg = argv[0];
 	
-    signal(SIGPIPE, sig_remember);
+    signal(SIGPIPE, SIG_IGN);
 
     if ((opt_pager=getenv("PAGER")) == NULL)
 	opt_pager = strdup("more");
