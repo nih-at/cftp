@@ -278,13 +278,13 @@ void fn_response(char **args)
 	return;
     }
     
-    if ((f=disp_open(-1)) == NULL)
+    if ((f=disp_open(opt_pager, 1)) == NULL)
 	return;
 
     for (h=ftp_history; h; h=h->next)
 	fprintf(f, "%s\n", h->line);
 
-    disp_close(f);
+    disp_close(f, 1);
 }
 
 

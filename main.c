@@ -38,6 +38,8 @@
 #include "bindings.h"
 #include "functions.h"
 #include "list.h"
+#include "options.h"
+#include "signals.h"
 
 
 
@@ -95,8 +97,17 @@ main(int argc, char **argv)
 
     prg = argv[0];
 	
-    signal(SIGPIPE, SIG_IGN);
+    signal(SIGPIPE, sig_remember);
 
+    if ((opt_pager=getenv("PAGER")) == NULL)
+	opt_pager = strdup("more");
+    else
+	opt_pager = strdup(opt_pager);
+    if (opt_pager == NULL) {
+	fprintf(stderr, "%s: malloc failure\n", prg);
+	exit(1);
+    }
+	
     if (tag_init() < 0)
 	exit(1);
     if (status_init() < 0)
@@ -187,12 +198,9 @@ main(int argc, char **argv)
 	exit(1);
     list_init();
 	    
-    signal(SIGINT, sig_end);
-    signal(SIGHUP, sig_end);
-    signal(SIGTERM, sig_end);
-    signal(SIGTSTP, sig_escape);
-    signal(SIGCONT, sig_reenter);
-    
+    if (signals_init() < 0)
+	exit(1);
+
     binding_state = bs_remote;
 
     if (ftp_login(host, user, pass) == -1) {
@@ -238,7 +246,7 @@ main(int argc, char **argv)
 	ftp_pass = pass;
 
     curdir = dir;
-    list = curdir;
+    list = (struct list *)curdir;
 
     loop();
 	
@@ -421,26 +429,4 @@ read_netrc(char *host, char **user, char **pass, char **wdir)
 	}
     }
     fclose(f);
-}
-
-
-
-void
-sig_end(int i)
-{
-    exit_disp();
-    exit(1);
-}
-
-void
-sig_escape(int i)
-{
-    escape_disp(0);
-    kill(0, SIGSTOP);
-}
-
-void
-sig_reenter(int i)
-{
-    reenter_disp();
 }

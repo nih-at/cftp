@@ -1,3 +1,5 @@
+dnl -*- text -*-
+
 dnl  fntable.fn -- description of bindable functions
 dnl  Copyright (C) 1996, 1997 Dieter Baron
 dnl
@@ -205,6 +207,11 @@ function(get, [file], fn_get, 0,
 function(view, [file], fn_view, 0,
 	 {view file},
  {View file;  default is file under cursor.})
+
+
+function(pipe, {[-q] file cmd [arg ...]}, fn_pipe, 0,
+	{pipe file to command},
+ {Pipe file to command @var{cmd}.  If @code{-q} is given, display is not escaped (thus, @var{cmd} should not produce any output).})
 
 
 function(leave, , fn_cdup, 0,

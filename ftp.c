@@ -26,6 +26,8 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
+#include <signal.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -38,6 +40,7 @@
 #include "util.h"
 #include "bindings.h"
 #include "status.h"
+#include "signals.h"
 
 
 
@@ -50,6 +53,8 @@ char *ftp_host = NULL, *ftp_prt = NULL,
 struct ftp_hist *ftp_history = NULL, *ftp_hist_last;
 int ftp_hist_cursize;
 
+int _ftp_keptresp = -1;
+
 char **ftp_response = NULL;
 long ftp_response_size = 0;
 
@@ -60,6 +65,7 @@ unsigned char ftp_addr[4];
 
 int ftp_put(char *fmt, ...);
 int ftp_resp(void);
+void ftp_unresp(int resp);
 int ftp_port(void);
 FILE *ftp_accept(int fd, char *mode);
 int ftp_mode(char m);
@@ -262,8 +268,8 @@ ftp_cd(char *wd)
 	
 
 
-int
-ftp_retr(char *file, FILE *fout, long size, int mode)
+FILE *
+ftp_retr(char *file, int mode)
 {
 	int fd, err;
 	char *dir, *name, *can;
@@ -274,29 +280,37 @@ ftp_retr(char *file, FILE *fout, long size, int mode)
 	name = (char *)basename(can);
 	
 	if (ftp_mode(mode) == -1 || ftp_cwd(dir) == -1)
-		return -1;
+		return NULL;
 
 	if ((fd=ftp_port()) == -1)
-		return -1;
+		return NULL;
 	
 	ftp_put("retr %s", name);
 	if (ftp_resp() != 150) {
 		close(fd);
-		return -1;
+		return NULL;
 	}
 	if ((fin=ftp_accept(fd, "r")) == NULL) {
 		close(fd);
-		return -1;
+		return NULL;
 	}
 
-	err = ftp_cat(fin, fout, size);
+	return fin;
+}
 
-	fclose(fin);
+
 
-	if ((ftp_resp() != 226))
-		return -1;
+int
+ftp_fclose(FILE *f)
+{
+    int err;
+
+    err = fclose(f);
+
+    if ((ftp_resp() != 226))
+	return -1;
 	
-	return err;
+    return err;
 }
 
 
@@ -395,12 +409,52 @@ ftp_put(char *fmt, ...)
 
 
 int
+ftp_abort(void)
+{
+    int resp;
+    
+    disp_status("-> <attention>");
+    ftp_hist(strdup("-> <attention>"));
+	     
+    if (send(fileno(conout), "\377\364\377" /* IAC IP IAC */, 3,
+	     MSG_OOB) != 3)
+	return -1;
+
+    if (fputc('\362' /* DM */, conout) == EOF)
+	return -1;
+
+    ftp_put("abor");
+
+    if (ftp_resp() == 226) {
+	ftp_unresp(226);
+	return 0;
+    }
+    else if (ftp_resp() == 426) {
+	resp = ftp_resp();
+    	ftp_unresp(426);
+	    
+	return resp == 226;
+    }
+    else
+	return 1;
+}
+
+
+
+
+int
 ftp_resp(void)
 {
     char *line, **l;
     int resp;
     long i;
     
+    if (_ftp_keptresp != -1) {
+	resp = _ftp_keptresp;
+	_ftp_keptresp = 1;
+	return resp;
+    }
+
     if ((line=ftp_gets(conin)) == NULL)
 	return -1;
 
@@ -420,6 +474,13 @@ ftp_resp(void)
     ftp_hist(line);
     
     return resp;
+}
+
+
+
+void ftp_unresp(int resp)
+{
+    _ftp_keptresp = resp;
 }
 
 
@@ -502,7 +563,7 @@ ftp_cat(FILE *fin, FILE *fout, long size)
 {
     time_t oldt, newt;
     char buf[4096], fmt[4096], *l;
-    int c, n, err = 0;
+    int c, n, err;
     long got = 0;
 
     if (size >= 0)
@@ -512,12 +573,14 @@ ftp_cat(FILE *fin, FILE *fout, long size)
 	
     oldt = 0;
 
+    signal(SIGINT, sig_remember);
+
     if (ftp_curmode == 'i')
 	while ((n=fread(buf, 1, 4096, fin)) > 0) {
-	    /* XXX: abort on error */
-	    if (!err) {
-		if (fwrite(buf, 1, n, fout) != n)
-		    err = 1;
+	    if (sig_intr)
+		break;
+	    if (fwrite(buf, 1, n, fout) != n) {
+		break;
 	    }
 	    got += n;
 	    if ((newt=time(NULL)) != oldt) {
@@ -527,6 +590,8 @@ ftp_cat(FILE *fin, FILE *fout, long size)
 	}
     else
 	while ((c=getc(fin)) != EOF) {
+	    if (sig_intr)
+		break;
 	    got++;
 	    if (c == '\r') {
 		if ((c=getc(fin)) != '\n')
@@ -536,6 +601,8 @@ ftp_cat(FILE *fin, FILE *fout, long size)
 	    else {
 		putc(c, fout);
 	    }
+	    if (ferror(fout))
+		break;
 
 	    if (got%512 == 0 && (newt=time(NULL)) != oldt) {
 		disp_status(fmt, got);
@@ -544,8 +611,19 @@ ftp_cat(FILE *fin, FILE *fout, long size)
 
 	}
 
-    if (err || ferror(fin) || ferror(fout))
+    signal(SIGINT, sig_end);
+
+    if (ferror(fin) || sig_intr) {
+	sig_intr = 0;
+	ftp_abort();
 	return -1;
+    }
+    else if (ferror(fout)) {
+	err = errno;
+	ftp_abort();
+	disp_status("write error: %s", strerror(err));
+	return -1;
+    }
 
     return 0;
 }

@@ -136,3 +136,28 @@ local_exp(char *path)
 
     return p;
 }
+
+
+
+char *
+argstostr(char **args)
+{
+    char *s;
+    int i, l;
+
+    l = 0;
+
+    for (i=0; args[i]; i++)
+	l += strlen(args[i])+1;
+
+    if ((s=(char *)malloc(l)) == NULL)
+	return NULL;
+
+    for (i=0; args[i]; i++) {
+	strcat(s, args[i]);
+	if (args[+1])
+	    strcat(s, " ");
+    }
+
+    return s;
+}

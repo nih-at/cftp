@@ -28,5 +28,6 @@
 char *canonical(char *path, char *current);
 char *dirname(char *name);
 char *local_exp(char *path);
+char *argstostr(char **args);
 
 #endif /* util.h */

@@ -36,7 +36,8 @@
 
 int aux_enter(char *name);
 int aux_download(char *name, long size);
-int aux_view(char *name);
+int aux_pipe(char *name, long size, int mode, char *cmd, int quietp);
+#define aux_view(name)	(aux_pipe((name), -1, 'a', opt_pager, 1))
 
 
 
@@ -63,16 +64,26 @@ int
 aux_download(char *name, long size)
 {
     int err;
-    FILE *f;
+    FILE *fin, *fout;
 
-    if ((f=fopen((char *)basename(name), "w")) == NULL) {
+    if ((fin=ftp_retr(name, opt_mode)) == NULL)
+	return -2;
+
+    if ((fout=fopen((char *)basename(name), "w")) == NULL) {
 	disp_status("can't create `%s': %s",
 		    basename(name), strerror(errno));
 	return -2;
     }
-	
-    err = ftp_retr(name, f, size, opt_mode);
-    fclose(f);
+
+    err = ftp_cat(fin, fout, size);
+
+    err |= ftp_fclose(fout);
+    
+    if (fclose(fin)) {
+	disp_status("error closing `%s': %s",
+		    basename(name), strerror(errno));
+	return -2;
+    }
 
     return err;
 }
@@ -80,17 +91,23 @@ aux_download(char *name, long size)
 
 
 int
-aux_view(char *name){
+aux_pipe(char *name, long size, int mode, char *cmd, int quietp)
+{
     int err;
-    FILE *f;
+    FILE *fin, *fout;
 	
-    if ((f=disp_open(-1)) == NULL)
+    if ((fin=ftp_retr(name, (mode ? mode : opt_mode))) == NULL)
 	return -2;
 
-    err = ftp_retr(name, f, 0, 'a');
+    if ((fout=disp_open(cmd, quietp)) == NULL)
+	return -2;
 
-    err |= disp_close(f);
-	
+    err = ftp_cat(fin, fout, size);
+
+    err |= ftp_fclose(fin);
+    
+    err |= disp_close(fout, quietp);
+
     return err;
 }
 
@@ -165,11 +182,7 @@ fn_enter_view(char **args)
 
 
 
-void
-fn_enter(char **args)
-{
-    char *name;
-    int type;
+void fn_enter(char **args) { char *name; int type;
 
     if (args) {
 	name = args[0];
@@ -241,6 +254,85 @@ fn_view(char **args)
     case 'f':
     case 'l':
 	aux_view(name);
+	break;
+    default:
+	disp_status("Can only view plain files.");
+    }
+}
+
+
+
+void
+fn_pipe(char **args)
+{
+    char *name, *cmd, *line;
+    int type, freecmdp, quietp;
+    long size;
+
+    line = NULL;
+    cmd = NULL;
+    freecmdp = 1;
+    quietp = 1;
+    
+    if (args) {
+	if (strcmp(args[0], "-q") == 0) {
+	    quietp = 0;
+	    args++;
+	}
+	if (strcmp(args[0], ":") == 0) {
+	    name = curdir->line[curdir->cur].name;
+	    type = curdir->line[curdir->cur].type;
+	    size = curdir->line[curdir->cur].size;
+	}
+	else {
+	    name = args[0];
+	    type = 'l';
+	    size = -1;
+	}
+
+	if (args[1])
+	    cmd = argstostr(args+1);
+	else
+	    cmd = read_string("| ", 1);
+    }
+    else {
+	line = read_string("pipe: ", 1);
+	if (line == NULL || line[0] == '\0') {
+	    free(line);
+	    return;
+	}
+	name = strtok(line, " \t");
+	if (name == NULL || name[0] == '\0') {
+	    free(line);
+	    return;
+	}
+	if (strcmp(name, "-q") == 0) {
+	    quietp = 0;
+	    name = strtok(line, " \t");
+	    if (name == NULL || name[0] == '\0') {
+		free(line);
+		return;
+	    }
+	}	    
+	cmd = strtok(NULL, "\n");
+	if (cmd == NULL || cmd[0] == '\0') {
+	    cmd = read_string("| ", 1);
+	}
+	else
+	    freecmdp = 0;
+    }
+
+    if (cmd == NULL || cmd[0] == '\0') {
+	if (freecmdp)
+	    free(cmd);
+	free(line);
+	return;
+    }
+
+    switch (type) {
+    case 'f':
+    case 'l':
+	aux_pipe(name, size, 0, cmd, quietp);
 	break;
     default:
 	disp_status("Can only view plain files.");

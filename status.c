@@ -132,7 +132,7 @@ enter_state(enum state state)
     switch (state) {
     case bs_remote:
 	binding_state = bs_remote;
-	list = curdir;
+	list = (struct list *)curdir;
 	list_do(1);
 	status_do(bs_none);
 	break;
@@ -148,7 +148,7 @@ enter_state(enum state state)
 	if (binding_state != bs_tag)
 	    leave_tag = binding_state;
 	binding_state = bs_tag;
-	list = &tags;
+	list = (struct list *)&tags;
 	list_do(1);
 	status_do(bs_none);
 	break;

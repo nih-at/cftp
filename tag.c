@@ -98,7 +98,7 @@ tag_file(char *dir, char *file, long size, char type, enum tagopt what)
 	    return 0;
 	}
 	freedirp = 1;
-	file = basename(canon);
+	file = (char *)basename(canon);
     }
     else {
 	if ((canon=(char *)malloc(strlen(dir)+strlen(file)+2)) == NULL)
@@ -207,7 +207,7 @@ _tag_insert(int n, struct tagentry *t, char *file, long size, char type)
 
     u->line = line;
     u->name = file;
-    u->file = basename(file);
+    u->file = (char *)basename(file);
     u->dirl = tags.line[n].file - file;
     if (u->dirl > 1)
 	--u->dirl;

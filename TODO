@@ -32,11 +32,14 @@ C fn_basic.c: (fn_exit) implement as function, -f option.
 B bindable functions: abort on empty input
 B REPORT LOST CONNECTION!
 F forced reload of directory listing
-B don't create file before data connection is open
 F status.c: add support for head status line (old style, but smarter)
 C status.c: rewrite status line code (better abstraction of common elements)
 B fn_scroll.c: (fn_isearch) don't hardwire ^r/^s/^l (check binding)
 ----------------------------------------------- done
+F fn_select.c (fn_pipe) new bindable
+B fn_select.c (aux_download, aux_pipe) create file after retr command
+C configure.in: use fn_bind.c for finding srcdir (not bindings.desc)
+
 Apr 18 1997 (0.6b)
 B display.c: (read_string) ignore verase if at beginning of line
 C now compiles on pedantic OSF/1 compiler

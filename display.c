@@ -278,13 +278,14 @@ win_line(char *line, int sel)
 
 
 FILE *
-disp_open(int lines)
+disp_open(char *cmd, int quietp)
 {
     FILE *f;
-    
-    escape_disp(1);
 
-    if ((f=popen("less", "w")) == NULL)
+    if (quietp)
+	escape_disp(1);
+
+    if ((f=popen(cmd, "w")) == NULL)
 	return NULL;
     
     return f;
@@ -293,13 +294,14 @@ disp_open(int lines)
 
 
 int
-disp_close(FILE *f)
+disp_close(FILE *f, int quietp)
 {
     int err;
 
     err = pclose(f);
-    
-    reenter_disp();
+
+    if (quietp)
+	reenter_disp();
 
     return err;
 }

@@ -56,4 +56,9 @@ option(emacs-status, es, opt_emacs_status, opt_set_status, b, 1,
 above the message area -- in standout mode.  If unset, it is displayed
 at top of screen, with blank lines surrounding the scrolling region.})
 
+option(pager, pg, opt_pager, NULL, s, "more",
+ {pager used to view files},
+ {Pager used to view files.  Deafults to the value of the environment
+variable $PAGER if set, to @code{more} otherwise.})
+
 endall
