@@ -2,9 +2,10 @@ dnl Process this file with autoconf to produce a configure script.
 
 dnl init
 
-AC_INIT(fn_bind.c)
-AM_INIT_AUTOMAKE(cftp, 0.12a)
-AM_CONFIG_HEADER(config.h)
+AC_INIT([cftp], [0.12a], [dillo@giga.or.at])
+AC_CONFIG_SRCDIR([fn_bind.c])
+AC_CONFIG_HEADERS([config.h])
+AM_INIT_AUTOMAKE
 
 AC_ARG_ENABLE(sftp,
     [  --enable-sftp           enable support for sftp protocol],
@@ -84,10 +85,18 @@ AC_CHECK_FUNCS(getdomainname getnameinfo)
 AC_CHECK_FUNCS(tparam, [tparam=1], [tparam=0])
 if test "$tparam" -ne 1
 then
-	AC_CHECK_FUNCS(tparm, , [LIBOBJS="$LIBOBJS tparam.o"])
+	AC_CHECK_FUNCS(tparm, , [AC_LIBOBJ(tparam)])
 fi
 
-AC_CHECK_FUNCS(getopt_long, , [LIBOBJS="$LIBOBJS getopt1.o getopt.o"])
+AC_CHECK_FUNCS(getopt_long, , [AC_LIBOBJ(getopt1) AC_LIBOBJ(getopt1)])
+
+need_snprintf=no
+AC_CHECK_FUNCS(snprintf vsnprintf vasprintf, , [need_snprintf=yes])
+if test $need_snprintf = yes
+then
+        AC_LIBOBJ(snprintf)
+fi
+
 
 dnl system services
 
