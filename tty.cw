@@ -12,7 +12,9 @@
 #include "tty.h"
 
 #ifndef VWERASE
+#ifdef VWERSE
 #define VWERASE	VWERSE
+#endif
 #endif
 #ifndef _POSIX_VDISABLED
 #define _POSIX_VDISABLED -1
@@ -119,8 +121,12 @@ tty_init(void)
 	/* erase, werase, kill */
 	if ((tty_verase=tty_tio.c_cc[VERASE]) == _POSIX_VDISABLED)
 	    tty_verase = -1;
+#ifdef VWERASE
 	if ((tty_vwerase=tty_tio.c_cc[VWERASE]) == _POSIX_VDISABLED)
 	    tty_vwerase = -1;
+#else
+	tty_vwerase = -1;
+#endif
 	if ((tty_vkill=tty_tio.c_cc[VKILL]) == _POSIX_VDISABLED)
 	    tty_vkill = -1;
 	
