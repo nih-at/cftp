@@ -1,3 +1,8 @@
+2003-05-19  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* display.c (disp_restat): don't truncate string if it is short
+	enough.
+
 2003-05-16  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* configure.in, INSTALL, install-sh, missing, mkinstalldirs:

@@ -1,5 +1,5 @@
 /*
-  $NiH: display.c,v 1.22 2002/09/16 12:42:29 dillo Exp $
+  $NiH: display.c,v 1.23 2003/05/16 19:07:21 dillo Exp $
 
   display.c -- display functions
   Copyright (C) 1996-2002 Dieter Baron
@@ -267,11 +267,18 @@ disp_restat(void)
 	tty_clreol();
 
 	if (d_status) {
-	    c = d_status[tty_cols-tty_noLP];
-	    d_status[tty_cols-tty_noLP] = '\0';
+	    if (strlen(d_status) > tty_cols-tty_noLP) {
+		c = d_status[tty_cols-tty_noLP];
+		d_status[tty_cols-tty_noLP] = '\0';
+	    }
+	    else
+		c = '\0';
+	    
 	    fputs(d_status, stdout);
 	    fflush(stdout);
-	    d_status[tty_cols-tty_noLP] = c;
+	    
+	    if (c)
+		d_status[tty_cols-tty_noLP] = c;
 	}
 }
 
