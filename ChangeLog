@@ -1,5 +1,8 @@
 2000-01-11  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* fn_guile.c (fn_guile, execute_guile, wrapper, catcher):  use
+	wrapper to catch guile exceptions.
+
 	* main.c (real_main): call swig init function.
 	
 	* configure.in, Makefile.am: furst cut at rules for scripting

@@ -6,7 +6,8 @@ SWIG = swig
 
 LDADD=	@LIBOBJS@
 
-cftp_LDADD = $(LDADD) $(SCRIPTING_OBJS)
+cftp_LDADD = @LIBOBJS@ @SCRIPTING_OBJS@
+#cftp_DEPENDENCIES = @LIBOBJS@ @SCRIPTING_OBJS@
 
 bin_PROGRAMS=	cftp
 info_TEXINFOS=	cftp.texi
@@ -16,8 +17,8 @@ cftp_SOURCES=	directory.c display.c readdir.c loop.c functions.c \
 		ftp.c sockets.c main.c options.c keys.c tty.c rc.c readrc.c \
 		list.c tag.c util.c version.c bindings.c status.c signals.c \
 		fntable.c fn_basic.c fn_scroll.c fn_select.c fn_tag.c \
-		fn_bind.c
-EXTRA_cftp_SOURCES=fn_guile.c scripting_guile.c
+		fn_bind.c fn_guile.c
+EXTRA_cftp_SOURCES=scripting_guile.c
 noinst_HEADERS= directory.h display.h readdir.h loop.h functions.h tag.h \
 		ftp.h sockets.h options.h keys.h tty.h rc.h fntable.h util.h \
 		getopt.h list.h bindings.h status.h signals.h \
@@ -71,8 +72,12 @@ getdomainname.o: getdomainname.c
 	$(CC) $(CFLAGS) -DDOMAINNAME=\"@DOMAINNAME@\" -c getdomainname.c
 
 scripting_guile.c: scripting.i display.h
-	$(SWIG) -o scripting_guile_raw.c scripting.i
+	$(SWIG) -guile -o scripting_guile_raw.c scripting.i
 	awk -f swig-guile.awk < scripting_guile_raw.c > scripting_guile.c \
 		|| rm scripting_guile.c
 
 #cftp: scripting_guile.o # XXX: why doesn't automake realize this?!
+# FUCK automake!
+cftp: $(cftp_OBJECTS) $(cftp_DEPENDENCIES) @SCRIPTING_SOURCES@
+	@rm -f cftp
+	$(LINK) $(cftp_LDFLAGS) $(cftp_OBJECTS) $(cftp_LDADD) $(LIBS)

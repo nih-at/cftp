@@ -92,8 +92,10 @@ dnl guile kluge.  real code to follow
 CFLAGS="$CFLAGS `guile-config compile`"
 LIBS="$LIBS `guile-config link`"
 AC_DEFINE(HAVE_GUILE)
-SCRIPTING_OBJS="fn_guile.o scripting_guile.o"
+SCRIPTING_OBJS="scripting_guile.o"
 AC_SUBST(SCRIPTING_OBJS)
+SCRIPTING_SOURCES="scripting_guile.o"
+AC_SUBST(SCRIPTING_SOURCES)
 
 dnl output
 AC_OUTPUT(Makefile)
