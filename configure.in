@@ -22,20 +22,24 @@ dnl programs
 dnl libraries
 
 TERMCAP=none
-AC_CHECK_LIB(termcap, tgetent, [TERMCAP=termcap])
+AC_CHECK_FUNC(tgetent, [TERMCAP=""])
 if test "$TERMCAP" = none
 then
-	AC_CHECK_LIB(curses, tgetent, [TERMCAP=curses])
+	AC_CHECK_LIB(termcap, tgetent, [TERMCAP=-ltermcap])
 fi
 if test "$TERMCAP" = none
 then
-	AC_CHECK_LIB(ncurses, tgetent, [TERMCAP=ncurses])
+	AC_CHECK_LIB(curses, tgetent, [TERMCAP=-lcurses])
+fi
+if test "$TERMCAP" = none
+then
+	AC_CHECK_LIB(ncurses, tgetent, [TERMCAP=-lncurses])
 fi
 if test "$TERMCAP" = none
 then
 	AC_MSG_ERROR([can't find termcap (emulation) library])
 fi
-LIBS="$LIBS -l$TERMCAP"
+LIBS="$LIBS $TERMCAP"
 
 AC_CHECK_LIB(socket, main)
 AC_CHECK_LIB(nsl, main)
