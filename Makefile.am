@@ -23,7 +23,8 @@ mkbind_DEPENDENCIES=    @LIBOBJS@
 
 EXTRA_DIST=	bindings.desc fntable.c.proto fntable.h.proto \
 		$(FUNCS) \
-		mkfntexi.m4 mkfntab-c.m4 mkfntab-h.m4 endall.m4
+		mkfntexi.m4 mkfntab-c.m4 mkfntab-h.m4 endall.m4 \
+		mkoptexi.m4 mkoptab-c.m4 mkoptab-h.m4 options.op
 
 FUNCS=	fn_basic.fn fn_scroll.fn fn_select.fn fn_tag.fn
 
