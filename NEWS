@@ -1,5 +1,8 @@
 New in 0.9.4:
 * support for IPv6
+* display transfer rate
+* understands MS DOS format directory listings
+* various bug fixes
 
 New in 0.9.3:
 * downloads: if size is unknown, use size from server response
