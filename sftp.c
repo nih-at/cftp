@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.19 2001/12/23 05:18:43 dillo Exp $
+  $NiH: sftp.c,v 1.20 2002/01/08 22:07:52 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001 Dieter Baron
@@ -770,13 +770,17 @@ sftp_put_str(int type, char *str, int slen, int flags)
 static void
 _sftp_put_uint32(char *p, char **end, unsigned int i)
 {
+    unsigned char *q;
+    
     if (end)
 	*end = p+4;
+
+    q = (unsigned char *)p;
     
-    (unsigned char)p[0] = (i>>24) & 0xff;
-    (unsigned char)p[1] = (i>>16) & 0xff;
-    (unsigned char)p[2] = (i>>8) & 0xff;
-    (unsigned char)p[3] = i & 0xff;
+    q[0] = (i>>24) & 0xff;
+    q[1] = (i>>16) & 0xff;
+    q[2] = (i>>8) & 0xff;
+    q[3] = i & 0xff;
 }
 
 
@@ -789,17 +793,21 @@ _sftp_put_uint32(char *p, char **end, unsigned int i)
 static void
 _sftp_put_uint64(char *p, char **end, unsigned long long i)
 {
+    unsigned char *q;
+    
     if (end)
 	*end = p+8;
-    
-    (unsigned char)p[0] = (i>>56) & 0xff;
-    (unsigned char)p[1] = (i>>48) & 0xff;
-    (unsigned char)p[2] = (i>>40) & 0xff;
-    (unsigned char)p[3] = (i>>32) & 0xff;
-    (unsigned char)p[4] = (i>>24) & 0xff;
-    (unsigned char)p[5] = (i>>16) & 0xff;
-    (unsigned char)p[6] = (i>>8) & 0xff;
-    (unsigned char)p[7] = i & 0xff;
+
+    q = (unsigned char *)p;
+
+    q[0] = (i>>56) & 0xff;
+    q[1] = (i>>48) & 0xff;
+    q[2] = (i>>40) & 0xff;
+    q[3] = (i>>32) & 0xff;
+    q[4] = (i>>24) & 0xff;
+    q[5] = (i>>16) & 0xff;
+    q[6] = (i>>8) & 0xff;
+    q[7] = i & 0xff;
 }
 
 
@@ -1424,7 +1432,7 @@ sftp_xfer_read(void *buf, size_t nbytes, void *file)
 	    if (n > nbytes-nret)
 		n = nbytes-nret;
 	    
-	    memcpy(buf+nret, _sftp_packet->dat+f->doff, n);
+	    memcpy(((char *)buf)+nret, _sftp_packet->dat+f->doff, n);
 	    f->doff += n;
 	    nret += n;
 
@@ -1668,7 +1676,7 @@ _sftp_read(int fd, void *buf, size_t nbytes, int flags)
 
     nret = 0;
     while (nbytes) {
-	n = read(fd, buf+nret, nbytes);
+	n = read(fd, ((char *)buf)+nret, nbytes);
 
 	if (n < 0) {
 	    if (errno == EINTR) {
@@ -1759,7 +1767,7 @@ _sftp_writev(int fd, struct iovec *iov, int niov, int flags)
 	    }
 	    else {
 		iov[0].iov_len -= n;
-		iov[0].iov_base += n;
+		iov[0].iov_base = ((char *)iov[0].iov_base) + n;
 		n = 0;
 	    }
 	}

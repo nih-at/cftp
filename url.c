@@ -1,5 +1,5 @@
 /*
-  $NiH: url.c,v 1.3 2001/12/11 14:37:44 dillo Exp $
+  $NiH: url.c,v 1.4 2001/12/13 21:14:57 dillo Exp $
 
   url -- functions to parse and create URLs
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -134,7 +134,7 @@ url_decode(char *d, const char *s)
 	if (s[0] == '%' && s[1] && isxdigit(s[1]) && s[2] && isxdigit(s[2])) {
 	    x[0] = s[1];
 	    x[1] = s[2];
-	    *p = strtoul(x, NULL, 16);
+	    *p = strtoul((char *)x, NULL, 16);
 	    s += 3;
 	}
 	else

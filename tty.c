@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: tty.c,v 1.22 2001/12/11 14:37:43 dillo Exp $
 
   tty -- lowlevel tty handling
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -349,7 +349,7 @@ tty_readkey(void)
     len = 0;
     
     if (keyflag[(int)s[0]] == KEY_PREF) {
-	while ((c=tty_ispref(s, l)) == EOF) {
+	while ((c=tty_ispref((char *)s, l)) == EOF) {
  	    if (!vmin) {
 		tty_vmin(0, 5);
 		vmin = 1;
