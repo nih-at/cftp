@@ -1,5 +1,7 @@
 2003-05-13  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* ftp.c (ftp_reconnect): _ftp_port and _ftp_user may well be NULL.
+
 	* util.c (noalloc_basename): move basename replacement function
 	here and rename; adapt callers.
 	* basename.c: remove.
