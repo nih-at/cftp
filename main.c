@@ -49,7 +49,7 @@ main(int argc, char **argv)
 	extern char *optarg;
 
 	directory *dir;
-	char *host, *user = NULL, *port = "ftp", *pass = NULL, *wdir = NULL;
+	char *host, *user = NULL, *port = NULL, *pass = NULL, *wdir = NULL;
 	int keep_pass = 1;
 	int c, err = 0;
 	char *b;
@@ -101,9 +101,9 @@ main(int argc, char **argv)
 			print_usage(0);
 			exit(1);
 		}
-		host = argv[optind];
+		host = strdup(argv[optind]);
 		if (argc > optind+1)
-			wdir = argv[optind+1];
+			wdir = strdup(argv[optind+1]);
 
 		check_alias = 1;
 	}
@@ -130,6 +130,8 @@ main(int argc, char **argv)
 		free(b);
 	    }
 	}
+	if (port == NULL)
+	    port = "ftp";
 	
 	if (tty_init() < 0)
 	    exit(1);
