@@ -42,6 +42,8 @@ F display.c: (read_string) line editing, completion
 P tty.c: handle terminfo parameterized capabilities (tparm)
 B fn_tag.c: (fn_tag) line[0] isn't updated if arg is given
 ----------------------------------------------- done
+
+Mar 31 1997 (0.6)
 F fn_tag.c: (fn_gettags) rewritten to new tagging code; uses <tag> state
 B ftp.c: (ftp_gets) handle realloc failure
 C fn_tag.c: (fn_savetags) renamed fn_listtags, requires file name, rewriten
