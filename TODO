@@ -38,7 +38,6 @@ F <local> (uploads, local tagging)
 B ftp.c: (ftp_cat) don't use ftp_gets in ascii mode
 F display.c: (read_string) line editing, completion
 B fn_tag.c: (fn_tag) line[0] isn't updated if arg is given
-C mkbind.c: include file name and line number in error messages 
 B ERROR MESSAGES ON ERRORS!
 F main.c: scan .netrc for type commands
 C fn_basic.c: (fn_exit) implement as function, -f option.
@@ -47,6 +46,7 @@ B REPORT LOST CONNECTION!
 F status.c: add support for head status line (old style, but smarter)
 C status.c: rewrite status line code (better abstraction of common elements)
 ----------------------------------------------- done
+C mkbind.c: include file name and line number in error messages 
 F fn_tag.c (fn_saveurls) new function: save tags as url list
 B fn_select.c: (aux_download) report fopen(3) error
 F fn_basic.c: (fn_redraw) -c option centers cursor

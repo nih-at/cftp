@@ -213,6 +213,11 @@ void fn_colon(char **args)
 	}
 	else {
 	    line = p = read_string(": ", 1);
+	    if (line == NULL || line[0] == '\0') {
+		free(line);
+		disp_status("");
+		return;
+	    }
 
 	    if ((cmd=rc_token(&p)) == NULL) {
 		disp_status("no function");

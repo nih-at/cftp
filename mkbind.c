@@ -84,7 +84,6 @@ main(int argc, char **argv)
 
     prg = argv[0];
     rc_inrc = 1;
-    rc_lineno = 0;
     maxkey = max_fnkey + 256;
 
     if (argc == 2 && strcmp(argv[1], ".") != 0)
@@ -108,15 +107,14 @@ main(int argc, char **argv)
     if ((fin=vpath_open(FNAME ".desc")) == NULL)
 	exit(1);
 
+    rc_lineno = 0;
     while (fgets(line, 4096, fin) != NULL) {
 	rc_lineno++;
 	p = line;
 	if ((tok=rc_token(&p)) == NULL || tok[0] == '#')
 	    continue;
 	if (strcasecmp(tok, "bind") != 0) {
-	    fprintf(stderr, "%s:" FNAME ".desc:%d: "
-		    "non-bind command ignored: `%s'\n",
-		    prg, line, tok);
+	    rc_error("non-bind command ignored: %s", tok);
 	    continue;
 	}
 	
@@ -126,19 +124,20 @@ main(int argc, char **argv)
     }
     
     if (ferror(fin)) {
-	fprintf(stderr, "%s: read error (%s): %s.\n",
-		prg, FNAME ".desc", strerror(errno));
+	fprintf(stderr, "%s: read error in `%s': %s.\n",
+		prg, rc_filename, strerror(errno));
 	fclose(fin);
 	exit(1);
     }
     fclose(fin);
-
+    free(rc_filename);
+    rc_filename = NULL;
 
 
     /* writing ``bindings.c'' */
 
     if ((fout=fopen(FNAME ".c", "w")) == NULL) {
-	fprintf(stderr, "%s: can't open output file (%s): %s.\n",
+	fprintf(stderr, "%s: can't open output file `%s': %s.\n",
 		prg, FNAME ".c", strerror(errno));
 	exit(1);
     }
@@ -176,7 +175,7 @@ main(int argc, char **argv)
     fprintf(fout, "};\n\n");
 
     if (ferror(fout)) {
-	fprintf(stderr, "%s: write error (%s): %s.\n",
+	fprintf(stderr, "%s: write error on `%s': %s.\n",
 		prg, FNAME ".c", strerror(errno));
 	exit(1);
 	fclose(fout);
@@ -216,12 +215,13 @@ main(int argc, char **argv)
 	    " / sizeof(" NAME "_" POOL "[0]);\n\n");
     
     if (ferror(fout)) {
-	fprintf(stderr, "%s: write error (%s): %s.\n",
+	fprintf(stderr, "%s: write error on `%s': %s.\n",
 		prg, FNAME ".c", strerror(errno));
 	exit(1);
 	fclose(fout);
     }
 
+    
     /* output: binding_argpool */
 
     len = 3;
@@ -240,7 +240,7 @@ main(int argc, char **argv)
 	    " / sizeof(" NAME "_" ARGS "[0]);\n");
 
     if (ferror(fout)) {
-	fprintf(stderr, "%s: write error (%s): %s.\n",
+	fprintf(stderr, "%s: write error on `%s': %s.\n",
 		prg, FNAME ".c", strerror(errno));
 	exit(1);
 	fclose(fout);
@@ -264,17 +264,17 @@ initnames()
 	exit(1);
     }
 
+    rc_lineno = 0;
     while (fgets(line, 8192, f) && line[strlen(line)-2] != '{')
-	;
+	rc_lineno++;
 
     if (ferror(f)) {
-	fprintf(stderr, "%s: read error (%s): %s.\n",
-		prg, TABLE, strerror(errno));
+	fprintf(stderr, "%s: read error in `%s': %s.\n",
+		prg, rc_filename, strerror(errno));
 	exit(1);
     }
     if (feof(f)) {
-	fprintf(stderr, "%s: beginning of names in table not found.\n",
-		prg);
+	rc_error("beggining of functions array not found");
 	exit(1);
     }
 
@@ -285,14 +285,12 @@ initnames()
 	    continue;
 	p = strchr(line, '\"');
 	if (p == NULL) {
-	    fprintf(stderr, "%s: table syntax error: %s\n",
-		    prg, line);
+	    rc_error("function name missing; line skipped");
 	    continue;
 	}
 	q = strchr(p+1, '\"');
 	if (q == NULL)
-	    fprintf(stderr, "%s: table syntax error: %s\n",
-		    prg, line);
+	    rc_error("end of function name missing; line skipped");
 	else {
 	    p++;
 	    *q = '\0';
@@ -310,12 +308,14 @@ initnames()
     }
 
     if (ferror(f)) {
-	fprintf(stderr, "%s: read error (%s): %s.\n",
-		prg, TABLE, strerror(errno));
+	fprintf(stderr, "%s: read error in `%s': %s.\n",
+		prg, rc_filename, strerror(errno));
 	exit(1);
     }
 
     fclose(f);
+    free(rc_filename);
+    rc_filename = NULL;
 }
 
 
@@ -357,8 +357,10 @@ vpath_open(char *name)
     FILE *f;
     char *vname;
 
-    if ((f=fopen(name, "r")) != NULL)
+    if ((f=fopen(name, "r")) != NULL) {
+	rc_filename = strdup(name);
 	return f;
+    }
 
     if (srcdir == NULL) {
 	fprintf(stderr, "%s: can't open file `%s': %s\n",
@@ -374,7 +376,7 @@ vpath_open(char *name)
     sprintf(vname, "%s/%s", srcdir, name);
 
     if ((f=fopen(vname, "r")) != NULL) {
-	free(vname);
+	rc_filename = vname;
 	return f;
     }
     
@@ -386,6 +388,8 @@ vpath_open(char *name)
 }
 
 
+
+/* dummy functions needed by fn_bind */
 
 void
 disp_status(char *fmt, ...)

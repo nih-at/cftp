@@ -113,13 +113,14 @@ rc_list(char *line)
 
 int rc_inrc = 0;
 int rc_lineno;
+char *rc_filename;
 
 extern char *prg;
 
 void rc_error(char *fmt, ...) {
     va_list argp;
 
-    fprintf(stderr, "%s:.cftprc:%d: ", prg, rc_lineno);
+    fprintf(stderr, "%s:%s:%d: ", prg, rc_filename, rc_lineno);
     va_start(argp, fmt);
     vfprintf(stderr, fmt, argp);
     va_end(argp);

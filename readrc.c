@@ -51,6 +51,7 @@ readrc(char **userp, char **passp, char **hostp, char **portp, char **wdirp,
 
     rc_inrc = 1;
     rc_lineno = 0;
+    rc_filename = "~/.cftprc";
 
     while (fgets(b, 8192, f)) {
 	rc_lineno++;

@@ -30,6 +30,7 @@ char **rc_list(char *line);
 
 extern int rc_inrc;
 extern int rc_lineno;
+extern char *rc_filename;
 
 void rc_error(char *fmt, ...);
 
