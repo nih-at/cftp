@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.74 2002/09/17 14:58:18 dillo Exp $
+  $NiH: ftp.c,v 1.75 2002/09/27 16:48:42 dillo Exp $
 
   ftp.c -- ftp protocol functions
   Copyright (C) 1996-2002 Dieter Baron
@@ -146,7 +146,7 @@ ftp_init(void)
 int
 rftp_open(char *host, char *port, char *user, char *pass)
 {
-    int fd;
+    int fd, resp;
 
     if (host) {
 	free(_ftp_host);
@@ -173,8 +173,11 @@ rftp_open(char *host, char *port, char *user, char *pass)
 	close(fd);
 	return -1;
     }
-    
-    if (ftp_resp() != 220) {
+
+    if ((resp=ftp_resp()) == 120)
+	resp = ftp_resp();
+	
+    if (resp != 220) {
 	close(fd);
 	return -1;
     }
@@ -458,11 +461,11 @@ rftp_stor(char *file, int mode)
 int
 rftp_fclose(void *f)
 {
-    int err;
+    int err, resp;
 
     err = fclose(f);
 
-    if ((ftp_resp() != 226))
+    if (((resp=ftp_resp()) != 226 || resp != 250))
 	return -1;
 	
     return err;
@@ -663,7 +666,7 @@ ftp_abort(FILE *fin)
     /* hanlde server response */
     resp = ftp_resp();
 
-    if (resp == 226) {
+    if (resp == 226 || resp == 250) {
 	ftp_unresp(226);
 
 	sleep(1);
@@ -682,7 +685,7 @@ ftp_abort(FILE *fin)
     	ftp_unresp(426);
 	disp_status(DISP_STATUS, "426 Transfer aborted.");
 	    
-	return resp == 226;
+	return (resp == 226 || resp == 250);
     }
     else
 	return 1;
