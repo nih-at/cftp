@@ -55,7 +55,7 @@ main(int argc, char **argv)
 	if (tty_init() < 0)
 	    exit(1);
 
-	if (ftp_open(host) == -1)
+	if (ftp_open(host, port) == -1)
 		exit(1);
 
 	if (init_disp() < 0)

@@ -65,16 +65,16 @@ FILE *conin=NULL, *conout=NULL;
 unsigned char ftp_addr[4];
 
 @d<prototypes@>
-int ftp_open(char *host);
+int ftp_open(char *host, char *port);
 int ftp_login(char *host, char *user, char *pass);
 
 @u
 int
-ftp_open(char *host)
+ftp_open(char *host, char *port)
 {
 	int fd;
 
-	if ((fd=sopen(host, "ftp")) == -1)
+	if ((fd=sopen(host, port)) == -1)
 		return -1;
 
 	if (ftp_gethostaddr(fd) == -1) {

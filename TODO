@@ -34,6 +34,8 @@ F cftp.texi: introduction, invoking, cftprc
 C fn_basic.cw: docu for bind
 B show cursor on linux console
 F fn_basic.cw (fn_help) help for `f'unktions, `k'eys, and `o'ptions
+B all output in first line outside screen
+B report resolv error, not errno
 ----------------------------------------------- done
 C fn_tag.cw (fn_listtag) display `no tagged files'
 F user options
