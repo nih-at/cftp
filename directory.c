@@ -30,13 +30,14 @@
 #include "ftp.h"
 #include "bindings.h"
 #include "display.h"
+#include "options.h"
 
 directory *curdir;
 
 typedef struct dircache {
-	directory *dir;
+    directory *dir;
 
-	struct dircache *next, *prev;
+    struct dircache *next, *prev;
 } dircache;
 
 dircache *cache_head = NULL, *cache_tail = NULL;
@@ -51,19 +52,19 @@ void cache_insert(dircache *d);
 void
 dir_free(directory *d)
 {
-	int i;
+    int i;
 
-	if (d == NULL)
-		return;
+    if (d == NULL)
+	return;
 	
-	for (i=0; i<d->len; i++) {
-		free(d->line[i].line);
-		free(d->line[i].name);
-		free(d->line[i].link);
-	}
-	free(d->line);
-	free(d->path);
-	free(d);
+    for (i=0; i<d->len; i++) {
+	free(d->line[i].line);
+	free(d->line[i].name);
+	free(d->line[i].link);
+    }
+    free(d->line);
+    free(d->path);
+    free(d);
 }
 
 
@@ -71,53 +72,54 @@ dir_free(directory *d)
 directory *
 get_dir(char *path)
 {
-	dircache *d;
-	directory *dir;
+    dircache *d;
+    directory *dir;
 	
-	/* initialize queue */
-	if (cache_head == NULL) {
-		cache_head = (dircache *)malloc(sizeof(dircache));
-		cache_tail = (dircache *)malloc(sizeof(dircache));
-		cache_head->prev = cache_tail->prev = cache_head;
-		cache_head->next = cache_tail->next = cache_tail;
-		cache_head->dir = cache_tail->dir = NULL;
-		cache_fill = 0;
-	}
+    /* initialize queue */
+    if (cache_head == NULL) {
+	cache_head = (dircache *)malloc(sizeof(dircache));
+	cache_tail = (dircache *)malloc(sizeof(dircache));
+	cache_head->prev = cache_tail->prev = cache_head;
+	cache_head->next = cache_tail->next = cache_tail;
+	cache_head->dir = cache_tail->dir = NULL;
+	cache_fill = 0;
+    }
 
-	/* find dir */
-	for (d=cache_head->next; (d!=cache_tail &&
-				  strcmp(path, d->dir->path) != 0);
-	     d=d->next)
-		;
+    /* find dir */
+    for (d=cache_head->next; (d!=cache_tail &&
+			      strcmp(path, d->dir->path) != 0);
+	 d=d->next)
+	;
 
-	if (d != cache_tail) {
-		/* found: put d to front of queue and return it */
-		cache_remove(d);
-		cache_insert(d);
-
-		return d->dir;
-	}
-
+    if (d != cache_tail) {
+	/* found: put d to front of queue and return it */
+	cache_remove(d);
+	cache_insert(d);
+    }
+    else {
 	dir = ftp_list(path);
 	if (dir == NULL)
 	    return NULL;
 
 	/* not found: if cache full, recycle last entry */
 	if (cache_fill >= cache_size) {
-		d = cache_tail->prev;
-		cache_remove(d);
-		dir_free(d->dir);
+	    d = cache_tail->prev;
+	    cache_remove(d);
+	    dir_free(d->dir);
 	}
 	else {
-		d = (dircache *)malloc(sizeof(dircache));
-		cache_fill++;
+	    d = (dircache *)malloc(sizeof(dircache));
+	    cache_fill++;
 	}
-
+	    
 	dir->path = strdup(path);
 	d->dir = dir;
 	cache_insert(d);
-	
-	return d->dir;
+    }
+
+    dir_sort(dir, opt_sort);
+
+    return d->dir;
 }
 
 
@@ -125,9 +127,9 @@ get_dir(char *path)
 void
 cache_remove(dircache *d)
 {
-	d->prev->next = d->next;
-	d->next->prev = d->prev;
-	d->next = d->prev = NULL;
+    d->prev->next = d->next;
+    d->next->prev = d->prev;
+    d->next = d->prev = NULL;
 }
 
 
@@ -135,10 +137,10 @@ cache_remove(dircache *d)
 void
 cache_insert(dircache *d)
 {
-	d->prev = cache_head;
-	d->next = cache_head->next;
-	cache_head->next->prev = d;
-	cache_head->next = d;
+    d->prev = cache_head;
+    d->next = cache_head->next;
+    cache_head->next->prev = d;
+    cache_head->next = d;
 }
 
 
@@ -149,7 +151,7 @@ dir_find(directory *dir, char *entry)
     int i;
 
     for (i=0; (i<dir->len &&
-		 strcmp(dir->line[i].name, entry)); i++)
+	       strcmp(dir->line[i].name, entry)); i++)
 	;
     
     if (i == dir->len)
@@ -269,7 +271,7 @@ opt_set_sort(int optval, int *optvar)
 
     *optvar = optval;
 
-    if (curdir->sorted != optval) {
+    if (curdir && curdir->sorted != optval) {
 	cur = curdir->line[curdir->cur].pos;
 	dir_sort(curdir, optval);
 	for (i=0; i<curdir->len; i++)

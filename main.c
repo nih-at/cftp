@@ -183,6 +183,8 @@ main(int argc, char **argv)
 	check_alias = 1;
     }
 
+    curdir == NULL;
+
     /* XXX */ readrc(&user, &pass, &host, &port, &wdir, check_alias);
 
     if (user == NULL) {

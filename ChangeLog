@@ -1,5 +1,8 @@
 1997-10-29  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* directory.c (opt_set_sort): don't sort curdir if it's NULL.
+	(get_dir): moved call to dir_sort here.
+
 	* readdir.c (init_parse_time): new function.
 	(parse_time): init non-standard fields of struct tm from global
 	now.  Use global now instead of calling time(), gmtime() on each
