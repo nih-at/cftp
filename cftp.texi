@@ -6,13 +6,39 @@
 @setchapternewpage odd
 
 @c ---------------------------------------------------------------------
-@node   Top
+@node Top, , ,(dir)
 @top cftp
 
 @menu
+* Customizability::     How to customize and configure @sc{cftp}
 * Functions::           Description of all bindable functions
 * Index::               Index
 @end menu
+
+@c ********************************************************************
+@node Customizability
+@chapter Customizability
+@cindex Customizability
+
+@menu
+* netrc::              @sc{cftp}'s use of the .netrc file
+@end menu
+
+@c ====================================================================
+@node netrc
+@section .netrc
+@cindex .netrc
+@cindex netrc
+
+In addition to its own config file, @sc{cftp} scanns your .netrc file for
+this information:
+
+@itemize @bullet
+@item @code{host} or @code{default} lines for @code{login} and
+@code{password}
+@item @code{macdef init} definition for @code{cd} commands (used as
+initial directory)
+@end itemize
 
 
 @include functions.texi

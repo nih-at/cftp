@@ -20,7 +20,6 @@ B tty.cw: (tty_readkey) don't discard chars by failed multibyte code
 F display.cw: (disp_redir) don't clear screen, overwrite
 P configure.in: add -posix for NeXTStep
 F quiet if in background
-F option: ring bell when finished (download)
 F readdir.cw: support other dir listing formats (vms, dos, descritpive, ...)
 F tag files: edit/clear tags, detached download
 F tag: if tagged is directory, try .tar.gz, .tar.Z, .tar
