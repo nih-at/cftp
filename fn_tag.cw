@@ -75,6 +75,37 @@ fn_tag(char **args)
 }
 
 
+@ clear tags.
+
+@d<functions@>
+function(clear-tags, , fn_cleartags, 0,
+	 {clear all tags},
+ {})
+
+@u
+void
+fn_cleartags(char **args)
+{
+    dirtags *p, *q;
+    int i;
+
+    p = tags.next;
+    while (p) {
+	q = p->next;
+	tag_freedir(p);
+	p = q;
+    }
+
+    tags.next = NULL;
+    curtags = NULL;
+
+    for (i=0; i<curdir->num; i++)
+	if (curdir->list[i].line[0] != ' ') {
+	    curdir->list[i].line[0] = ' ';
+	    disp_reline(i);
+	}
+}
+
 @ listing tags.
 
 @d<functions@>
