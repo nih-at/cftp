@@ -108,6 +108,8 @@ int ftp_gethostaddr(int fd);
 void ftp_histf(char *fmt, ...);
 void ftp_hist(char *line);
 
+#define ENABLE_TRANSFER_RATE
+
 #ifdef ENABLE_TRANSFER_RATE
 static void _ftp_update_transfer(char *fmt, long got, long *cur,
 				 int old_sec, int new_sec);
@@ -933,6 +935,145 @@ ftp_cwd(char *path)
 
 
 
+#ifdef ENABLE_TRANSFER_RATE
+int
+ftp_cat(FILE *fin, FILE *fout, long start, long size)
+{
+    char buf[4096], fmt[4096];
+    int c, nread, nwritten, err;
+    long got;
+    struct itimerval itv;
+    long cur[4];
+    int old_alarm;
+    int flags, ret, do_read;
+    fd_set fds;
+
+    if (size >= 0) {
+	sprintf(fmt, "transferred %%ld/%ld "
+		"(total: %%.2fkb/s, current: %%.2fkb/s)",
+		size);
+    }
+    else {
+	strcpy(fmt, "transferred %ld (total: %%.2fkb/s, current: %%.2fkb/s)");
+    }
+
+    got = start;
+    signal(SIGINT, sig_remember);
+
+    cur[0] = cur[1] = cur[2] = cur[3] = 0;
+    old_alarm = sig_alarm = sig_intr = 0;
+    itv.it_value.tv_sec = itv.it_interval.tv_sec = 1;
+    itv.it_value.tv_usec = itv.it_interval.tv_usec = 0;
+    setitimer(ITIMER_REAL, &itv, NULL);
+
+    if (ftp_curmode == 'i') {
+	/* XXX: error check */
+	if ((flags=fcntl(fileno(fin), F_GETFL, 0)) != -1) {
+	    flags |= O_NONBLOCK;
+	    ret=fcntl(fileno(fin), F_SETFL, flags);
+	}
+	if ((flags=fcntl(fileno(fout), F_GETFL, 0)) != -1) {
+	    flags |= O_NONBLOCK;
+	    ret=fcntl(fileno(fout), F_SETFL, flags);
+	}
+
+	do_read = 1;
+
+	for (;;) {
+	    FD_ZERO(&fds);
+
+	    if (do_read) {
+		FD_SET(fileno(fin), &fds);
+		ret=select(fileno(fin)+1, &fds, NULL, NULL, NULL);
+
+		if (ret != -1 && FD_ISSET(fileno(fin), &fds)) {
+		    errno = 0;
+		    if ((nread=fread(buf, 1, 4096, fin)) > 0) {
+			do_read = 0;
+			nwritten = 0; 
+		    }
+		    else if (errno != EAGAIN)
+			break;
+		}
+	    }
+	    else {
+		FD_SET(fileno(fin), &fds);
+		ret=select(fileno(fin)+1, &fds, NULL, NULL, NULL);
+		
+		if (ret != -1 && FD_ISSET(fileno(fin), &fds)) {
+		    errno = 0;
+		    if ((err=fwrite(buf+nwritten, 1, nread-nwritten,
+				    fout)) < 0 && errno != EAGAIN)
+			break;
+		    nwritten += err;
+		    got += err;
+
+		    if (nwritten == nread)
+			do_read = 1;
+		}
+	    }
+		
+	    if (sig_intr)
+		break;
+	    
+	    if (old_alarm != sig_alarm) {
+		_ftp_update_transfer(fmt, got-start, cur,
+				     old_alarm, sig_alarm);
+		old_alarm = sig_alarm;
+	    }
+	}
+    }
+    else
+	while ((c=getc(fin)) != EOF) {
+	    if (sig_intr)
+		break;
+	    got++;
+	    if (c == '\r') {
+		if ((c=getc(fin)) != '\n')
+		    putc('\r', fout);
+		ungetc(c, fin);
+	    }
+	    else {
+		putc(c, fout);
+	    }
+	    if (ferror(fout))
+		break;
+
+	    if (old_alarm != sig_alarm) {
+		_ftp_update_transfer(fmt, got-start, cur,
+				     old_alarm, sig_alarm);
+		old_alarm = sig_alarm;
+	    }
+	}
+
+    signal(SIGINT, sig_end);
+    itv.it_value.tv_sec = itv.it_interval.tv_sec = 0;
+    itv.it_value.tv_usec = itv.it_interval.tv_usec = 0;
+    setitimer(ITIMER_REAL, &itv, NULL);
+
+    if (ferror(fin) || sig_intr) {
+	errno = 0;
+	sig_intr = 0;
+	ftp_abort(fin);
+	return -1;
+    }
+    else if (ferror(fout)) {
+	err = errno;
+	errno = 0;
+	ftp_abort(fin);
+	disp_status("write error: %s", strerror(err));
+	return -1;
+    }
+
+    return 0;
+}
+
+#endif
+
+
+
+#ifndef ENABLE_TRANSFER_RATE
+
 int
 ftp_cat(FILE *fin, FILE *fout, long start, long size)
 {
@@ -1057,6 +1198,8 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size)
 
     return 0;
 }
+
+#endif
 
 
 
