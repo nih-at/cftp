@@ -1,4 +1,4 @@
-bind		^l	redraw
+bind		^l	redraw -c
 bind		V	version
 bind		q	exit
 bind		H	help

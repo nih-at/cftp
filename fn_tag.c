@@ -31,8 +31,9 @@
 #include "ftp.h"
 #include "tag.h"
 #include "util.h"
+#include "status.h"
 
-
+
 
 void
 fn_tag(char **args)
@@ -48,7 +49,7 @@ fn_tag(char **args)
 	size = -1;
 	type = 'l';
 
-	base = basename(file);
+	base = (char *)basename(file);
 
 	i = strlen(curdir->path);
 	if ((base-file == 1 && i == 1)
@@ -189,7 +190,7 @@ fn_savetags(char **args)
     }
 	    
     if ((f=fopen(name, "w")) == NULL) {
-	disp_status("can't open `%s': %s", name, strerror(errno));
+	disp_status("can't create `%s': %s", name, strerror(errno));
 	return;
     }
 
@@ -285,4 +286,49 @@ fn_loadtag(char **args)
 	disp_status("%d file%s tagged", count, (count == 1 ? "" : "s"));
 
     fclose(f);
+}
+
+
+
+void
+fn_saveurls(char **args)
+{
+    FILE *f;
+    char *name;
+    int i;
+
+    if (!tag_anytags()) {
+	disp_status("no tags");
+	return;
+    }
+
+    if (args)
+	name =  args[0];
+    else {
+	name = read_string("File: ", 1);
+	if (name == NULL || name[0] == '\0') {
+	    disp_status("");
+	    return;
+	}
+    }
+	    
+    if ((f=fopen(name, "w")) == NULL) {
+	disp_status("can't create `%s': %s", name, strerror(errno));
+	return;
+    }
+
+    
+
+    for (i=0; i<tags.len && !ferror(f); i++)
+	fprintf(f, "ftp://%s%s\n", status.host, tags.line[i].name);
+
+    if (ferror(f))
+	disp_status("write error on `%s': %s", name, strerror(errno));
+    else
+	disp_status("%d url%s saved", tags.len, (tags.len == 1 ? "" : "s"));
+
+    fclose(f);
+
+    if (!args)
+	free(name);
 }

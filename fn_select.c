@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include "directory.h"
 #include "bindings.h"
 #include "functions.h"
@@ -64,8 +65,11 @@ aux_download(char *name, long size)
     int err;
     FILE *f;
 
-    if ((f=fopen((char *)basename(name), "w")) == NULL)
+    if ((f=fopen((char *)basename(name), "w")) == NULL) {
+	disp_status("can't create `%s': %s",
+		    basename(name), strerror(errno));
 	return -2;
+    }
 	
     err = ftp_retr(name, f, size, opt_mode);
     fclose(f);

@@ -56,7 +56,8 @@ aux_scroll(int top, int sel, int force)
     list->top = top;
     list->cur = sel;
 
-    list_do(force);
+    if (force >= 0)
+	list_do(force);
 }
 
 

@@ -34,21 +34,24 @@ F (fn_isearch) search backwards
 B (fn_isearch) repeated search sets start to wrong match
 F (fn_isearch) show status (failed, wrapped)
 C rename disp_stat to disp_mesg (status line is what used to be head)
-F status.c: add support for head status line (old style, but smarter)
 F <local> (uploads, local tagging)
-F save tag list as url list
 B ftp.c: (ftp_cat) don't use ftp_gets in ascii mode
 F display.c: (read_string) line editing, completion
 B fn_tag.c: (fn_tag) line[0] isn't updated if arg is given
-B fn_select.c: (aux_download) report `can't open file' errors
 C mkbind.c: include file name and line number in error messages 
 B ERROR MESSAGES ON ERRORS!
 F main.c: scan .netrc for type commands
 C fn_basic.c: (fn_exit) implement as function, -f option.
-F fn_basic.c: (fn_redraw) option to center cursor
-B bindable functinos: abort on empty input
+B bindable functions: abort on empty input
 B REPORT LOST CONNECTION!
+F status.c: add support for head status line (old style, but smarter)
+C status.c: rewrite status line code (better abstraction of common elements)
 ----------------------------------------------- done
+F fn_tag.c (fn_saveurls) new function: save tags as url list
+B fn_select.c: (aux_download) report fopen(3) error
+F fn_basic.c: (fn_redraw) -c option centers cursor
+P mkbind.c, Makefile.am: support for srcdir
+B ftp.c: (ftp_cd) corrected initialization bug by failed list command
 
 Apr 2, 1997 (0.6a)
 C version.c: now uses config.h to obtain version, not special make rule

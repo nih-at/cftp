@@ -50,6 +50,9 @@ void fn_version(char **args)
 
 void fn_redraw(char **args)
 {
+    if (args && strcmp(args[0], "-c") == 0) {
+	aux_scroll(list->cur-(win_lines/2), list->cur, -1);
+    }
     disp_redraw();
 }
 

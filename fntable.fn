@@ -33,11 +33,13 @@ function(version, , fn_version, 0,
  {Display the @sc{cftp} version string.})
 
 
-function(redraw, , fn_redraw, FN_PRE,
+function(redraw, [-c], fn_redraw, FN_PRE,
 	 {redraw screen},
  {Clear and redraw the screen.
 
-Use this function if something messed up your display.})
+Use this function if something messed up your display.  If @code{-c}
+is given (as it is in the default bindings), the cursor is centered on
+the screen.})
 
 
 function(help, , fn_help, 0,
@@ -256,6 +258,11 @@ contains one tag per line, each consisting of up to three whitespace
 separated fields: size (integer, -1 for unknown; optional), type
 (`d'irectory, palin `f'ile, `l'ink, or `x' for unknown; optional), and
 name (mandatory).})
+
+function(save-urls, [file], fn_saveurls, 0,
+	 {save tags as url list},
+ {Save tag list to file, in URL notation.})
+
 
 endsec()
 
