@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.1 2001/12/11 02:07:41 dillo Exp $
+  $NiH: sftp.c,v 1.2 2001/12/11 14:33:29 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001 Dieter Baron
@@ -14,7 +14,7 @@
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
@@ -31,50 +31,52 @@ static char *_sftp_strerror(int error);
 
 
 
+#define SSH_FX_PROTO_VERSION	3
+
 /* packet types */
 
-#define SSH_FXP_INIT                1
-#define SSH_FXP_VERSION             2
-#define SSH_FXP_OPEN                3
-#define SSH_FXP_CLOSE               4
-#define SSH_FXP_READ                5
-#define SSH_FXP_WRITE               6
-#define SSH_FXP_LSTAT               7
-#define SSH_FXP_FSTAT               8
-#define SSH_FXP_SETSTAT             9
-#define SSH_FXP_FSETSTAT           10
-#define SSH_FXP_OPENDIR            11
-#define SSH_FXP_READDIR            12
-#define SSH_FXP_REMOVE             13
-#define SSH_FXP_MKDIR              14
-#define SSH_FXP_RMDIR              15
-#define SSH_FXP_REALPATH           16
-#define SSH_FXP_STAT               17
-#define SSH_FXP_RENAME             18
-#define SSH_FXP_STATUS            101
-#define SSH_FXP_HANDLE            102
-#define SSH_FXP_DATA              103
-#define SSH_FXP_NAME              104
-#define SSH_FXP_ATTRS             105
-#define SSH_FXP_EXTENDED          200
-#define SSH_FXP_EXTENDED_REPLY    201
+#define SSH_FXP_INIT		1
+#define SSH_FXP_VERSION		2
+#define SSH_FXP_OPEN		3
+#define SSH_FXP_CLOSE		4
+#define SSH_FXP_READ		5
+#define SSH_FXP_WRITE		6
+#define SSH_FXP_LSTAT		7
+#define SSH_FXP_FSTAT		8
+#define SSH_FXP_SETSTAT		9
+#define SSH_FXP_FSETSTAT	10
+#define SSH_FXP_OPENDIR		11
+#define SSH_FXP_READDIR		12
+#define SSH_FXP_REMOVE		13
+#define SSH_FXP_MKDIR		14
+#define SSH_FXP_RMDIR		15
+#define SSH_FXP_REALPATH	16
+#define SSH_FXP_STAT		17
+#define SSH_FXP_RENAME		18
+#define SSH_FXP_STATUS		101
+#define SSH_FXP_HANDLE		102
+#define SSH_FXP_DATA		103
+#define SSH_FXP_NAME		104
+#define SSH_FXP_ATTRS		105
+#define SSH_FXP_EXTENDED	200
+#define SSH_FXP_EXTENDED_REPLY	201
 
 /* attribute flag bits */
 
-#define SSH_FILEXFER_ATTR_SIZE          0x00000001
-#define SSH_FILEXFER_ATTR_UIDGID        0x00000002
-#define SSH_FILEXFER_ATTR_PERMISSIONS   0x00000004
-#define SSH_FILEXFER_ATTR_ACMODTIME     0x00000008
-#define SSH_FILEXFER_ATTR_EXTENDED      0x80000000
+#define SSH_FILEXFER_ATTR_SIZE		0x00000001
+#define SSH_FILEXFER_ATTR_UIDGID	0x00000002
+#define SSH_FILEXFER_ATTR_PERMISSIONS	0x00000004
+#define SSH_FILEXFER_ATTR_ACMODTIME	0x00000008
+#define SSH_FILEXFER_ATTR_EXTENDED	0x80000000
 
 /* open pflags bits */
 
-#define SSH_FXF_READ            0x00000001
-#define SSH_FXF_WRITE           0x00000002
-#define SSH_FXF_APPEND          0x00000004
-#define SSH_FXF_CREAT           0x00000008
-#define SSH_FXF_TRUNC           0x00000010
-#define SSH_FXF_EXCL            0x00000020
+#define SSH_FXF_READ		0x00000001
+#define SSH_FXF_WRITE		0x00000002
+#define SSH_FXF_APPEND		0x00000004
+#define SSH_FXF_CREAT		0x00000008
+#define SSH_FXF_TRUNC		0x00000010
+#define SSH_FXF_EXCL		0x00000020
 
 /* error/status code definitions */
 
@@ -167,14 +169,14 @@ _sftp_get_packet(FILE *f, char *buf, int *lenp, int log_resp)
 
 
 void
-_sftp_log_packet(int dir, int type, char *buf, int len)
+_sftp_log_packet(int dir, int type, char *data, int len)
 {
     int status;
     char *msg, buf[80];
 
     sitch (type) {
     case SSH_FXP_STATUS:
-	status = _sftp_get_uint32(buf+4);
+	status = _sftp_get_uint32(data+4);
 	if (status == SSH_FX_OK) {
 	    status = 200;
 	    msg = "Ok.";
@@ -186,6 +188,11 @@ _sftp_log_packet(int dir, int type, char *buf, int len)
 	sprintf(buf, "%d %s", status, msg);
 	break;
 
+    case SSH_FXP_VERSION:
+	sprintf(buf, "202 protocol version %d",
+		_sftp_get_uint32(data));
+	break;
+	
     /* XXX: other packet types */
 
     default:
