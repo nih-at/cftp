@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.72 2002/09/05 16:14:27 dillo Exp $
+  $NiH: ftp.c,v 1.73 2002/09/16 12:42:32 dillo Exp $
 
   ftp.c -- ftp protocol functions
   Copyright (C) 1996-2002 Dieter Baron
@@ -384,7 +384,7 @@ rftp_retr(char *file, int mode, long *startp, long *sizep)
     FILE *fin;
     
     can = canonical(file, NULL);
-    dir = dirname(can);
+    dir = xdirname(can);
     name = basename(can);
     
     if (ftp_mode(mode) == -1 || ftp_cwd(dir) == -1)
@@ -431,7 +431,7 @@ rftp_stor(char *file, int mode)
     FILE *fin;
     
     can = canonical(file, NULL);
-    dir = dirname(can);
+    dir = xdirname(can);
     name = basename(can);
     
     if (ftp_mode(mode) == -1 || ftp_cwd(dir) == -1)

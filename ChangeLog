@@ -1,5 +1,8 @@
 2002-09-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* util.c (xdirname): rename and adapt callers, declare argument
+	const.
+
 	* display.h, functions.h (struct function), list.c: fix missing
 	prototype warnings from IRIX cc.
 

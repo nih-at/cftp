@@ -1,5 +1,5 @@
 /*
-  $NiH: util.c,v 1.20 2001/12/20 17:58:48 dillo Exp $
+  $NiH: util.c,v 1.21 2002/09/16 12:42:46 dillo Exp $
 
   util.c -- auxiliary functions
   Copyright (C) 1996-2002 Dieter Baron
@@ -89,7 +89,7 @@ canonical(char *path, char *current)
 
 
 char *
-dirname(char *name)
+xdirname(const char *name)
 {
     char *dir;
     char *p = strrchr(name, '/');
