@@ -32,6 +32,7 @@ F cftp.texi: introduction, invoking, cftprc
 C fn_basic.cw: docu for bind
 F fn_basic.cw (fn_help) help for `f'unktions, `k'eys, and `o'ptions
 B all output in first line outside screen
+P hstrerror.c: AIX: unknown error instead of host unknown
 ----------------------------------------------- done
 B show cursor
 B report resolv error, not errno
