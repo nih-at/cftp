@@ -188,7 +188,7 @@ fn_isearch(char **args)
 	    *p = '\0';
 	    current = start;
 	}
-	else if (c == 's'&0x1f) {
+	else if (c == 19 /* ^S */) {
 	    start = current;
 	    current++;
 	}
