@@ -28,6 +28,8 @@ EXTRA_DIST=	bindings.desc fntable.c.proto fntable.h.proto \
 
 # extra rules
 
+BUILT_SOURCES=	options.h options.c fntable.h fntable.c bindings.c
+
 functions.texi : fntable.fn mkfntexi.m4
 	m4 $(srcdir)/mkfntexi.m4 $(srcdir)/fntable.fn >> functions.texi-unsort
 	sed -e '/^>>>>>>>>/,$$ d' $(srcdir)/functions.texi-unsort \
