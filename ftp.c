@@ -107,6 +107,7 @@ int ftp_cwd(char *path);
 int ftp_gethostaddr(int fd);
 void ftp_histf(char *fmt, ...);
 void ftp_hist(char *line);
+static int _ftp_ascii2host(char *buf, int n, int *trail_cr);
 
 #define ENABLE_TRANSFER_RATE
 
@@ -939,8 +940,8 @@ ftp_cwd(char *path)
 int
 ftp_cat(FILE *fin, FILE *fout, long start, long size)
 {
-    char buf[4096], fmt[4096];
-    int c, nread, nwritten, err;
+    char buf[4098], fmt[4096];
+    int nread, nwritten, err, trail_cr;
     long got;
     struct itimerval itv;
     long cur[4];
@@ -966,85 +967,65 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size)
     itv.it_value.tv_usec = itv.it_interval.tv_usec = 0;
     setitimer(ITIMER_REAL, &itv, NULL);
 
-    if (ftp_curmode == 'i') {
-	/* XXX: error check */
-	if ((flags=fcntl(fileno(fin), F_GETFL, 0)) != -1) {
-	    flags |= O_NONBLOCK;
-	    ret=fcntl(fileno(fin), F_SETFL, flags);
-	}
-	if ((flags=fcntl(fileno(fout), F_GETFL, 0)) != -1) {
-	    flags |= O_NONBLOCK;
-	    ret=fcntl(fileno(fout), F_SETFL, flags);
-	}
+    /* XXX: error check */
+    if ((flags=fcntl(fileno(fin), F_GETFL, 0)) != -1) {
+	flags |= O_NONBLOCK;
+	ret=fcntl(fileno(fin), F_SETFL, flags);
+    }
+    if ((flags=fcntl(fileno(fout), F_GETFL, 0)) != -1) {
+	flags |= O_NONBLOCK;
+	ret=fcntl(fileno(fout), F_SETFL, flags);
+    }
 
-	do_read = 1;
+    trail_cr = 0;
+    do_read = 1;
+    for (;;) {
+	FD_ZERO(&fds);
 
-	for (;;) {
-	    FD_ZERO(&fds);
-
-	    if (do_read) {
-		FD_SET(fileno(fin), &fds);
-		ret=select(fileno(fin)+1, &fds, NULL, NULL, NULL);
-
-		if (ret != -1 && FD_ISSET(fileno(fin), &fds)) {
-		    errno = 0;
-		    if ((nread=fread(buf, 1, 4096, fin)) > 0) {
-			do_read = 0;
-			nwritten = 0; 
-		    }
-		    else if (errno != EAGAIN)
-			break;
-		}
-	    }
-	    else {
-		FD_SET(fileno(fin), &fds);
-		ret=select(fileno(fin)+1, &fds, NULL, NULL, NULL);
-		
-		if (ret != -1 && FD_ISSET(fileno(fin), &fds)) {
-		    errno = 0;
-		    if ((err=fwrite(buf+nwritten, 1, nread-nwritten,
-				    fout)) < 0 && errno != EAGAIN)
-			break;
-		    nwritten += err;
-		    got += err;
-
-		    if (nwritten == nread)
-			do_read = 1;
-		}
-	    }
-		
-	    if (sig_intr)
-		break;
+	if (do_read) {
+	    FD_SET(fileno(fin), &fds);
+	    ret=select(fileno(fin)+1, &fds, NULL, NULL, NULL);
 	    
-	    if (old_alarm != sig_alarm) {
-		_ftp_update_transfer(fmt, got-start, cur,
-				     old_alarm, sig_alarm);
-		old_alarm = sig_alarm;
+	    if (ret != -1 && FD_ISSET(fileno(fin), &fds)) {
+		errno = 0;
+		if ((nread=fread(buf, 1, 4096, fin)) > 0) {
+		    do_read = 0;
+		    nwritten = 0;
+		    if (ftp_curmode == 'a') {
+			/* XXX: direction? */
+			nread = _ftp_ascii2host(buf, nread, &trail_cr);
+		    }
+		}
+		else if (errno != EAGAIN)
+		    break;
 	    }
+	}
+	else {
+	    FD_SET(fileno(fin), &fds);
+	    ret=select(fileno(fin)+1, &fds, NULL, NULL, NULL);
+	    
+	    if (ret != -1 && FD_ISSET(fileno(fin), &fds)) {
+		errno = 0;
+		if ((err=fwrite(buf+nwritten, 1, nread-nwritten,
+				fout)) < 0 && errno != EAGAIN)
+		    break;
+		nwritten += err;
+		got += err;
+		
+		if (nwritten == nread)
+		    do_read = 1;
+	    }
+	}
+	
+	if (sig_intr)
+	    break;
+	
+	if (old_alarm != sig_alarm) {
+	    _ftp_update_transfer(fmt, got-start, cur,
+				 old_alarm, sig_alarm);
+	    old_alarm = sig_alarm;
 	}
     }
-    else
-	while ((c=getc(fin)) != EOF) {
-	    if (sig_intr)
-		break;
-	    got++;
-	    if (c == '\r') {
-		if ((c=getc(fin)) != '\n')
-		    putc('\r', fout);
-		ungetc(c, fin);
-	    }
-	    else {
-		putc(c, fout);
-	    }
-	    if (ferror(fout))
-		break;
-
-	    if (old_alarm != sig_alarm) {
-		_ftp_update_transfer(fmt, got-start, cur,
-				     old_alarm, sig_alarm);
-		old_alarm = sig_alarm;
-	    }
-	}
 
     signal(SIGINT, sig_end);
     itv.it_value.tv_sec = itv.it_interval.tv_sec = 0;
@@ -1400,4 +1381,35 @@ int
 ftp_anon(void)
 {
     return _ftp_anon;
+}
+
+
+
+static int
+_ftp_ascii2host(char *buf, int n, int *trail_cr)
+{
+    char *s, *t;
+    int cr;
+
+    if (n == 0)
+	return 0;
+
+    t = s = buf;
+    cr = *trail_cr;
+
+    for (; n; --n,s++) {
+	if (cr) {
+	    if (*s != '\n')
+		*t++ = '\r';
+	    cr = 0;
+	}
+	if (*s == '\r')
+	    cr = 1;
+	else
+	    *(t++) = *s;
+    }
+
+    *trail_cr = cr;
+    
+    return t-buf;
 }
