@@ -1,3 +1,9 @@
+1998-10-07  Wiz  <wiz@danbala.tuwien.ac.at>
+
+	* display.c: removed include for termcap.h
+
+	* main.c (main): if startdir is file, download.
+
 1998-05-01  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* directory.c, tty.h: cleanup for -Wall
