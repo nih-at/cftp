@@ -1,3 +1,8 @@
+2003-04-16  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* mkbind.c (main): fix typo resulting in undersized buffer.
+	Reported by Anil Madhavapeddy.
+
 2003-04-08  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* list.c (list_desel, list_sel): bounds check line to be

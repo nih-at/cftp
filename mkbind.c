@@ -1,5 +1,5 @@
 /*
-  $NiH: mkbind.c,v 1.22 2002/09/16 12:42:38 dillo Exp $
+  $NiH: mkbind.c,v 1.23 2002/09/17 11:46:23 dillo Exp $
 
   mkbind.c -- make binding table
   Copyright (C) 1996-2002 Dieter Baron
@@ -86,7 +86,7 @@ int
 main(int argc, char **argv)
 {
     FILE *fin, *fout;
-    char line[4069], *p, *tok, **args;
+    char line[4096], *p, *tok, **args;
     char tmp[128];
     struct binding *b;
     int i, j, off, argoff, len;
