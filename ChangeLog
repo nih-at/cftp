@@ -1,5 +1,6 @@
 1999-02-08  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* added 1999 to copyright notices.
 	* readrc.c (readrc): remember password when part of alias url.
 
 1998-12-31  Dieter Baron  <dillo@danbala.tuwien.ac.at>
