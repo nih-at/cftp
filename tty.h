@@ -25,16 +25,6 @@
 
 
 
-#include "config.h"
-
-#ifndef HAVE_FPUTCHAR
-#ifndef USE_NCURSES
-void fputchar();
-#else
-int fputchar();
-#endif
-#endif
-
 enum {
     _TTY_cl, _TTY_ho, _TTY_cd, _TTY_ce, _TTY_so, _TTY_se, _TTY_vi,
     _TTY_ve, _TTY_cs, _TTY_sf, _TTY_sr, _TTY_SF, _TTY_SR,
@@ -44,17 +34,15 @@ enum {
 extern char *_tty_caps[];
 
 #define TTY_CAP(cap)	(_tty_caps[(_TTY_##cap)])
-#define tty_put0(cap, lines)  \
-		(tputs(TTY_CAP(cap), (lines), fputchar))
 
-#define tty_clear()	(tty_put0(cl, tty_lines))
-#define tty_home()	(tty_put0(ho, 1))
-#define tty_clreos(l)	(tty_put0(cd, (l)))
-#define tty_clreol()	(tty_put0(ce, 1))
-#define tty_standout()	(tty_put0(so, 1))
-#define tty_standend()	(tty_put0(se, 1))
-#define tty_hidecrsr()	(tty_put0(vi, 1))
-#define tty_showcrsr()	(tty_put0(ve, 1))
+#define tty_clear()	(tty_put0(TTY_CAP(cl), tty_lines))
+#define tty_home()	(tty_put0(TTY_CAP(ho), 1))
+#define tty_clreos(l)	(tty_put0(TTY_CAP(cd), (l)))
+#define tty_clreol()	(tty_put0(TTY_CAP(ce), 1))
+#define tty_standout()	(tty_put0(TTY_CAP(so), 1))
+#define tty_standend()	(tty_put0(TTY_CAP(se), 1))
+#define tty_hidecrsr()	(tty_put0(TTY_CAP(vi), 1))
+#define tty_showcrsr()	(tty_put0(TTY_CAP(ve), 1))
 
 void tty_lowleft(void);
 
@@ -84,6 +72,7 @@ int tty_init(void);
 int tty_setup(void);
 int tty_restore(void);
 void tty_put(char *name, int lines);
+void tty_put0(char *cap, int lines);
 void tty_goto(int x, int y);
 int tty_noecho(void);
 int tty_echo(void);

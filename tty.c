@@ -39,6 +39,17 @@ char PC, *BC, *UP;
 short ospeed;
 #endif
 
+#ifndef HAVE_FPUTCHAR
+#ifndef USE_NCURSES
+void fputchar();
+#else
+int fputchar();
+#endif
+#endif
+#if !defined(HAVE_TPARAM) && !defined(HAVE_TPARM)
+char *tparam();
+#endif
+
 #include "keys.h"
 #include "tty.h"
 
@@ -245,6 +256,14 @@ void
 tty_put(char *name, int lines)
 {
     tputs(tty_getcap(name), lines, fputchar);
+}
+
+
+
+void
+tty_put0(char *cap, int lines)
+{
+    tputs(cap, lines, fputchar);
 }
 
 
@@ -530,7 +549,7 @@ void
 tty_lowleft(void)
 {
     if (*TTY_CAP(ll))
-	tty_put0(ll, 1);
+	tty_put0(TTY_CAP(ll), 1);
     else
 	tty_goto(0, tty_lines-1);
 }

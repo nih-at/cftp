@@ -1,9 +1,15 @@
 2001-08-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* fn_tag.c (fn_tag): strcmp returns int, so compare with 0.
+
+	* tty.c: if we're using tparam replacement, declare it.
+
+	* tty.c (tty_put0): new function (was macro), adapt users.
+	* tty.h: remove prototype for fputchar().  make tty_put0() a
+	function and adapt using macros.
+
 	* tty.c: if present, include termcap.h.  Adapt for gratuitous
 	differences of termcap implementations.
-	* tty.h: adapt for gratuitous differences of termcap
-	implementations.
 	* fputchar.c (fputchar): make return type dependent on termcap
 	library we're using.
 	* configure.in: check for termcap.h if using libtermcap.  Set one
