@@ -8,7 +8,6 @@ INSTALL_PROGRAM=@INSTALL_PROGRAM@
 
 CFLAGS=	@CFLAGS@
 LIBS=	@LIBS@ -ltermcap
-LCURSES=@LCURSES@
 LIBOBJS=@LIBOBJS@
 
 prefix = @prefix@
@@ -45,7 +44,7 @@ WEBDISTRIB=$(PRG)-$(VERS)-web
 all: $(PRG)
 
 $(PRG): $(OBJS) $(LIBOBJS)
-	$(CC) -o $(PRG) $(OBJS) $(LIBOBJS) $(LCURSES) $(LIBS)
+	$(CC) -o $(PRG) $(OBJS) $(LIBOBJS) $(LIBS)
 
 dist: $(SRCS) $(FUNCS) $(AUXSRCS) $(LIBSRCS) configure
 	rm -rf $(DISTRIB)
