@@ -27,12 +27,10 @@
 #include <string.h>
 #include <errno.h>
 
-#define _MKBIND
 #include "keys.h"
 #include "rc.h"
 #include "functions.h"
 #include "bindings.h"
-#undef _MKBIND
 
 #define FNAME	"bindings"
 #define NAME	"binding"
@@ -63,7 +61,7 @@ function functions[MAX_FN];
 int num;
 
 enum state binding_state;
-struct binding *binding;
+struct binding binding[MAX_FN];
 
 char *binding_argpool[1];
 int binding_nargpool = 0;
@@ -88,12 +86,6 @@ main(int argc, char **argv)
     rc_lineno = 0;
     maxkey = max_fnkey + 256;
 
-    binding = (struct binding *)malloc(maxkey*sizeof(struct binding));
-    if (binding == NULL) {
-	fprintf(stderr, "%s: malloc failure.\n", prg);
-	exit(1);
-    }
-    
     initnames();
 
     for (i=0; i<maxkey; i++) {
@@ -153,21 +145,21 @@ main(int argc, char **argv)
     /* output: bindings */
 
     off = argoff = 0;
-    fprintf(fout, "struct binding " NAME "[] = {\n  ");
+    fprintf(fout, "struct binding " NAME "[] = {\n");
     for (i=0; i<maxkey; i++) {
 	fprintf(fout, "    { ");
 	if (binding[i].next) {
-	    fprintf(fout, "binding_pool+%d, ", off);
+	    fprintf(fout, "binding_pool+%3d, ", off);
 	    for (b=binding[i].next; b; b=b->next)
 		off++;
 	}
 	else
-	    fprintf(fout, "NULL, ");
+	    fprintf(fout, "NULL            , ");
 	if (binding[i].state+1 < nstates)
 	    fprintf(fout, "%s, ", states[binding[i].state+1]);
 	else
 	    fprintf(fout, "%d, ", binding[i].state);
-	fprintf(fout, "%d, ", binding[i].fn);
+	fprintf(fout, "%3d, ", binding[i].fn);
 	if (binding[i].args) {
 	    fprintf(fout, "binding_argpool+%d },\n", argoff);
 	    for (j=0; binding[i].args[j]; j++)
@@ -189,21 +181,24 @@ main(int argc, char **argv)
     /* output: bindings_pool */
 
     off = 0;
-    fprintf(fout, "struct binding " NAME "_" POOL "[] = {\n  ");
+    fprintf(fout, "struct binding " NAME "_" POOL "[] = {\n");
     for (i=0; i<maxkey; i++)
 	if (binding[i].next) {
 	    for (b=binding[i].next; b; b=b->next) {
 		fprintf(fout, "    { ");
-		if (binding[i].next) {
-		    fprintf(fout, "binding_pool+%d, ", ++off);
+		if (b->next) {
+		    fprintf(fout, "binding_pool+%3d, ", ++off);
 		}
 		else
-		    fprintf(fout, "NULL, ");
-		fprintf(fout, "%s, ", states[binding[i].state+1]);
-		fprintf(fout, "%d, ", binding[i].fn);
-		if (binding[i].args) {
+		    fprintf(fout, "NULL            , ");
+		if (b->state+1 < nstates)
+		    fprintf(fout, "%s, ", states[b->state+1]);
+		else
+		    fprintf(fout, "%d, ", b->state);
+		fprintf(fout, "%3d, ", b->fn);
+		if (b->args) {
 		    fprintf(fout, "binding_argpool+%d },\n", argoff);
-		    for (j=0; binding[i].args[j]; j++)
+		    for (j=0; b->args[j]; j++)
 			;
 		    argoff += j+1;
 		}

@@ -131,11 +131,14 @@ fn_bind(char **args)
 	if (line)
 	    list = rc_list(p);
 	else {
-	    /* XXX: what's this supposed to be? */
-	    for (i=0; args[i]; i++) {
+	    for (i=0; args[i]; i++)
+		;
+	    if (i > 0) {
 		list = (char **)malloc(sizeof(char *)*(i+1));
 		memcpy(list, args, sizeof(char *)*(i+1));
 	    }
+	    else
+		list = NULL;
 	}
 
 	b->fn = fn;
