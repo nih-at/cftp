@@ -27,9 +27,9 @@ F tag: if tagged is directory, try .tar.gz, .tar.Z, .tar
 F remember home dir, use in disp_header
 F tag files: tag regexp
 F on quit: warn if tags remain
-B ftp.cw: (ftp_retr) cd to dirname(file) and retr basename(file)
-F display filename instead of `transferred' during tag download
+F fn_tag.cw: (fn_gettags) display tags list while downloading
 ----------------------------------------------- done
+B ftp.cw: (ftp_retr) cd to dirname(file) and retr basename(file)
 P configure.in: check for libresolv
 B fn_select.cw: (fn_cd) don't move cursor if empty line entered
 

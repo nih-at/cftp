@@ -223,15 +223,19 @@ int
 ftp_retr(char *file, FILE *fout, long size, int mode)
 {
 	int fd, err;
+	char *dir, *name;
 	FILE *fin;
+
+	dir = dirname(file);
+	name = basename(file);
 	
-	if (ftp_mode(mode) == -1 || ftp_cwd(ftp_lcwd) == -1)
+	if (ftp_mode(mode) == -1 || ftp_cwd(dir) == -1)
 		return -1;
 
 	if ((fd=ftp_port()) == -1)
 		return -1;
 	
-	ftp_put("retr %s", file);
+	ftp_put("retr %s", name);
 	if (ftp_resp() != 150) {
 		close(fd);
 		return -1;
