@@ -1,5 +1,8 @@
 2000-12-06  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* getaddrinfo.c (getaddrinfo): avoid host name lookup for raw ip
+	addresses, use inet_aton.
+
 	* sockets.c (sockaddr_ntop): omit scope id.
 	
 	* main.c (main): initialize ftp_host et al before getting initial

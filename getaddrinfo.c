@@ -26,6 +26,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>	
 #include <netdb.h>
 #include <stdlib.h>
 
@@ -43,6 +44,8 @@ getaddrinfo(const char *nodename, const char *servname,
     struct sockaddr_in sa;
     struct servent *serv;
     u_short port;
+    char addr[4], *s_addr_list[2], **addr_list;
+    int addr_len;
     int i;
 
     /* XXX: check arguments */
@@ -66,33 +69,33 @@ getaddrinfo(const char *nodename, const char *servname,
     sa.sin_port = port;
     memset(sa.sin_zero, 0, 8);
 
+    addr_list = s_addr_list;
+    addr_list[0] = addr;
+    addr_list[1] = NULL;
+    addr_len = 4;
+
     if (hints->ai_flags & AI_PASSIVE && nodename == NULL) {
 	if ((ai=malloc(sizeof(struct addrinfo))) == NULL) {
 	    freeaddrinfo(airet);
 	    return EAI_MEMORY;
 	}
-	ai->ai_next = NULL;
-	ai->ai_family = AF_INET;
-	ai->ai_socktype = SOCK_STREAM; /* XXX: from hints */
-	ai->ai_protocol = IPPROTO_TCP; /* XXX: from hints */
 	sa.sin_addr.s_addr = INADDR_ANY;
-	if ((ai->ai_addr=malloc(sizeof(struct sockaddr_in))) == NULL)
-	    return EAI_MEMORY;
-	
-	memcpy(ai->ai_addr, &sa, sizeof(struct sockaddr_in));
-	ai->ai_addrlen = sizeof(struct sockaddr_in);
-
-	*res = ai;
-	return 0;
+	memcpy(addr_list[0], &sa.sin_addr.s_addr, addr_len);
     }
-    
-    if ((hp = gethostbyname(nodename)) == NULL) {
-	/* XXX: switch on herrno */
-	return EAI_NODATA;
+    else if (inet_aton(nodename, &sa.sin_addr) == 1) {
+	memcpy(addr_list[0], &sa.sin_addr.s_addr, addr_len);
+    }
+    else {
+	if ((hp = gethostbyname(nodename)) == NULL) {
+	    /* XXX: switch on herrno */
+	    return EAI_NODATA;
+	}
+	addr_list = hp->h_addr_list;
+	addr_len = hp->h_length;
     }
 
     airet = aiprev = NULL;
-    for (i=0; hp->h_addr_list[i]; i++) {
+    for (i=0; addr_list[i]; i++) {
 	if ((ai=malloc(sizeof(struct addrinfo))) == NULL) {
 	    freeaddrinfo(airet);
 	    return EAI_MEMORY;
@@ -107,7 +110,7 @@ getaddrinfo(const char *nodename, const char *servname,
 	ai->ai_family = AF_INET;
 	ai->ai_socktype = SOCK_STREAM; /* XXX: from hints */
 	ai->ai_protocol = IPPROTO_TCP; /* XXX: from hints */
-	memcpy(&sa.sin_addr, hp->h_addr_list[i], hp->h_length);
+	memcpy(&sa.sin_addr, addr_list[i], addr_len);
 	if ((ai->ai_addr=malloc(sizeof(struct sockaddr_in))) == NULL) {
 	    freeaddrinfo(airet);
 	    return EAI_MEMORY;
