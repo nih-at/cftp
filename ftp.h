@@ -40,6 +40,7 @@ extern char **ftp_response;
 
 
 
+void ftp_init(void);
 int ftp_open(char *host, char *port);
 int ftp_login(char *host, char *user, char *pass);
 int ftp_reconnect(void);

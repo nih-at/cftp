@@ -117,7 +117,7 @@ get_dir(char *path)
 	cache_insert(d);
     }
 
-    dir_sort(dir, opt_sort);
+    dir_sort(d->dir, opt_sort);
 
     return d->dir;
 }

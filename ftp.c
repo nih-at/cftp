@@ -55,22 +55,27 @@ extern char *prg;
 
 
 
-char *ftp_head, *ftp_lcwd, *ftp_pcwd = NULL;
-char ftp_curmode = ' ', ftp_anon = 0;
-char *ftp_last_resp = NULL;
-char *ftp_host = NULL, *ftp_prt = NULL,
-     *ftp_user = NULL, *ftp_pass = NULL;
+char *ftp_lcwd;
+char *ftp_pcwd;
+char ftp_curmode;		/* current transfer mode (' ' for unknown) */
+char ftp_anon;
+char *ftp_last_resp;
+char *ftp_host, *ftp_prt, *ftp_user, *ftp_pass;
+				/* host, port, user, passwd (for reconnect) */
 
-struct ftp_hist *ftp_history = NULL, *ftp_hist_last;
-int ftp_hist_cursize;
+struct ftp_hist *ftp_history;	/* command/response history */
+struct ftp_hist *ftp_hist_last; /* tail of history */
+int ftp_hist_cursize;		/* size of history (for dynamic growth) */
 
-int _ftp_keptresp = -1;
+static int _ftp_keptresp;
+static int ftp_dosnames;	/* server sends directory names in
+				   DOS format */
 
-char **ftp_response = NULL;
-long ftp_response_size = 0;
+char **ftp_response;
+long ftp_response_size;
 
-FILE *conin=NULL, *conout=NULL;
-unsigned char ftp_addr[4];
+FILE *conin, *conout;		/* control connection to server */
+unsigned char ftp_addr[4];	/* local ip address (for port commands) */
 
 
 
@@ -88,6 +93,23 @@ void ftp_histf(char *fmt, ...);
 void ftp_hist(char *line);
 
 
+
+void
+ftp_init(void)
+{
+    ftp_pcwd = NULL;
+    ftp_curmode = ' ';
+    ftp_anon = 0;
+    ftp_last_resp = NULL;
+    ftp_host = ftp_prt = ftp_pass = NULL;
+    ftp_history = NULL;
+    _ftp_keptresp = -1;
+    ftp_dosnames = -1;
+    ftp_response = NULL;
+    ftp_response_size = 0;
+    conin = conout = NULL;
+}
+
 
 int
 ftp_open(char *host, char *port)
@@ -399,11 +421,31 @@ ftp_pwd(void)
 	|| (e=strchr(s+1, '"')) == NULL)
 	return NULL;
     
-    if ((dir=(char *)malloc(e-s)) == NULL)
+    if ((dir=(char *)malloc(e-s+1)) == NULL)
 	return NULL;
 
     strncpy(dir, s+1, e-s-1);
     dir[e-s-1] = '\0';
+
+    if (ftp_dosnames == -1) {
+	if (dir[0] >= 'A' && dir[0] <= 'Z'
+	    && dir[1] == ':' && dir[2] == '\\')
+	    ftp_dosnames = 1;
+	else
+	    ftp_dosnames = 0;
+    }
+
+    if (ftp_dosnames == 1) {
+	    strncpy(dir+1, s+1, e-s-1);
+	    dir[e-s] = '\0';
+	    dir[0] = '/';
+	    for (s=dir; *s; s++)
+		if (*s == '\\')
+		    *s = '/';
+    }
+
+    free(ftp_pcwd);
+    ftp_pcwd = strdup(dir);
 
     return dir;
 }
@@ -656,17 +698,41 @@ ftp_mode(char m)
 int
 ftp_cwd(char *path)
 {
-	if (ftp_pcwd && strcmp(path, ftp_pcwd) == 0)
-		return 0;
-
-	ftp_put("cwd %s", path);
-	if (ftp_resp() != 250)
-		return -1;
-
-	free(ftp_pcwd);
-	ftp_pcwd = strdup(path);
-
+    char *s, *e;
+    
+    if (ftp_pcwd && strcmp(path, ftp_pcwd) == 0)
 	return 0;
+
+    if (ftp_dosnames == 1) {
+	for (s=path+1; *s; s++)
+	    if (*s == '/')
+		*s = '\\';
+	ftp_put("cwd %s", path+1);
+	for (s=path+1; *s; s++)
+	    if (*s == '\\')
+		*s = '/';
+    }
+    else
+	ftp_put("cwd %s", path);
+    if (ftp_resp() != 250)
+	return -1;
+
+    if (ftp_dosnames == -1) {
+	if ((s=strchr(ftp_last_resp, '"')) != NULL
+	    && (e=strchr(s+1, '"')) != NULL) {
+	    if (s[1] >= 'A' && s[1] >= 'Z' && s[2] == ':' && s[3] == '\\')
+		ftp_dosnames = 1;
+	    else
+		ftp_dosnames = 0;
+	}
+	else
+	    ftp_dosnames = 0;
+    }
+
+    free(ftp_pcwd);
+    ftp_pcwd = strdup(path);
+    
+    return 0;
 }
 
 

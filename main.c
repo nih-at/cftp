@@ -213,6 +213,8 @@ main(int argc, char **argv)
     if (tty_init() < 0)
 	exit(1);
 
+    ftp_init();
+
     if (ftp_open(host, port) == -1)
 	exit(1);
 
