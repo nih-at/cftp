@@ -75,16 +75,13 @@ aux_view(char *name){
 	int err;
 	FILE *f;
 	
-	if ((f=popen("less", "w")) == NULL)
+	if ((f=disp_open(0)) == NULL)
 		return -2;
 
-	escape_disp(1);
-	
 	err = ftp_retr(name, f, 0, 'a');
-	pclose(f);
 
-	reenter_disp();
-
+	err |= disp_close(f);
+	
 	return err;
 }
 
@@ -105,7 +102,7 @@ fn_enter_get(char **args)
     if (args) {
 	name = args[0];
 	type = 'l';
-	size = 0;
+	size = -1;
     }
     else {
 	name = curdir->list[cursel].name;
@@ -216,7 +213,7 @@ fn_get(char **args)
     if (args) {
 	name = args[0];
 	type = 'l';
-	size = 0;
+	size = -1;
     }
     else {
 	name = curdir->list[cursel].name;

@@ -428,7 +428,7 @@ ftp_cat(FILE *fin, FILE *fout, long size)
 	int n, err = 0;
 	long got = 0;
 
-	if (size)
+	if (size >= 0)
 		sprintf(fmt, "transferred %%ld/%ld", size);
 	else
 		strcpy(fmt, "transferred %ld");

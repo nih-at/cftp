@@ -20,14 +20,15 @@ directory) containing sorted lists (one entry for each file).
 
 @d<types@>
 struct dirtags {
-	char *name;
-	struct dirtags *next;
-	struct filetags *tags;
+    char *name;
+    struct dirtags *next;
+    struct filetags *tags;
 };
 
 struct filetags {
-	char *name;
-	struct filetags *next;
+    char *name;
+    struct filetags *next;
+    long size;
 };
 
 typedef struct dirtags dirtags;
@@ -62,16 +63,16 @@ tag_changecurrent(char *dir)
 @ functions to manipulate tags lists.
 
 @d<prototypes@>
-int tag_file(char *dir, char *file, int flag);
+int tag_file(char *dir, char *file, long size, int flag);
 
 @u
 int
-tag_file(char *dir, char *file, int flag)
+tag_file(char *dir, char *file, long size, int flag)
 {
     extern char *ftp_lcwd;
-
+    
     int filep;
-    filetags *tl;
+    filetags *tl, *n;
  
     if (dir == NULL) {
 	if (curtags == NULL) {
@@ -95,8 +96,12 @@ tag_file(char *dir, char *file, int flag)
 	return 0;
     }
     else if (!filep && flag >= 0) {
-	tag_insfile(tl, file);
-	return 1;
+	if (n=tag_insfile(tl, file)) {
+	    n->size = size;
+	    return 1;
+	}
+	else
+	    return 0;
     }
     else
 	return filep;

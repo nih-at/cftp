@@ -145,7 +145,7 @@ change_curdir(directory *dir)
 {
     extern dirtags *curtags;
 
-    dirtags *tags;
+    filetags *tags;
     int i;
 
     for (i=0; i<curdir->num; i++)
@@ -154,8 +154,8 @@ change_curdir(directory *dir)
     tag_changecurrent(dir->path);
 
     if (curtags) {
-	for (tags=curtags->next; tags; tags=tags->next)
-	    if ((i=dir_find(dir, tags->name)) > 0)
+	for (tags=curtags->tags->next; tags; tags=tags->next)
+	    if ((i=dir_find(dir, tags->name)) >= 0)
 		dir->list[i].line[0] = opt_tagchar;
     }
 

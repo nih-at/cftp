@@ -1,6 +1,7 @@
 @ Display routines
 
 @(display.h@)
+#include <stdio.h>
 @<globals@>
 @<prototypes@>
 
@@ -476,4 +477,37 @@ win_line(char *line, int sel)
 
 	if (sel)
 		tty_standend();
+}
+
+
+@ piping stuff to a pager.
+
+@d<prototypes@>
+FILE *disp_open(int lines);
+int disp_close(FILE *f);
+
+@u
+FILE *
+disp_open(int lines)
+{
+    FILE *f;
+    
+    if ((f=popen("less", "w")) == NULL)
+	return NULL;
+    
+    escape_disp(1);
+
+    return f;
+}
+
+int
+disp_close(FILE *f)
+{
+    int err;
+
+    err = pclose(f);
+    
+    reenter_disp();
+
+    return err;
 }

@@ -9,6 +9,8 @@ bind	!	shell
 bind	:	colon
 
 bind	t	tag
+bind	T	list-tags
+bind	D	get-tags
 
 bind	a	ascii
 bind	i	image

@@ -134,7 +134,7 @@ parse_unix(direntry *de, char *line)
     de->size = strtol(p, &q, 10);
 			/* size  */
     if (p == q)
-	de->size = 0;
+	de->size = -1;
     else if ((p=strtok(NULL, " ")) == NULL) {
 	free(line);
 	return 1;
@@ -146,7 +146,7 @@ parse_unix(direntry *de, char *line)
 	q[-4] = '\0';
 	de->name = strdup(p);
 	de->link = strdup(q);
-	de->size = 0;
+	de->size = -1;
     }
     else {
 	de->name = strdup(p);
