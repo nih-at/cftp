@@ -52,6 +52,10 @@
 #include "status.h"
 #include "signals.h"
 
+#ifndef HAVE_SOCKADDR_STORAGE
+#define sockaddr_storage sockaddr
+#endif
+
 extern char *prg;
 
 
@@ -76,7 +80,7 @@ char **ftp_response;
 long ftp_response_size;
 
 FILE *conin, *conout;		/* control connection to server */
-unsigned char ftp_addr[4];	/* local ip address (for port commands) */
+struct sockaddr_storage ftp_addr; /* local ip address (for port commands) */
 
 
 
@@ -956,11 +960,10 @@ _ftp_update_transfer(char *fmt, long got, long *cur, int old_sec, int new_sec)
 int
 ftp_gethostaddr(int fd)
 {
-	struct sockaddr_in addr;
 	int len;
 	
-	len = sizeof(addr);
-	if (getsockname(fd, (struct sockaddr* )&addr, &len) == -1) {
+	len = sizeof(ftp_addr);
+	if (getsockname(fd, (struct sockaddr *)&ftp_addr, &len) == -1) {
 	    if (disp_active)
 		disp_status("can't get host address: %s",
 			    strerror(errno));
@@ -970,8 +973,6 @@ ftp_gethostaddr(int fd)
 	    
 	    return -1;
 	}
-
-	memcpy(ftp_addr, (char *)&addr.sin_addr.s_addr, 4);
 
 	return 0;
 }

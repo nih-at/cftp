@@ -1,5 +1,8 @@
 2000-12-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* ftp.c (ftp_addr, ftp_gethostaddr): store address in struct
+	sockaddr_storage for protocol independence.
+
 	* configure.in: check for struct sockaddr_storage.
 	* acinclude.m4 (NIH_HAVE_STRUCT): generic check for a struct.
 
