@@ -1,6 +1,6 @@
 dnl -*- text -*-
 dnl
-dnl  $NiH$
+dnl  $NiH: methods.mt,v 1.1 2001/12/13 21:14:52 dillo Exp $
 dnl
 dnl  methods.mt -- definition and documentation for protocol methods
 dnl  Copyright (C) 2001 Dieter Baron
@@ -22,13 +22,7 @@ dnl  You should have received a copy of the GNU General Public License
 dnl  along with this program; if not, write to the Free Software
 dnl  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-rcsid(<<$NiH$>>)
-
-method(int, cat, <<void *fin, void *fout, long start, long size, int upload>>,
-  <<transfer file from FIN to FOUT.  If UPLOAD, FIN is a FILE * and
-FOUT has been obtained from stor, otherwise FOUT is a FILE * and FIN
-has been obtained from retr.  START is the starting offset and SIZE is
-the expecded file size if known, -1 otherwise.>>)
+rcsid(<<$NiH: methods.mt,v 1.1 2001/12/13 21:14:52 dillo Exp $>>)
 
 method(int, close, void,
   <<close connection to server.>>)
@@ -73,5 +67,23 @@ method(int, site, <<char *cmd>>,
 
 method(<<void *>>, stor, <<char *file, int mode>>,
   <<start storing FILE in mode MODE.>>)
+
+method(int, xfer_eof, <<void *file>>,
+  <<return true if end of file is reached on FILE.>>)
+
+method(int, xfer_read, <<void *buf, size_t n, void *file>>,
+  <<read N bytes into BUF from FILE.  Returns the number of bytes
+read, or -1 on error or end of file.>>)
+
+method(int, xfer_start, <<void *file, int writing>>,
+  <<start transfer on file, for writing if WRITING, for reading otherwise.>>)
+
+method(int, xfer_stop, <<void *file, int aborting>>,
+  <<stop transfer on file.  If ABORTING, transfer might not have been
+completed.>>)
+
+method(int, xfer_write, <<void *buf, size_t n, void *file>>,
+  <<write N bytes from BUF to FILE.  Returns the number of bytes
+written, -1 if an error occured before writing the first byte.>>)
 
 endall
