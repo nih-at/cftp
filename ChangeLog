@@ -1,3 +1,8 @@
+1997-10-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* directory.c (get_dir): reuse cache entry only if ftp_list
+	succeeded.
+
 1997-10-08  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* main.c (main): --version and --help: conform to GNU standards.

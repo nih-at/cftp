@@ -68,6 +68,7 @@ directory *
 get_dir(char *path)
 {
 	dircache *d;
+	directory *dir;
 	
 	/* initialize queue */
 	if (cache_head == NULL) {
@@ -93,6 +94,10 @@ get_dir(char *path)
 		return d->dir;
 	}
 
+	dir = ftp_list(path);
+	if (dir == NULL)
+	    return NULL;
+
 	/* not found: if cache full, recycle last entry */
 	if (cache_fill >= cache_size) {
 		d = cache_tail->prev;
@@ -104,11 +109,9 @@ get_dir(char *path)
 		cache_fill++;
 	}
 
-	d->dir = ftp_list(path);
-	if (d->dir) {
-		d->dir->path = strdup(path);
-		cache_insert(d);
-	}
+	dir->path = strdup(path);
+	d->dir = dir;
+	cache_insert(d);
 	
 	return d->dir;
 }
