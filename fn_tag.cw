@@ -80,7 +80,7 @@ fn_listtags(char **args)
     for (d=tags.next; d; d=d->next)
 	for (t=d->tags->next; t; t=t->next) {
 	    if (f == NULL)
-		if ((f=disp_open(0)) == NULL)
+		if ((f=disp_open(-1)) == NULL)
 		    return;
 	    fprintf(f, "%8ld  %s%s%s\n",
 		    t->size,
