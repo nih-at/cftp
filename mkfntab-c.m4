@@ -1,4 +1,4 @@
-dnl  $NiH: mkfntab-c.m4,v 1.4 2001/12/13 21:14:52 dillo Exp $
+dnl  $NiH: mkfntab-c.m4,v 1.5 2001/12/23 03:52:33 dillo Exp $
 dnl
 dnl  mkfntab-c.m4 -- create fntable.c from fntable.fn
 dnl  Copyright (C) 1996, 2000, 2001 Dieter Baron
@@ -32,7 +32,7 @@ define(rcsid, dnl id
 <<divert(2)    $1
 divert(-1)>>)
 
-rcsid(<<$NiH$>>)
+rcsid(<<$NiH: mkfntab-c.m4,v 1.5 2001/12/23 03:52:33 dillo Exp $>>)
 
 define(function,dnl name, synopsis, function, flags, help-string, description
 <<divert(1)dnl
@@ -62,7 +62,7 @@ undivert(2)dnl
 #include "fntable.h"
 
 function functions[] = {
->>
+>>dnl
 undivert(1)dnl
 <</* end marker */
   { 0, 0, 0, 0 }
