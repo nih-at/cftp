@@ -1,3 +1,8 @@
+2001-08-01  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* ftp.c (ftp_retr): set *sizep to -1 if we cannot extract a size
+	from the response.
+
 2001-07-31  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* sockets.c (sopen): don't include '\n' in disp_status message.
