@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.21 2002/09/15 13:06:06 dillo Exp $
+  $NiH: sftp.c,v 1.22 2002/09/16 12:42:42 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001, 2002 Dieter Baron
@@ -102,13 +102,14 @@ int sftp_send_init(int proto_version);
 int sftp_start_read(struct sftp_file *f, int nbytes);
 int sftp_status(void);
 
+static int _sftp_close(int st_valid, int status);
 static int _sftp_get_packet(struct packet *p, int flags);
 static char *_sftp_get_string(char *buf, char **endp);
 static unsigned int _sftp_get_uint32(char *p, char **endp);
 static unsigned long long _sftp_get_uint64(char *p, char **endp);
 static void _sftp_log_handle(char *buf, char *data, char **endp);
 static void _sftp_log_packet(int dir, struct packet *pkt);
-void _sftp_log_pflags(char *buf, char *data, char **endp);
+static void _sftp_log_pflags(char *buf, char *data, char **endp);
 static void _sftp_log_str(char *buf, char *data, char **endp);
 static void _sftp_make_packet(struct packet *pkt, int type, char *end);
 static int _sftp_parse_name(char *p, char **endp, direntry *e);
@@ -122,8 +123,9 @@ static void _sftp_put_uint64(char *p, char **endp, unsigned long long i);
 static int _sftp_read(int fd, void *buf, size_t nbytes, int flags);
 static directory *_sftp_read_dir(struct handle *hnd);
 static void _sftp_send_error_packet(char *fmt, ...);
+static void _sftp_sig_child(int sig);
 static void _sftp_start_ssh(int fdin, int fdout);
-int _sftp_start_write(struct sftp_file *f, int len);
+static int _sftp_start_write(struct sftp_file *f, int len);
 static char *_sftp_strerror(int error);
 static int _sftp_writev(int fd, struct iovec *iov, int niov, int flags);
 
@@ -918,6 +920,7 @@ sftp_open(char *host, char *port, char *user, char *pass)
 
     default:
 	_sftp_ssh_pid = pid;
+	signal(SIGCHLD, _sftp_sig_child);
 	
 	close(pin[1]);
 	close(pout[0]);
@@ -996,35 +999,11 @@ _sftp_start_ssh(int fdin, int fdout)
 int
 sftp_close(void)
 {
-    int status;
-    
-    if (_conin >= 0) {
-	close(_conin);
-	_conin = -1;
-    }
-    if (_conout >= 0) {
-	close(_conout);
-	_conout = -1;
-    }
-    if (_sftp_ssh_pid != 0) {
-	if (waitpid(_sftp_ssh_pid, &status, 0) == -1) {
-	    disp_status(DISP_ERROR, "cannot wait on ssh (pid %d): %s",
-			(int)_sftp_ssh_pid, strerror(errno));
-	    return -1;
-	}
-	if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
-	    disp_status(DISP_ERROR, "ssh exited with %d",
-			WEXITSTATUS(status));
-	    return -1;
-	}
-	else if (WIFSIGNALED(status)) {
-	    disp_status(DISP_ERROR, "ssh exited due to signal %d",
-			WTERMSIG(status));
-	    return -1;
-	}
-    }
+    int status, valid;
 
-    return 0;
+    valid = 0;
+    
+    return _sftp_close(0, status);
 }
 
 
@@ -1083,6 +1062,56 @@ sftp_pwd(void)
 
 
 
+static int
+_sftp_close(int st_valid, int status)
+{
+    int ret;
+    
+    signal(SIGCHLD, SIG_IGN);
+
+    if (_conin >= 0) {
+	close(_conin);
+	_conin = -1;
+    }
+    if (_conout >= 0) {
+	close(_conout);
+	_conout = -1;
+    }
+
+    ret = 1;
+
+    if (_sftp_ssh_pid) {
+	if (!st_valid) {
+	    if (waitpid(_sftp_ssh_pid, &status, 0) == _sftp_ssh_pid)
+		st_valid = 1;
+	    else {
+		disp_status(DISP_ERROR, "cannot wait on ssh (pid %d): %s",
+			    (int)_sftp_ssh_pid, strerror(errno));
+		ret = -1;
+	    }
+	}
+	
+	if (st_valid) {
+	    if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
+		disp_status(DISP_ERROR, "ssh exited with %d",
+			    WEXITSTATUS(status));
+		ret = -1;
+	    }
+	    else if (WIFSIGNALED(status)) {
+		disp_status(DISP_ERROR, "ssh exited due to signal %d",
+			    WTERMSIG(status));
+		ret = -1;
+	    }
+	}
+    }
+
+    _sftp_ssh_pid = 0;
+
+    return ret;
+}
+
+
+
 static void
 _sftp_log_str(char *buf, char *data, char **endp)
 {
@@ -1126,7 +1155,7 @@ _sftp_log_handle(char *buf, char *data, char **endp)
   is non-NULL, point it at next unprocessed byte.
 */
 
-void
+static void
 _sftp_log_pflags(char *buf, char *data, char **endp)
 {
     static char *fl[] = {
@@ -1784,7 +1813,7 @@ _sftp_writev(int fd, struct iovec *iov, int niov, int flags)
   Start write cycle: prepare write packet for LEN bytes, initialize members of F, and put F in state send.
 */
 
-int
+static int
 _sftp_start_write(struct sftp_file *f, int len)
 {
     char *p;
@@ -1835,6 +1864,19 @@ _sftp_send_error_packet(char *fmt, ...)
     _sftp_put_uint32(p, NULL, q-(p+4));
     _sftp_make_packet(_sftp_packet, SSH_FXP_STATUS, q);
     _sftp_put_packet(_sftp_packet, 0);
+}
+
+
+
+static void
+_sftp_sig_child(int sig)
+{
+    int status;
+
+    if (_sftp_ssh_pid != 0
+	&& waitpid(_sftp_ssh_pid, &status, WNOHANG) == _sftp_ssh_pid) {
+	_sftp_close(1, status);
+    }
 }
 
 #endif /* USE_SFTP */

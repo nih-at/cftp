@@ -1,3 +1,10 @@
+2003-07-12  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* sftp.c (sftp_close, _sftp_close): move part shared with signal
+	handler to own function.
+	(sftp_open): set up SIGCHLD handler.
+	(_sftp_sig_child): collect exit status when ssh dies.
+
 2003-05-19  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* display.c (disp_restat): don't truncate string if it is short
