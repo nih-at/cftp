@@ -30,10 +30,10 @@ P configure.in: add -posix for NeXTStep
 B propagate errors (conn hung or eof?) up to fn_gettags
 F cftp.texi: introduction, invoking, cftprc
 C fn_basic.cw: docu for bind
-F fn_basic.cw (fn_help) help for `f'unktions, `k'eys, and `o'ptions
+F fn_basic.cw: (fn_help) help for `f'unktions, `k'eys, and `o'ptions
 B all output in first line outside screen
-P hstrerror.c: AIX: unknown error instead of host unknown
 ----------------------------------------------- done
+P hstrerror.c: AIX: Service unavailable (5); include h_errno in unknown msg
 B show cursor
 B report resolv error, not errno
 F fn_isearch
