@@ -95,7 +95,8 @@ tag_file(char *dir, char *file, long size, char type, enum tagopt what)
     else {
 	if ((canon=(char *)malloc(strlen(dir)+strlen(file)+2)) == NULL)
 	    return 0;
-	sprintf(canon, "%s/%s", dir, file);
+	sprintf(canon, "%s%s%s", dir,
+		(strcmp(dir, "/") == 0 ? "" : "/"), file);
     }
 
     for (t=tags_s.next;
@@ -103,7 +104,7 @@ tag_file(char *dir, char *file, long size, char type, enum tagopt what)
 	 t=t->next)
 	;
 
-    if (strncmp(dir, t->name, t->dirl) == 0) {
+    if (strncmp(dir, t->name, t->dirl) == 0 && t != &tags_s) {
 	if (what == TAG_ON) {
 	    free(canon);
 	    return 0;
