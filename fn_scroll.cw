@@ -161,7 +161,7 @@ fn_goto(char **args)
 
 @d<functions@>
 function(isearch, , fn_isearch, 0,
-	 {incremnetal search},
+	 {incremental search},
  {Search directory listing incrementally.})
 
 

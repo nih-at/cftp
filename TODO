@@ -24,7 +24,6 @@ F tag files: tag regexp
 * handle closed connections due to timeout
 F forced reload of directory listing
 B handle immensly long lines in ftp_gets (malloc failure)
-F .cftprc 
 P display.c: check for missing capabilities
 F display.c: (disp_redir) don't clear screen, overwrite
 P configure.in: add -posix for NeXTStep
@@ -35,8 +34,11 @@ F fn_basic.cw: (fn_help) help for `f'unktions, `k'eys, and `o'ptions
 C untangle fn_* files
 F (fn_isearch) search backwards
 B (fn_isearch) repeaded search sets start to wrong match
-F long options
+F readrc: host
 ----------------------------------------------- done
+Jan 28 1997 (0.5d)
+F readrc: alias and commands
+F long options
 B main.c: (main) canonify pathname if not starting with `/'
 B tty.c: (tty_init) sanity checks on screen size detecion
 P hstrerror.c: AIX: Service unavailable (5); include h_errno in unknown msg

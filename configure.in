@@ -3,7 +3,7 @@ dnl Process this file with autoconf to produce a configure script.
 dnl init
 
 AC_INIT(bindings.desc)
-AM_INIT_AUTOMAKE(cftp, 0.5c+)
+AM_INIT_AUTOMAKE(cftp, 0.5d)
 AM_CONFIG_HEADER(config.h)
 
 # We want these before the checks, so the checks can modify their values.
@@ -54,6 +54,8 @@ dnl compiler characteristics
 dnl library functions
 
 AC_REPLACE_FUNCS(strdup getcwd getdomainname strerror hstrerror basename fputchar)
+
+AC_CHECK_FUNCS(getopt_long, , [LIBOBJS="$LIBOBJS getopt1.o getopt.o"])
 
 if test `expr "$LIBOBJS" : getdomainname` -ne 0
 then

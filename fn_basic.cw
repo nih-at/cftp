@@ -11,6 +11,7 @@ endsec()
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
 #include "util.h"
 #include "directory.h"
 #include "ftp.h"
@@ -92,7 +93,7 @@ void fn_help(char **args)
 @ change local directory.
 
 @d<functions@>
-function(lcd, [dir], fn_lcd, 0,
+function(lcd, [dir], fn_lcd, FN_RC,
 	 {change directory on local host},
  {Change directory on localhost; dir is prompted for if ommited.  The new current directory is printed.})
 
@@ -107,19 +108,26 @@ void fn_lcd(char **args)
 	    freep = 0;
 	}
 	else {
+	    if (rc_inrc) {
+		rc_error("lcd: no directory specified");
+		return;
+	    }
 	    lwd = read_string("local directory: ", 1);
 	    freep = 1;
 	}
 	exp = local_exp(lwd);
 	if (exp) {
-	    chdir(exp);
+	    if (chdir(exp) < 0 && rc_inrc)
+		rc_error("rc: cannot cd to %s: %s",
+			 lwd, strerror(errno));
 	    free(exp);
 	}
 	if (freep)
 	    free(lwd);
 
 	lwd = getcwd(NULL, 1024);
-	disp_status("Current local directory: %s", lwd);
+	if (!rc_inrc)
+	    disp_status("Current local directory: %s", lwd);
 	free(lwd);
 }
 
