@@ -74,9 +74,9 @@ dnl compiler characteristics
 
 dnl library functions
 
-AC_REPLACE_FUNCS(basename fnmatch fputchar getaddrinfo getcwd inet_aton \
-		 strdup strerror)
-AC_CHECK_FUNCS(getdomainname)
+AC_REPLACE_FUNCS(basename fnmatch fputchar getaddrinfo \
+		 getcwd inet_aton strdup strerror)
+AC_CHECK_FUNCS(getdomainname getnameinfo)
 
 AC_CHECK_FUNCS(tparam, [tparam=1], [tparam=0])
 if test "$tparam" -ne 1
