@@ -1,5 +1,5 @@
 /*
-  $NiH: main.c,v 1.46 2001/12/23 02:53:25 dillo Exp $
+  $NiH: main.c,v 1.47 2002/09/16 12:42:37 dillo Exp $
 
   main.c -- main function
   Copyright (C) 1996-2002 Dieter Baron
@@ -122,6 +122,7 @@ main(int argc, char **argv)
     extern int opterr, optind;
     extern char *optarg;
 
+    struct ftp_hist *h;
     directory *dir;
     char *host, *user = NULL, *port = NULL, *pass = NULL, *wdir = NULL;
     char *poss_fn, *poss_dir;
@@ -228,8 +229,12 @@ main(int argc, char **argv)
 
     ftp_init();
 
-    if (ftp_open(host, port, user, pass) == -1)
+    if (ftp_open(host, port, user, pass) == -1) {
+	for (h=ftp_history; h; h=h->next)
+	    printf("%s\n", h->line);
+
 	exit(1);
+    }
 
     if (init_disp() < 0)
 	exit(1);

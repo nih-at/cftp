@@ -1,3 +1,10 @@
+2002-10-10  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* main.c (main): print history if ftp_open() failes.
+
+	* ftp.c (rftp_open, rftp_fclose, ftp_abort): allow responses
+	specified in RFC.
+
 2002-09-27  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (rftp_list, rftp_retr): allow response 125 (as per RFC).
