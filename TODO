@@ -41,6 +41,7 @@ B ftp.c: (ftp_cat) don't use ftp_gets in ascii mode
 F display.c: (read_string) line editing, completion
 P tty.c: handle terminfo parameterized capabilities (tparm)
 B fn_tag.c: (fn_tag) line[0] isn't updated if arg is given
+B fn_select.c: (aux_download) report `can't open file' errors
 ----------------------------------------------- done
 
 Mar 31 1997 (0.6)
