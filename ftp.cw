@@ -43,7 +43,7 @@ int ftp_login(char *host, char *user, char *pass);
 int
 ftp_open(char *host)
 {
-	int fd, resp;
+	int fd;
 
 	if ((fd=sopen(host, "ftp")) == -1)
 		return -1;
@@ -67,6 +67,8 @@ ftp_open(char *host)
 int
 ftp_login(char *host, char *user, char *pass)
 {
+	int resp;
+
 	if (ftp_resp() != 220)
 		return -1;
 
