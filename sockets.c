@@ -34,6 +34,7 @@
 
 #include "config.h"
 #include "display.h"
+#include "sockets.h"
 
 extern char *prg;
 
