@@ -1,6 +1,6 @@
 /*
   main -- main function
-  Copyright (C) 1996, 1997, 1998, 1999 Dieter Baron
+  Copyright (C) 1996, 1997, 1998, 1999, 2000 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -70,7 +70,7 @@ char help[] = "\
 Report bugs to <dillo@giga.or.at>.\n";
 
 char version_tail[] = "\
-Copyright (C) 1999 Dieter Baron\n\
+Copyright (C) 2000 Dieter Baron\n\
 cftp comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
 You may redistribute copies of\n\
 cftp under the terms of the GNU General Public License.\n\

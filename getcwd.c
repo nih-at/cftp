@@ -1,6 +1,6 @@
 /*
   getcwd -- get working directory pathname
-  Copyright (C) 1996, 1997, 1998, 1999 Dieter Baron
+  Copyright (C) 1996, 1997, 1998, 1999, 2000 Dieter Baron
 
   The author can be contacted at <dillo@giga.or.at>
 
