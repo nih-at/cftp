@@ -37,19 +37,25 @@ bindings.c : mkbind bindings.desc fntable.c
 	./mkbind $(srcdir)
 
 fntable.c : fntable.fn mkfntab-c.m4
-	m4 $(srcdir)/mkfntab-c.m4 $(srcdir)/fntable.fn > fntable.c
+	m4 $(srcdir)/mkfntab-c.m4 $(srcdir)/fntable.fn > fntable.c.$$$$ \
+	&& mv fntable.c.$$$$ fntable.c
 
 fntable.h : fntable.fn mkfntab-h.m4
-	m4 $(srcdir)/mkfntab-h.m4 $(srcdir)/fntable.fn > fntable.h
+	m4 $(srcdir)/mkfntab-h.m4 $(srcdir)/fntable.fn > fntable.h.$$$$ \
+	&& mv fntable.h.$$$$ fntable.h
 
 functions.texi : fntable.fn mkfntexi.m4
-	m4 $(srcdir)/mkfntexi.m4 $(srcdir)/fntable.fn >> functions.texi-unsort
-	sed -e '/^<-------/,$$ d' $(srcdir)/functions.texi-unsort \
-		> functions.texi
-	sed -e '1,/^<-------/ d' -e '/^------->/,$$ d' functions.texi-unsort \
-		| sort -t: +0 -1 >> functions.texi
-	sed -e '1,/^------->/ d' functions.texi-unsort >> functions.texi
-	rm functions.texi-unsort
+	m4 $(srcdir)/mkfntexi.m4 $(srcdir)/fntable.fn \
+		>> functions.texi-unsort.$$$$ \
+	&& sed -e '/^<-------/,$$ d' $(srcdir)/functions.texi-unsort.$$$$ \
+		> functions.texi.$$$$ \
+	&& sed -e '1,/^<-------/ d' -e '/^------->/,$$ d' \
+		functions.texi-unsort.$$$$ \
+		| sort -t: +0 -1 >> functions.texi.$$$$ \
+	&& sed -e '1,/^------->/ d' functions.texi-unsort.$$$$ \
+		 >> functions.texi.$$$$ \
+	&& mv functions.texi.$$$$ functions.texi \
+	&& rm functions.texi-unsort.$$$$
 
 methods.c: methods.mt mkmethods-c.m4
 	m4 $(srcdir)/mkmethods-c.m4 $(srcdir)/methods.mt > methods.c.$$$$ \
@@ -60,10 +66,13 @@ methods.h: methods.mt mkmethods-h.m4
 	&& mv methods.h.$$$$ methods.h
 
 options.c: options.op $(srcdir)/mkoptab-c.m4
-	m4 $(srcdir)/mkoptab-c.m4 $(srcdir)/options.op > options.c
+	m4 $(srcdir)/mkoptab-c.m4 $(srcdir)/options.op > options.c.$$$$ \
+	&& mv options.c.$$$$ options.c
 
 options.h: options.op mkoptab-h.m4
-	m4 $(srcdir)/mkoptab-h.m4 $(srcdir)/options.op > options.h
+	m4 $(srcdir)/mkoptab-h.m4 $(srcdir)/options.op > options.h.$$$$ \
+	&& mv options.h.$$$$ options.h
 
 options.texi: options.op mkoptexi.m4
-	m4 $(srcdir)/mkoptexi.m4 $(srcdir)/options.op > options.texi
+	m4 $(srcdir)/mkoptexi.m4 $(srcdir)/options.op > options.texi.$$$$ \
+	&& mv options.texi.$$$$ options.texi

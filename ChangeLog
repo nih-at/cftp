@@ -1,3 +1,8 @@
+2001-12-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* Makefile.am: don't create files with output redirection
+	directly, use temporary files and mv.
+
 2001-12-13  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c: garbage collect code not ENABLE_TRANSFER_RATE.
