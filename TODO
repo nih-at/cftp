@@ -1,13 +1,9 @@
 * handle cd ~user/.. in a better way
 F save dir listing
-F get .tar[.gz] files
-F support for stor, dele
-F display.c: (disp_dir) make max no of lines to scroll user setable
 F tty.c: (tty_readkey) make VTIME value user setable
 F readdir.c: support other dir listing formats (vms, dos, descritpive, ...)
-F tag files: edit/clear tags, detached download
-F tag: if tagged is directory, try .tar.gz, .tar.Z, .tar
-F fn_tag.cw: (fn_gettags) display tags list while downloading
+F tag files: edit tags, detached download
+F if file to download is directory, try .tar.gz, .tar.Z, .tar
 F use `size' to determine unkown size (of links and tags)
 F quiet if in background
 F automatically deidle connection
@@ -15,35 +11,33 @@ C functions.texi: fix bad next pointer in last section (to first command)
 F if url is file, download
 C display.c: (disp_prompt_char) return after first key, not after newline
 F functions.texi: include default bindings
-P Makefile, mkbind.c: support for srcdir
+F display.c: (read_string) line editing, completion
 ---------------------------------------------------------------- till beta
 F abort transfer
-F fn_search
 F tag files: globbing tag
-* handle closed connections due to timeout
-F forced reload of directory listing
-P display.c: check for missing capabilities
-B propagate errors (conn hung or eof?) up to fn_gettags
+F handle closed connections due to timeout
 F cftp.texi: introduction, invoking, cftprc, binding states
 F readrc: host
 P configure.in: add -posix for NeXTStep
 P cc on HPUX: -Aa -D_POSIX_SOURCE, prototypes for LIBOBJS
+P tparm on HPUX doesn't work
 B options.h: dependencies seem wrong -- doesn't get remade
 F fn_basic.c: (fn_help) display type and value for options
 C rename disp_stat to disp_mesg (status line is what used to be head)
 F <local> (uploads, local tagging)
-F display.c: (read_string) line editing, completion
 B fn_tag.c: (fn_tag) line[0] isn't updated if arg is given
 B ERROR MESSAGES ON ERRORS!
 F main.c: scan .netrc for type commands
 C fn_basic.c: (fn_exit) implement as function, -f option.
 B bindable functions: abort on empty input
 B REPORT LOST CONNECTION!
+F forced reload of directory listing
+B don't create file before data connection is open
 F status.c: add support for head status line (old style, but smarter)
 C status.c: rewrite status line code (better abstraction of common elements)
 B fn_scroll.c: (fn_isearch) don't hardwire ^r/^s/^l (check binding)
 ----------------------------------------------- done
-Apr 18, 1997 (0.6b)
+Apr 18 1997 (0.6b)
 B display.c: (read_string) ignore verase if at beginning of line
 C now compiles on pedantic OSF/1 compiler
 P configure.in, acconfig.h, sockets.c: check whether h_errno is declared
@@ -57,7 +51,7 @@ F fn_basic.c: (fn_redraw) -c option centers cursor
 P mkbind.c, Makefile.am: support for srcdir
 B ftp.c: (ftp_cd) corrected initialization bug by failed list command
 
-Apr 2, 1997 (0.6a)
+Apr  2 1997 (0.6a)
 C version.c: now uses config.h to obtain version, not special make rule
 B mkbind.c: fixed offset bug in writing binding_pool
 F fn_select.c: (aux_scroll_page) rewrote behavior for more(?) consistency 
@@ -124,7 +118,7 @@ B ftp.cw: (ftp_retr) cd to dirname(file) and retr basename(file)
 P configure.in: check for libresolv
 B fn_select.cw: (fn_cd) don't move cursor if empty line entered
 
-May 6 1996 (0.5)
+May  6 1996 (0.5)
 F tag files: save/load tags
 F show multiline responses
 F tag files (later download)
@@ -140,7 +134,7 @@ B tty.cw: (tty_readkey): fixed bug in multi-char read
 F ftp.cw: (ftp_cat): update status at most once a second
 B main.cw, display.cw, ftp.cw: init_disp after opening connection
 
-Mar 1996 30 (0.4)
+Mar 30 1996 (0.4)
 B main.cw: (main) crashes when TERM is unknown -- fixed
 B tty.cw: check for window size & size change
 B display.cw (escape_disp, reenter_disp) don't redraw if disp_quiet
