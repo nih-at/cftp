@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.81 2003/05/13 16:31:53 dillo Exp $
+  $NiH: ftp.c,v 1.82 2003/12/19 10:06:31 dillo Exp $
 
   ftp.c -- ftp protocol functions
   Copyright (C) 1996-2002 Dieter Baron
@@ -399,7 +399,7 @@ rftp_retr(char *file, int mode, long *startp, long *sizep)
 	close(fd);
 	return NULL;
     }
-    if (sizep != NULL) {
+    if (sizep) {
 	/* XXX: check how other servers format 150s */
 	if (strcmp(ftp_last_resp+strlen(ftp_last_resp)-8, " bytes).") == 0) {
 	    if ((p=strrchr(ftp_last_resp, '(')) != NULL)
