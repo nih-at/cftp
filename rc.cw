@@ -25,7 +25,7 @@ rc_token(char **linep)
 {
 	char *tok, *p;
 	
-	if (linep == NULL)
+	if (*linep == NULL)
 		return NULL;
 
 	tok = *linep;
@@ -49,8 +49,12 @@ rc_token(char **linep)
 	}
 	else {
 		p = tok+strcspn(tok, " \t\n");
-		*p = '\0';
-		*linep = p+1+strspn(p+1, " \t\n");
+		if (*p == '\0')
+		    *linep = NULL;
+		else {
+		    *p = '\0';
+		    *linep = p+1+strspn(p+1, " \t\n");
+		}
 	}
 
 	return tok;

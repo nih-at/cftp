@@ -23,10 +23,10 @@ F display.cw: (disp_redir) don't clear screen, overwrite
 P configure.in: add -posix for NeXTStep
 F queit if in background
 F option: ring bell when finished (download)
-F fn_colon
 - fn_select.cw: handle args
-B rc.cw: (rc_token) doesn't work with fn_colon
 ----------------------------------------------- done
+B rc.cw: (rc_token) bug at end of line detection
+F fn_colon
 F arguments for bindable functions
 B tty.cw: (tty_readkey): fixed bug in multi-char read
 F ftp.cw: (ftp_cat): update status at most once a second
