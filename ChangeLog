@@ -1,5 +1,7 @@
 2000-12-07  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* util.c (parse_url): recognize literal IPv6 addresses (RFC 2732).
+	
 	* fntable.fn, mkfntab-c.m4, mkfntab-h.m4, mkfntexi.m4,
 	mkoptab-c.m4, mkoptab-h.m4, mkoptexi.m4, options.op: change quotes
 	to << and >>.

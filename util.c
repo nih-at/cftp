@@ -147,8 +147,7 @@ int
 parse_url(char *url, char **user, char **pass,
 	  char **host, char **port, char **dir)
 {
-    char *p, *q, *r;
-    int userp = 0;
+    char *p, *q, *h, *r;
 
     if (strncmp(url, "ftp://", 6) != 0)
 	return -1;
@@ -167,10 +166,17 @@ parse_url(char *url, char **user, char **pass,
 	}
 	*user = deurl(url);
 	url = q+1;
-	userp = 1;
     }
 
-    if ((q=strchr(url, ':')) != NULL) {
+    if (url[0] == '[' && (h=strchr(url, ']')) != NULL
+	&& (h[1] == ':' || h[1] == '\0')) {
+	url++;
+	*(h++) = '\0';
+    }
+    else
+	h = url;
+
+    if ((q=strchr(h, ':')) != NULL) {
 	*q = '\0';
 	if (*(q+1) != '\0')
 	    *port = deurl(q+1);
@@ -184,7 +190,6 @@ parse_url(char *url, char **user, char **pass,
 	    fprintf(stderr, "malloc failure\n");
 	    return -1;
 	}
-	/* sprintf(*dir, "%s%s", userp ? "" : "/", p); */
 	*dir = deurl(p);
     }
 
