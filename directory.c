@@ -1,7 +1,7 @@
 /*
-  $NiH: directory.c,v 1.17 2001/12/11 14:37:29 dillo Exp $
+  $NiH: directory.c,v 1.18 2001/12/12 04:43:32 dillo Exp $
 
-  direcotry -- handle directory cache
+  directory -- handle directory cache
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
