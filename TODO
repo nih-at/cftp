@@ -1,10 +1,7 @@
-! provide flags to disp_status: add to hist, print to stderr if !disp_active
-! don't (unconditionally) use disp_status in sftp_connect
 ! sftp: reconnect doesn't work
 ! sftp: lost connection not reported
 ! sftp: ^c kills ssh subprocess (how to avoid?!)
 ! test ftp_cat error cases
-! sftp: have child send error package
 - fix --disable-sftp
 - avoid magic numbers in sftp xfer
 - finish _sftp_log_packet
@@ -12,7 +9,6 @@
 - move history from ftp.c
 - add rcsid to m4 created files
 - display stalled time in m:s
-- rewrite sftp not to use stdio (non-blocking i/o using stdio is a PitA)
 
 * ftp.univie.ac.at: abort hoses connection state
 * sftp options: ssh command & flags, sftp server filename

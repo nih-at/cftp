@@ -1,6 +1,14 @@
 2001-12-20  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
-	* sftp.c: supersede SSH_FFL_READ and SSH_FFL_WRITE with
+	* sftp.c: rewrite without stdio.
+	
+	* sftp.c (_sftp_start_ssh) send status packet in case of error.
+
+	* ftp.c: delete (now unused) function ftp_histf.
+
+	* sftp.c: rename SSH_FX_PROTO_VERSION with SFTP_PROTO_VERSION
+	
+	* sftp.c: supersede SFTP_FFL_READ and SFTP_FFL_WRITE with
 	SSH_FXF_READ and SSH_FXF_WRITE, respectively.
 
 2001-12-19  Dieter Baron  <dillo@danbala.tuwien.ac.at>
