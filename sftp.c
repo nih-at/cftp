@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: sftp.c,v 1.1 2001/12/11 02:07:41 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001 Dieter Baron
@@ -108,6 +108,15 @@ static const int _sftp_nerr = sizeof(_sftp_errlist) / sizeof(_sftp_errlist[0]);
 
 
 
+int
+sftp_mkdir(char *path)
+{
+    
+}
+
+
+
+
 static char *
 _sftp_strerror(int error)
 {
@@ -124,7 +133,7 @@ _sftp_strerror(int error)
 
 
 static int
-_sftp_get_packet(FILE *f, char *buf, int *lenp)
+_sftp_get_packet(FILE *f, char *buf, int *lenp, int log_resp)
 {
     int c, i, len, type;
 
@@ -141,12 +150,48 @@ _sftp_get_packet(FILE *f, char *buf, int *lenp)
 
     if ((type=fgetc(f)) == EOF)
 	return -1;
+    --len;
 
-    if (fread(buf, len-1, 1, f) != len-1)
+    if (fread(buf, len, 1, f) != len)
 	return -1;
 
     if (lenp)
 	*lenp = len;
 
+    if (log_resp)
+	_sftp_log_response(1, type, buf, len);
+
     return type;
+}
+
+
+
+void
+_sftp_log_packet(int dir, int type, char *buf, int len)
+{
+    int status;
+    char *msg, buf[80];
+
+    sitch (type) {
+    case SSH_FXP_STATUS:
+	status = _sftp_get_uint32(buf+4);
+	if (status == SSH_FX_OK) {
+	    status = 200;
+	    msg = "Ok.";
+	}
+	else {
+	    msg = _sftp_strerror(status);
+	    status += 500;
+	}
+	sprintf(buf, "%d %s", status, msg);
+	break;
+
+    /* XXX: other packet types */
+
+    default:
+	sprintf(buf, "500 Unknown packet type %d", type);
+    }
+
+    disp_status("%s", buf);
+    ftp_hist(strdup(buf));
 }
