@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.80 2003/05/13 16:10:24 dillo Exp $
+  $NiH: ftp.c,v 1.81 2003/05/13 16:31:53 dillo Exp $
 
   ftp.c -- ftp protocol functions
   Copyright (C) 1996-2002 Dieter Baron
@@ -457,7 +457,7 @@ rftp_fclose(void *f)
 
     err = fclose(f);
 
-    if (((resp=ftp_resp()) != 226 || resp != 250))
+    if (((resp=ftp_resp()) != 226 && resp != 250))
 	return -1;
 	
     return err;
