@@ -1,4 +1,5 @@
 New in 0.9:
+* wildcard tagging/untagging (tag -t, tag -u)
 * wrap option to control wrap around of scrolling
 * support for servers with dos directory names
 * reload current directory

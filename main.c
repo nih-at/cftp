@@ -334,7 +334,6 @@ void
 print_usage(FILE *f)
 {
     int i;
-    FILE *f;
 
     for (i=0; usage[i]; i++)
 	fprintf(f, "%s %s %s\n", i ? "      " : "Usage:",

@@ -3,7 +3,7 @@ dnl Process this file with autoconf to produce a configure script.
 dnl init
 
 AC_INIT(fn_bind.c)
-AM_INIT_AUTOMAKE(cftp, 0.8.2)
+AM_INIT_AUTOMAKE(cftp, 0.9)
 AM_CONFIG_HEADER(config.h)
 
 # We want these before the checks, so the checks can modify their values.
@@ -62,7 +62,7 @@ dnl compiler characteristics
 
 dnl library functions
 
-AC_REPLACE_FUNCS(strdup getcwd getdomainname strerror hstrerror basename fputchar)
+AC_REPLACE_FUNCS(strdup getcwd getdomainname strerror hstrerror basename fputchar fnmatch)
 
 AC_CHECK_FUNCS(tparam, [tparam=1], [tparam=0])
 if test "$tparam" -ne 1

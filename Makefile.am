@@ -14,7 +14,8 @@ cftp_SOURCES=	directory.c display.c readdir.c loop.c functions.c \
 		fntable.c fn_basic.c fn_scroll.c fn_select.c fn_tag.c fn_bind.c
 noinst_HEADERS= directory.h display.h readdir.h loop.h functions.h tag.h \
 		ftp.h sockets.h options.h keys.h tty.h rc.h fntable.h util.h \
-		getopt.h list.h bindings.h status.h signals.h
+		getopt.h list.h bindings.h status.h signals.h \
+		fnmatch_repl.h
 mkbind_SOURCES=	mkbind.c keys.c rc.c fn_bind.c functions.c
 
 cftp_DEPENDENCIES=    @LIBOBJS@

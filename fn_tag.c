@@ -20,9 +20,17 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include <config.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
+#ifdef HAVE_FNMATCH
+#include <fnmatch.h>
+#else
+#include <fnmatch_repl.h>
+#endif
 #include "directory.h"
 #include "bindings.h"
 #include "functions.h"
@@ -44,21 +52,51 @@ fn_tag(char **args)
     int tagged, i;
 
     if (args) {
-	dir = NULL;
-	file = canonical(args[0], NULL);
-	size = -1;
-	type = 'l';
+	if (strcmp(args[0], "-t") == NULL || strcmp(args[0], "-u") == NULL) {
+	    /* works in <remote> only */
 
-	base = (char *)basename(file);
-
-	i = strlen(curdir->path);
-	if ((base-file == 1 && i == 1)
-	    || i == base-file-1 && strncmp(curdir->path, file, i) == 0) {
-	    i = dir_find(curdir, base);
-	    if (i >= 0) {
-		size = curdir->line[i].size;
-		type = curdir->line[i].type;
+	    if (args[1] == NULL) {
+		file = read_string("tag (wildcard): ", 1);
+		if (file == NULL || file[0] == '\0') {
+		    free(file);
+		    return;
+		}
 	    }
+	    else
+		file = args[1];
+	    
+	    tagged = 0;
+	    for (i=0; i<curdir->len; i++) {
+		if (fnmatch(file, curdir->line[i].name, FNM_PERIOD) == 0)
+		    tagged += tag_file(curdir->path,
+				       curdir->line[i].name,
+				       curdir->line[i].size,
+				       curdir->line[i].type,
+				       args[0][1] == 't' ? TAG_ON : TAG_OFF);
+	    }
+
+	    if (args[1] == NULL)
+		free(file);
+	}
+	else {
+	    dir = NULL;
+	    file = canonical(args[0], NULL);
+	    size = -1;
+	    type = 'l';
+
+	    base = (char *)basename(file);
+	    
+	    i = strlen(curdir->path);
+	    if ((base-file == 1 && i == 1)
+		|| i == base-file-1 && strncmp(curdir->path, file, i) == 0) {
+		i = dir_find(curdir, base);
+		if (i >= 0) {
+		    size = curdir->line[i].size;
+		    type = curdir->line[i].type;
+		}
+	    }
+	    tagged = tag_file(dir, file, size, type, TAG_TOGGLE);
+	    free(file);
 	}
     }
     else {
@@ -71,10 +109,10 @@ fn_tag(char **args)
 	file = curdir->line[curdir->cur].name;
 	size = curdir->line[curdir->cur].size;
 	type = curdir->line[curdir->cur].type;
+
+	tagged = tag_file(dir, file, size, type, TAG_TOGGLE);
     }
 	
-    tagged = tag_file(dir, file, size, type, TAG_TOGGLE);
-
     if (tagged < -1)
 	disp_status("%d files untagged", -tagged);
     else if (tagged == -1)
@@ -83,9 +121,6 @@ fn_tag(char **args)
 	disp_status("1 file tagged");
     else if (tagged > 1)
 	disp_status("%d files tagged", tagged);
-
-    if (args)
-	free(file);
 }
 
 

@@ -31,6 +31,7 @@ bind		R	state <remote>
 bind	<remote> ^j	enter/get
 bind	<remote> ^m	enter/get
 bind	<remote> t	tag
+bind	<remote> ^t	tag -t
 bind	<remote> D	get-tags
 bind	<remote> ^b	leave
 bind	<remote> ^f	enter/get
