@@ -501,47 +501,53 @@ int
 ftp_cat(FILE *fin, FILE *fout, long size)
 {
     time_t oldt, newt;
-	char buf[4096], fmt[4096], *l;
-	int n, err = 0;
-	long got = 0;
+    char buf[4096], fmt[4096], *l;
+    int c, n, err = 0;
+    long got = 0;
 
-	if (size >= 0)
-		sprintf(fmt, "transferred %%ld/%ld", size);
-	else
-		strcpy(fmt, "transferred %ld");
+    if (size >= 0)
+	sprintf(fmt, "transferred %%ld/%ld", size);
+    else
+	strcpy(fmt, "transferred %ld");
 	
-	if (ftp_curmode == 'i')
-		while ((n=fread(buf, 1, 4096, fin)) > 0) {
-		    /* XXX: abort on error */
-		    if (!err) {
-			if (fwrite(buf, 1, n, fout) != n)
-				err = 1;
-		    }
-		    got += n;
-		    if ((newt=time(NULL)) != oldt) {
-			disp_status(fmt, got);
-			oldt = newt;
-		    }
-		}
-	else
-		while ((l=ftp_gets(fin)) != NULL) {
-		    /* XXX: abort on error */
-		    n = strlen(l)+1;
-		    if (!err) {
-			if (fprintf(fout, "%s\n", l) != n)
-				err = 1;
-		    }
-		    got += n;
-		    if ((newt=time(NULL)) != oldt) {
-			disp_status(fmt, got);
-			oldt = newt;
-		    }
-		}
+    oldt = 0;
 
-	if (err || ferror(fin) || ferror(fout))
-		return -1;
+    if (ftp_curmode == 'i')
+	while ((n=fread(buf, 1, 4096, fin)) > 0) {
+	    /* XXX: abort on error */
+	    if (!err) {
+		if (fwrite(buf, 1, n, fout) != n)
+		    err = 1;
+	    }
+	    got += n;
+	    if ((newt=time(NULL)) != oldt) {
+		disp_status(fmt, got);
+		oldt = newt;
+	    }
+	}
+    else
+	while ((c=getc(fin)) != EOF) {
+	    got++;
+	    if (c == '\r') {
+		if ((c=getc(fin)) != '\n')
+		    putc('\r', fout);
+		ungetc(c, fin);
+	    }
+	    else {
+		putc(c, fout);
+	    }
 
-	return 0;
+	    if (got%512 == 0 && (newt=time(NULL)) != oldt) {
+		disp_status(fmt, got);
+		oldt = newt;
+	    }
+
+	}
+
+    if (err || ferror(fin) || ferror(fout))
+	return -1;
+
+    return 0;
 }
 
 

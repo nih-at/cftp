@@ -35,7 +35,6 @@ B (fn_isearch) repeated search sets start to wrong match
 F (fn_isearch) show status (failed, wrapped)
 C rename disp_stat to disp_mesg (status line is what used to be head)
 F <local> (uploads, local tagging)
-B ftp.c: (ftp_cat) don't use ftp_gets in ascii mode
 F display.c: (read_string) line editing, completion
 B fn_tag.c: (fn_tag) line[0] isn't updated if arg is given
 B ERROR MESSAGES ON ERRORS!
@@ -45,7 +44,9 @@ B bindable functions: abort on empty input
 B REPORT LOST CONNECTION!
 F status.c: add support for head status line (old style, but smarter)
 C status.c: rewrite status line code (better abstraction of common elements)
+F status.c: add TOP/BOT/ALL/xx% to status line
 ----------------------------------------------- done
+B ftp.c: (ftp_cat) rewrote ascii transfer (handles long lines, nul chars)
 C mkbind.c: include file name and line number in error messages 
 F fn_tag.c (fn_saveurls) new function: save tags as url list
 B fn_select.c: (aux_download) report fopen(3) error

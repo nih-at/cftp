@@ -177,48 +177,132 @@ fn_goto(char **args)
 
 
 
+#define FN_IS_BACK	0x1
+#define FN_IS_FAIL	0x2
+#define FN_IS_WRAP	0x4
+
+int
+aux_isread(int state, char *s)
+{
+    char b[2048];
+
+    sprintf(b, "%s%s%sI-search%s: %s",
+	   (state & FN_IS_FAIL ? "Failing " : ""),
+	   (state & FN_IS_WRAP ? (state & FN_IS_FAIL ? "W" : "w") : ""),
+	   (state & FN_IS_WRAP ? "rapped " : ""),
+	   (state & FN_IS_BACK ? " backward" : ""),
+	   s);
+
+    return read_char(b);
+}
+
 void
 fn_isearch(char **args)
 {
-    char b[1024], *p;
-    int n, c, start, current, origin;
 
-    strcpy(b, "isearch: ");
-    p = b+9;
+    char b[1024], *prompt, *p;
+    int n, c, start, current, research, state;
+
+    state = 0;
+
+    if (args && strcmp(args[0], "-r") == 0) {
+	state = FN_IS_BACK;
+    }
+    
+    b[0] = '\0';
+    p = b;
     n = 0;
 
-    origin = start = current = list->cur;
+    start = current = list->cur;
 
-    while ((c=read_char(b)) != '\n' && c != 7 /* ^G */) {
+    while ((c=aux_isread(state, b)) != '\n' && c != 7 /* ^G */) {
+	research = 1;
 	if (c == tty_verase) {
 	    *(--p) = '\0';
 	    current = start;
+	    state &= ~FN_IS_WRAP;
+	}
+	else if (c == tty_vwerase) {
+	    while (p>b && *(--p) == ' ')
+		;
+	    while (p>b && *(p-1) != ' ')
+		--p;
+
+	    *p = '\0';
+
+	    current = start;
+	    state &= ~FN_IS_WRAP;
 	}
 	else if (c == tty_vkill) {
-	    p = b+9;
+	    p = b;
 	    *p = '\0';
+	    
 	    current = start;
+	    state &= ~FN_IS_WRAP;
 	}
 	else if (c == 19 /* ^S */) {
-	    start = current;
-	    current++;
+	    if ((state & FN_IS_FAIL) && !(state & FN_IS_BACK))
+		state |= FN_IS_WRAP;
+	    state &= ~FN_IS_BACK;
+	    research = 2;
 	}
-	else {
+	else if (c == 18 /* ^R */) {
+	    if (state & (FN_IS_FAIL|FN_IS_BACK))
+		state |= FN_IS_WRAP;
+	    state |= FN_IS_BACK;
+	    research = 2;
+	}
+	else if (c >= 32 && c < 127) {
 	    *(p++) = c;
 	    *p = '\0';
 	}
 
-	for (n = current;
-	     n < list->len && strstr(LIST_LINE(list, n)->name, b+9) == NULL;
-	     n++)
-	    ;
+	if (research) {
+	    n = current;
+	    state &= ~FN_IS_FAIL;
+	    
+	    if (!(state & FN_IS_BACK)) {
+		if (research == 2)
+		    n++;
 
-	if (n < list->len) {
-	    current = n;
-	    if (current >= list->top && current < list->top+win_lines)
-		aux_scroll(list->top, current, 0);
-	    else
-		aux_scroll(current-(win_lines/2), current, 0);
+		while (!(state & FN_IS_FAIL)) {
+		    if (strstr(LIST_LINE(list, n)->name, b+9) == NULL)
+			break;
+		    if (++n == list->len) {
+			if (state & FN_IS_WRAP)
+			    n == 0;
+			else
+			    state |= FN_IS_FAIL;
+		    }
+		    if (n == current)
+			state |= FN_IS_FAIL;
+		}
+	    }
+	    else {
+		if (research == 2)
+		    --n;
+
+		while (!(state & FN_IS_FAIL)) {
+		    if (strstr(LIST_LINE(list, n)->name, b+9) == NULL)
+			break;
+		    if (--n < 0) {
+			if (state & FN_IS_WRAP)
+			    n == list->len-1;
+			else
+			    state |= FN_IS_FAIL;
+		    }
+		    if (n == current)
+			state |= FN_IS_FAIL;
+		}
+	    }
+
+	    if (!(state & FN_IS_FAIL)) {
+		current = n;
+		if (current >= list->top && current < list->top+win_lines)
+		    aux_scroll(list->top, current, 0);
+		else
+		    aux_scroll(current-(win_lines/2), current, 0);
+	    }
 	}
     }
     if (c == 7 /* ^G */) {
