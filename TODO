@@ -27,7 +27,9 @@ F tag: if tagged is directory, try .tar.gz, .tar.Z, .tar
 F remember home dir, use in disp_header
 F tag files: tag regexp
 F fn_tag.cw: (fn_gettags) display tags list while downloading
+B fn_basic.cw: (fn_lcd) handle ~, ~user
 ----------------------------------------------- done
+B ftp.cw: (ftp_retr) canonicalize file name
 F on quit: warn if tags remain
 B ftp.cw: (ftp_retr) cd to dirname(file) and retr basename(file)
 P configure.in: check for libresolv

@@ -223,11 +223,12 @@ int
 ftp_retr(char *file, FILE *fout, long size, int mode)
 {
 	int fd, err;
-	char *dir, *name;
+	char *dir, *name, *can;
 	FILE *fin;
 
-	dir = dirname(file);
-	name = basename(file);
+	can = canonical(file, NULL);
+	dir = dirname(can);
+	name = basename(can);
 	
 	if (ftp_mode(mode) == -1 || ftp_cwd(dir) == -1)
 		return -1;
