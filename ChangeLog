@@ -1,6 +1,6 @@
 2003-12-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
-	* main.c (main): new option to download.
+	* main.c (main): new option to download tags from file on startup.
 
 2003-12-04  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 

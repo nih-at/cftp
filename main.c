@@ -1,5 +1,5 @@
 /*
-  $NiH: main.c,v 1.48 2002/10/10 08:50:56 dillo Exp $
+  $NiH: main.c,v 1.49 2003/12/05 12:14:18 dillo Exp $
 
   main.c -- main function
   Copyright (C) 1996-2003 Dieter Baron
@@ -70,14 +70,14 @@ char *usage[] = {
 char help_head[] = "%s by Dieter Baron <dillo@giga.or.at>\n\n";
 
 char help[] = "\
-  -h, --help        display this help message\n\
-  -V, --version     display version number\n\
-  -i, --get-tags TAGS  load and get tags from file TAGS\n\
-  -p, --port PORT   specify port\n"
+  -h, --help           display this help message\n\
+  -V, --version        display version number\n\
+  -i, --get-tags TAGS  download tags from file TAGS on startup\n\
+  -p, --port PORT      specify port\n"
 #ifdef USE_SFTP
-"  -s, --sftp        use sftp\n"
+"  -s, --sftp           use sftp\n"
 #endif
-"  -u, --user USER   specify user\n\
+"  -u, --user USER      specify user\n\
 \n\
 Report bugs to <dillo@giga.or.at>.\n";
 
