@@ -20,6 +20,7 @@
 #include "sockets.h"
 #include "ftp.h"
 #include "readdir.h"
+#include "options.h"
 #include "util.h"
 
 @<local prototypes@>
@@ -44,7 +45,7 @@ char ftp_curmode = ' ', ftp_anon = 0;
 char *ftp_last_resp = NULL;
 
 struct ftp_hist *ftp_history = NULL, *ftp_hist_last;
-int ftp_hist_size = 200, ftp_hist_cursize;
+int ftp_hist_cursize;
 
 
 @ last response.
@@ -583,6 +584,9 @@ ftp_histf(char *fmt, ...)
     
     va_list argp;
 
+    if (ftp_hist_size == 0)
+	return;
+
     va_start(argp, fmt);
     vsprintf(buf, fmt, argp);
     va_end(argp);
@@ -594,6 +598,9 @@ ftp_histf(char *fmt, ...)
 void ftp_hist(char *line)
 {
     struct ftp_hist *p;
+
+    if (ftp_hist_size == 0)
+	return;
 
     if (ftp_history == NULL) {
 	if ((ftp_history=(struct ftp_hist *)
@@ -625,5 +632,44 @@ void ftp_hist(char *line)
 	ftp_history = ftp_history->next;
 	free(p->line);
 	free(p);
+    }
+}
+
+
+@ validating and setting options
+
+@u
+void
+ftp_set_hist_size(int size, int *sizep)
+{
+    struct ftp_hist *p;
+
+    if (size < 0)
+	return;
+
+    while (ftp_hist_cursize > size) {
+	--ftp_hist_cursize;
+	p = ftp_history;
+	ftp_history = ftp_history->next;
+	free(p->line);
+	free(p);
+    }
+
+    ftp_hist_size = size;
+}
+
+
+@u
+void
+opts_mode(int c, int *cp)
+{
+    switch (c) {
+    case 'a':
+	opt_mode = 'a';
+	break;
+
+    case 'i':
+    case 'b':
+	opt_mode = 'i';
     }
 }

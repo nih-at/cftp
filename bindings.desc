@@ -14,8 +14,8 @@ bind	t	tag
 bind	T	list-tags
 bind	D	get-tags
 
-bind	a	ascii
-bind	i	image
+bind	a	set mode a
+bind	i	set mode i
 
 bind	0	prefix 0
 bind	1	prefix 1

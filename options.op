@@ -1,0 +1,19 @@
+dnl option(name, short, variable, function, type, default, help, doku)
+
+option(mode, mo, opt_mode, opts_mode, c, 'i',
+ {transfer mode for downloads},
+ {Transfer mode used for downloads; set to `i' for image (binary), `a'
+for ascii.})
+
+option(tag-char, tc, opt_tagchar, NULL, c, '>',
+ {char to mark tagged files with},
+ {Tagged files in the current directory are marked with this character
+in the first column.})
+
+option(hist-size, hs, ftp_hist_size, ftp_set_hist_size, i, 200,
+ {size of ftp command/response history},
+ {Specifies the number of lines exchanged with ftp server to remember,
+as displayed by response. @xref{response}})
+
+endall
+

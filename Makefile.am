@@ -8,14 +8,13 @@ LDADD=	@LIBOBJS@
 
 bin_PROGRAMS=	cftp
 info_TEXINFOS=	cftp.texi
-cftp_TEXINFOS=	functions.texi
+cftp_TEXINFOS=	functions.texi options.texi
 noinst_PROGRAMS=mkbind
 cftp_SOURCES=	directory.c display.c readdir.c loop.c functions.c \
 		ftp.c sockets.c main.c options.c keys.c tty.c rc.c \
 		tag.c util.c version.c bindings.c fntable.c \
-		fn_basic.c fn_scroll.c fn_select.c fn_options.c \
-		fn_tag.c
-noinst_HEADERS= directory.h display.h readdir.h loop.h functions.h tag.h\
+		fn_basic.c fn_scroll.c fn_select.c fn_tag.c
+noinst_HEADERS= directory.h display.h readdir.h loop.h functions.h tag.h \
 		ftp.h sockets.h options.h keys.h tty.h rc.h fntable.h util.h
 mkbind_SOURCES=	mkbind.c keys.c rc.c
 
@@ -26,8 +25,7 @@ EXTRA_DIST=	bindings.desc fntable.c.proto fntable.h.proto \
 		$(FUNCS) \
 		mkfntexi.m4 mkfntab-c.m4 mkfntab-h.m4 endall.m4
 
-FUNCS=	fn_basic.fn fn_scroll.fn fn_select.fn fn_tag.fn \
-	fn_options.fn 
+FUNCS=	fn_basic.fn fn_scroll.fn fn_select.fn fn_tag.fn
 
 # extra rules
 
@@ -56,6 +54,15 @@ fntable.h : $(FUNCS) fntable.h.proto mkfntab-h.m4
 bindings.c : mkbind bindings.desc fntable.c
 	./mkbind
 
+options.texi: options.op mkoptexi.m4
+	m4 mkoptexi.m4 options.op > options.texi
+
+options.c: options.op mkoptab-c.m4
+	m4 mkoptab-c.m4 options.op > options.c
+
+options.h: options.op mkoptab-h.m4
+	m4 mkoptab-h.m4 options.op > options.h
+
 getdomainname.o: getdomainname.c
 	$(CC) $(CFLAGS) -DDOMAINNAME=\"@DOMAINNAME@\" -c getdomainname.c
 
@@ -77,7 +84,7 @@ display.o: display.c directory.h ftp.h config.h tty.h keys.h
 readdir.o: readdir.c directory.h ftp.h display.h
 loop.o: loop.c directory.h display.h functions.h tty.h
 functions.o: functions.c directory.h display.h tag.h options.h
-ftp.o: ftp.c directory.h display.h readdir.h sockets.h util.h
+ftp.o: ftp.c directory.h display.h readdir.h sockets.h util.h options.h
 fn_basic.o: fn_basic.c directory.h functions.h display.h ftp.h util.h
 fn_scroll.o: fn_scroll.c directory.h functions.h display.h
 fn_select.o: fn_select.c directory.h functions.h display.h ftp.h options.h \

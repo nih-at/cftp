@@ -12,6 +12,7 @@
 @menu
 * Customizability::     How to customize and configure @sc{cftp}
 * Functions::           Description of all bindable functions
+* Options::             User settable options
 * Index::               Index
 @end menu
 
@@ -42,6 +43,9 @@ initial directory)
 
 
 @include functions.texi
+
+
+@include options.texi
 
 
 @c *********************************************************************

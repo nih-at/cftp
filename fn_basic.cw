@@ -17,6 +17,7 @@ endsec()
 #include "functions.h"
 #include "display.h"
 #include "rc.h"
+#include "options.h"
 
 extern int binding[];
 extern function functions[];
@@ -199,9 +200,11 @@ void fn_colon(char **args)
 
 	if (line) {
 	    free(line);
-	    for (i=0; args[i]; i++)
-		free(args[i]);
-	    free(args);
+	    if (args) {
+		for (i=0; args[i]; i++)
+		    free(args[i]);
+		free(args);
+	    }
 	}
 }
 
@@ -364,3 +367,99 @@ fn_bind(char **args)
 
     return;
 }
+
+
+@ setting user options.
+
+@d<functions@>
+function(set, [option [value]], fn_set, 0,
+	 {set option},
+ {Set user option.})
+
+@u
+void fn_set(char **args)
+{
+    char *opt, *value;
+    char *line = NULL, *p;
+    char prompt[128];
+    int ival, i;
+
+    if (args) {
+	opt = args[0];
+	if (args[1])
+	    value = args[1];
+	else {
+	    sprintf(prompt, "set %s ", opt);
+	    p = line = read_string(prompt);
+	    if (line[0] == '\0') {
+		disp_status("");
+		return;
+	    }
+	    value = rc_token(&p);
+	}
+    }
+    else {
+	p = line = read_string("set ");
+	if (line[0] == '\0') {
+	    disp_status("");
+	    return;
+	}
+	opt = rc_token(&p);
+	value = rc_token(&p);
+    }
+
+    if (opt == NULL || opt[0] == '\0') {
+	disp_status("no option.");
+	return;
+    }
+
+    for (i=0; option[i].name; i++)
+	if (strcasecmp(option[i].name, opt) == 0
+	    || strcasecmp(option[i].shrt, opt) == 0)
+	    break;
+
+    if (option[i].name == NULL) {
+	disp_status("unknown option: %s", opt);
+	return;
+    }
+    if (value == NULL)
+	value = "";
+
+    switch (option[i].type) {
+    case OPT_INT:
+	ival = atoi(value);
+	if (option[i].func)
+	    option[i].func(ival, option[i].var.i);
+	else
+	    *(option[i].var.i) = ival;
+
+	disp_status("%s set to %d", option[i].name, *(option[i].var.i));
+	break;
+
+    case OPT_CHR:
+	ival = value[0];
+	if (option[i].func)
+	    option[i].func(ival, option[i].var.i);
+	else
+	    *(option[i].var.i) = ival;
+
+	disp_status("%s set to `%c'", option[i].name, *(option[i].var.i));
+	break;
+
+    case OPT_STR:
+	if (option[i].func)
+	    option[i].func(strdup(value), option[i].var.s);
+	else
+	    *(option[i].var.s) = strdup(value);
+
+	disp_status("%s set to `%s'", option[i].name, *(option[i].var.s));
+	break;
+    }
+
+    if (line)
+	free(line);
+
+    return;
+}
+
+
