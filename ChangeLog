@@ -1,3 +1,7 @@
+1998-10-19  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* status.c (status_do): handle short status line (space < 0).
+
 1998-10-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* bindings.desc: added mkdir, site.

@@ -58,9 +58,26 @@ status_do(enum state when)
 
     memset(status_line, ' ', cols);
     status_line[cols] = '\0';
-	
-/*    if (opt_emacs_status) { */
-    if (1) {
+
+    if (cols < 25) {
+	switch (binding_state) {
+	case bs_remote:
+	    l = strlen(status.remote.path);
+	    if (l > cols)
+		strcpy(status_line, status.remote.path+(l-cols));
+	    else
+		strncpy(status_line, status.remote.path, l);
+	    break;
+
+	case bs_tag:
+	    if (cols < 5)
+		strncpy(status_line, "tag  ", cols);
+	    else
+		strncpy(status_line, "<tag>", 5);
+	    break;
+	}
+    }
+    else {
 	strncpy(status_line, "--cftp: ", 8);
 
 	switch(status.percent) {
