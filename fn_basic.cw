@@ -97,14 +97,24 @@ function(lcd, [dir], fn_lcd, 0,
 @u
 void fn_lcd(char **args)
 {
-	char *lwd;
+	char *lwd, *exp;
+	int freep;
 
-	if (args)
+	if (args) {
 	    lwd = args[0];
-	else
+	    freep = 0;
+	}
+	else {
 	    lwd = read_string("local directory: ");
-	chdir(lwd);
-	free(lwd);
+	    freep = 1;
+	}
+	exp = local_exp(lwd);
+	if (exp) {
+	    chdir(exp);
+	    free(exp);
+	}
+	if (freep)
+	    free(lwd);
 
 	lwd = getcwd(NULL, 1024);
 	disp_status("Current local directory: %s", lwd);
