@@ -41,6 +41,7 @@ extern char ftp_anon;
 @d<local globals@>
 char *ftp_head, *ftp_lcwd, *ftp_pcwd = NULL;
 char ftp_curmode = ' ', ftp_anon = 0;
+char *ftp_last_resp = NULL;
 
 struct ftp_hist *ftp_history = NULL, *ftp_hist_last;
 int ftp_hist_size = 200, ftp_hist_cursize;
@@ -286,6 +287,35 @@ ftp_noop(void)
 }
 
 
+@ pwd
+
+@d<prototypes@>
+char *ftp_pwd(void);
+
+@u
+char *
+ftp_pwd(void)
+{
+    char *s, *e, *dir;
+
+    ftp_put("pwd");
+
+    if (ftp_resp() != 257)
+	return NULL;
+
+    if ((s=strchr(ftp_last_resp, '"')) == NULL
+	|| (e=strchr(s+1, '"')) == NULL)
+	return NULL;
+    
+    if ((dir=(char *)malloc(e-s)) == NULL)
+	return NULL;
+
+    strncpy(dir, s+1, e-s-1);
+    dir[e-s-1] = '\0';
+
+    return dir;
+}
+
 @ low level interface.
 
 @d<prototypes@>
@@ -365,6 +395,8 @@ ftp_resp(void)
 
     resp = atoi(line);
     disp_status("%s", line);
+    free(ftp_last_resp);
+    ftp_last_resp = strdup(line);
 
     while (!(isdigit(line[0]) && isdigit(line[1]) &&
 	     isdigit(line[2]) && line[3] == ' ')) {
