@@ -1,4 +1,7 @@
-/* changed by Dieter Baron for cftp: tgoto deleted */
+/* changes by Dieter Baron for cftp:
+      assume ANSI C headers and functions are present
+      tgoto deleted
+*/
 
 /* Merge parameters into a termcap entry string.
    Copyright (C) 1985, 87, 93, 95 Free Software Foundation, Inc.
@@ -17,28 +20,13 @@ You should have received a copy of the GNU General Public License
 along with this program; see the file COPYING.  If not, write to
 the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
-/* Emacs config.h may rename various library functions such as malloc.  */
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#else /* not HAVE_CONFIG_H */
-
-#if defined(HAVE_STRING_H) || defined(STDC_HEADERS)
-#define bcopy(s, d, n) memcpy ((d), (s), (n))
-#endif
-
-#ifdef STDC_HEADERS
 #include <stdlib.h>
 #include <string.h>
-#else
-char *malloc ();
-char *realloc ();
-#endif
+#include <unistd.h>
 
-#endif /* not HAVE_CONFIG_H */
+#include "config.h"
+#define bcopy(s, d, n) memcpy ((d), (s), (n))
 
-#ifndef NULL
-#define NULL (char *) 0
-#endif
 
 #ifndef emacs
 static void

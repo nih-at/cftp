@@ -1,5 +1,7 @@
 2000-12-10  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* tparam.c: include ANSI C headers unconditionally.
+
 	* fn_select.c, fn_tag.c, ftp.c, tag.c: sort headers, include
 	<libgen.h> or prototype for basename.
 	* configure.in: check for <libgen.h>.
