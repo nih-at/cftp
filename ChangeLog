@@ -1,5 +1,21 @@
 2000-12-11  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* util.c (get_anon_passwd): move to util.c from main.c.
+
+	* main.c (main): adapt to changes of ftp_connect and ftp_login.
+	* ftp.c (ftp_connect, ftp_login, ftp_reconnect): set and use
+	connection info variables.  NULL host or user means use old
+	values.  only ask user for password if server wants one.
+	
+	* ftp.c (ftp_host, ftp_prt, ftp_user, ftp_pass, ftp_anon):
+	functions to access connection info.
+
+	* ftp.c: prepended _ to connection info variables and made them
+	static.
+	
+	* fn_tag.c (fn_saveurls): make pluralization internationalization
+	friendly.
+
 	* Makefile.am, configure.in: remove getdomainname replacement.
 	main.c (get_anon_passwd): if the system doesn't provide
 	getdomainname, don't use it.

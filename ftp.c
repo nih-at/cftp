@@ -68,10 +68,10 @@ extern char *prg;
 char *ftp_lcwd;
 char *ftp_pcwd;
 char ftp_curmode;		/* current transfer mode (' ' for unknown) */
-char ftp_anon;
 char *ftp_last_resp;
-char *ftp_host, *ftp_prt, *ftp_user, *ftp_pass;
+static char *_ftp_host, *_ftp_port, *_ftp_user, *_ftp_pass;
 				/* host, port, user, passwd (for reconnect) */
+static int _ftp_anon;		/* whether we're using anonymous ftp */
 
 struct ftp_hist *ftp_history;	/* command/response history */
 struct ftp_hist *ftp_hist_last; /* tail of history */
@@ -120,9 +120,9 @@ ftp_init(void)
 {
     ftp_pcwd = NULL;
     ftp_curmode = ' ';
-    ftp_anon = 0;
+    _ftp_anon = 0;
     ftp_last_resp = NULL;
-    ftp_host = ftp_prt = ftp_pass = NULL;
+    _ftp_host = _ftp_user = _ftp_port = _ftp_pass = NULL;
     ftp_history = NULL;
     _ftp_keptresp = -1;
     ftp_dosnames = -1;
@@ -131,13 +131,24 @@ ftp_init(void)
     conin = conout = NULL;
 }
 
+
 
 int
 ftp_open(char *host, char *port)
 {
     int fd;
-    
-    if ((fd=sopen(host, port, AF_UNSPEC)) == -1)
+
+    if (host) {
+	free(_ftp_host);
+	_ftp_host = strdup(host);
+	free(_ftp_port);
+	if (port && strcmp(port, "ftp") != 0)
+	    _ftp_port = strdup(port);
+	else
+	    _ftp_port = NULL;
+    }
+
+    if ((fd=sopen(_ftp_host, _ftp_port ? _ftp_port : "ftp", AF_UNSPEC)) == -1)
 	return -1;
     
     if (ftp_gethostaddr(fd) == -1) {
@@ -153,35 +164,91 @@ ftp_open(char *host, char *port)
 	return -1;
     }
     
+    if (ftp_resp() != 220) {
+	close(fd);
+	return -1;
+    }
+
     return 0;
 }
 
 
 
 int
-ftp_login(char *host, char *user, char *pass)
+ftp_login(char *user, char *pass)
 {
     int resp;
+    int len, n, i;
+    char *str[5], *b;
+    int free_pass;
 
-    if (ftp_resp() != 220)
-	return -1;
+    if (user) {
+	free(_ftp_user);
+	_ftp_user = strdup(user);
 
-    if (strcmp(user, "ftp") != 0 && strcmp(user, "anonymous") != 0) {
-	status.host = (char *)malloc(strlen(user)+strlen(host)+2);
-	sprintf(status.host, "%s@%s", user, host);
-	ftp_anon = 0;
+	free(_ftp_pass);
+	if (pass)
+	    _ftp_pass = strdup(pass);
+	else
+	    _ftp_pass = NULL;
     }
-    else {
-	status.host = strdup(host);
-	ftp_anon = 1;
-    }
 
+    if (strcmp(_ftp_user, "ftp") != 0 && strcmp(_ftp_user, "anonymous") != 0)
+	_ftp_anon = 0;
+    else
+	_ftp_anon = 1;
+
+    len = n = 0;
+    if (!_ftp_anon) {
+	len += strlen(_ftp_user) + 1;
+	str[n++] = _ftp_user;
+	str[n++] = "@";
+    }
+    len += strlen(_ftp_host);
+    str[n++] = _ftp_host;
+    if (_ftp_port) {
+	len += strlen(_ftp_port) + 1;
+	str[n++] = ":";
+	str[n++] = _ftp_port;
+    }
+    len++;
+
+    status.host = (char *)malloc(len);
+    status.host[0] = '\0';
+    for (i=0; i<n; i++)
+	strcat(status.host, str[i]);
+
+    
     ftp_put("user %s", user);
     resp = ftp_resp();
 	
     if (resp == 331) {
+	free_pass = 0;
+	if (_ftp_pass)
+	    pass = _ftp_pass;
+	else {
+	    if (_ftp_anon) {
+		free_pass = 1;
+		pass = get_anon_passwd();
+	    }
+	    else {
+		b = (char *)malloc(strlen(status.host)+14);
+		sprintf(b, "Password (%s): ", status.host);
+		if (disp_active) {
+		    pass = read_string(b, 0);
+		    free_pass = 1;
+		}
+		else
+		    pass = getpass(b);
+		free(b);
+	    }
+	}
+	
 	ftp_put("pass %s", pass);
 	resp = ftp_resp();
+
+	if (free_pass)
+	    free(pass);
     }
 
     if (resp != 230)
@@ -210,9 +277,9 @@ ftp_reconnect(void)
 {
     char *pass;
 
-    pass = ftp_pass;
+    pass = _ftp_pass;
 
-    if (ftp_host == NULL || ftp_prt == NULL || ftp_user == NULL)
+    if (_ftp_host == NULL || _ftp_port == NULL || _ftp_user == NULL)
 	return -1;
 
     if (conin) {
@@ -224,23 +291,14 @@ ftp_reconnect(void)
 	conout = NULL;
     }
 
-    if (pass == NULL) {
-	char *b;
-	
-	b = (char *)malloc(strlen(ftp_user)+strlen(ftp_host)+16);
-	sprintf(b, "Password (%s@%s): ", ftp_user, ftp_host);
-	pass = read_string(b, 0);
-	free(b);
-    }
-
     disp_status("connecting. . .");
 
-    if (ftp_open(ftp_host, ftp_prt) == -1) {
+    if (ftp_open(NULL, NULL) == -1) {
 	/* Error printed in ftp_open or sopen. */
 	return -1;
     }
 
-    if (ftp_login(ftp_host, ftp_user, pass) == -1) {
+    if (ftp_login(NULL, NULL) == -1) {
 	/* ftp response is error message */
 	return -1;
     }
@@ -562,7 +620,7 @@ ftp_put(char *fmt, ...)
     vsprintf(buf, fmt, argp);
     va_end(argp);
     
-    if (strncmp(buf, "pass ", 5) == 0 && ftp_anon == 0) {
+    if (strncmp(buf, "pass ", 5) == 0 && _ftp_anon == 0) {
 	disp_status("-> pass ********");
 	ftp_hist(strdup("-> pass ********"));
     }
@@ -801,7 +859,7 @@ ftp_port(void)
 	    strncpy(bport, s, e-s);
 	    bport[e-s] = '\0';
 	    sport = bport;
-	    saddr = ftp_host;
+	    saddr = _ftp_host;
 	}
 	fd = sopen(saddr, sport, ftp_addr->sa_family);
     }
@@ -1173,4 +1231,44 @@ opts_mode(int c, int *cp)
     case 'b':
 	opt_mode = 'i';
     }
+}
+
+
+
+char *
+ftp_host(void)
+{
+    return _ftp_host;
+}
+
+
+
+char *
+ftp_prt(void)
+{
+    return _ftp_port;
+}
+
+
+
+char *
+ftp_user(void)
+{
+    return _ftp_user;
+}
+
+
+
+char *
+ftp_pass(void)
+{
+    return _ftp_pass;
+}
+
+
+
+int
+ftp_anon(void)
+{
+    return _ftp_anon;
 }
