@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 
-AUTOMAKE_OPTIONS=	no-dependencies foreign
+AUTOMAKE_OPTIONS=	foreign
 
 MAKEINFO = makeinfo --no-validate
 
@@ -79,23 +79,23 @@ getdomainname.o: getdomainname.c
 
 # dependencies
 
-main.o: main.c directory.h display.h loop.h ftp.h functions.h
-directory.o: ftp.h
-display.o: display.c directory.h ftp.h config.h tty.h keys.h
-readdir.o: readdir.c directory.h ftp.h display.h
-loop.o: loop.c directory.h display.h functions.h tty.h
-functions.o: functions.c directory.h display.h tag.h options.h
-ftp.o: ftp.c directory.h display.h readdir.h sockets.h util.h options.h
-fn_basic.o: fn_basic.c directory.h functions.h display.h ftp.h util.h
-fn_scroll.o: fn_scroll.c directory.h functions.h display.h
-fn_select.o: fn_select.c directory.h functions.h display.h ftp.h options.h \
-	util.h
-fn_options.o: fn_options.c directory.h functions.h display.h options.h
-fn_tag.o: fn_tag.c directory.h functions.h display.h util.h tag.h options.h \
-	ftp.h
-fntable.o: fntable.c fntable.h
-keys.o: keys.c keys.h
-tty.o: tty.c tty.h keys.h
-rc.o: rc.c rc.h
+#main.o: main.c directory.h display.h loop.h ftp.h functions.h
+#directory.o: ftp.h
+#display.o: display.c directory.h ftp.h config.h tty.h keys.h
+#readdir.o: readdir.c directory.h ftp.h display.h
+#loop.o: loop.c directory.h display.h functions.h tty.h
+#functions.o: functions.c directory.h display.h tag.h options.h
+#ftp.o: ftp.c directory.h display.h readdir.h sockets.h util.h options.h
+#fn_basic.o: fn_basic.c directory.h functions.h display.h ftp.h util.h
+#fn_scroll.o: fn_scroll.c directory.h functions.h display.h
+#fn_select.o: fn_select.c directory.h functions.h display.h ftp.h options.h \
+#	util.h
+#fn_options.o: fn_options.c directory.h functions.h display.h options.h
+#fn_tag.o: fn_tag.c directory.h functions.h display.h util.h tag.h options.h \
+#	ftp.h
+#fntable.o: fntable.c fntable.h
+#keys.o: keys.c keys.h
+#tty.o: tty.c tty.h keys.h
+#rc.o: rc.c rc.h
 
-mkbind.o: mkbind.c keys.h rc.h
+#mkbind.o: mkbind.c keys.h rc.h

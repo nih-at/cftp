@@ -1,43 +1,7 @@
-@ maintaining information about keys, parsing and printing their
-names.
-
-@u
 #include <stdio.h>
 #include <string.h>
 #include "keys.h"
 
-@(keys.h@)
-#ifndef HAD_KEYS_H
-#define HAD_KEYS_H
-
-@<types@>
-@<globals@>
-@<prototypes@>
-
-#endif /* keys.h */
-
-
-@ structures to keep info about keys in.
-
-@d<types@>
-
-struct keyname {
-	int key;
-	char *name, *longname;
-};
-
-struct fnkey {
-	char *name, *longname;
-	char *cap, *seq;
-};
-
-
-@ names for keys
-
-@d<globals@>
-extern struct keyname keyname[];
-
-@u
 struct keyname keyname[] = {
 	{ 8, "bs", "backspace" },
 	{ 9, "tab", NULL },
@@ -48,13 +12,6 @@ struct keyname keyname[] = {
 	{ 256,  NULL, NULL }
 };
 
-@ function keys
-
-@d<globals@>
-extern struct fnkey fnkey[];
-extern int max_fnkey;
-
-@u
 struct fnkey fnkey[] = {
 	{ "left", "cursor left", "kl", NULL },
 	{ "right", "cursor right", "kr", NULL },
@@ -94,13 +51,8 @@ struct fnkey fnkey[] = {
 
 int max_fnkey = sizeof(fnkey)/sizeof(struct fnkey);
 
+
 
-@ printing keys.
-
-@d<prototypes@>
-char *print_key(int key, int longp);
-
-@u
 char *
 print_key(int key, int longp)
 {
@@ -147,13 +99,8 @@ print_key(int key, int longp)
 			fnkey[key-256].longname : fnkey[key-256].name);
 }
 
+
 
-@ parsing key names.
-
-@d<prototypes@>
-int parse_key(char *kn);
-
-@u
 int
 parse_key(char *kn)
 {

@@ -1,25 +1,9 @@
-@ reading and parsing rc file
-
-@u
 #include <stdio.h>
 #include <string.h>
 #include "rc.h"
 
-@(rc.h@)
-#ifndef HAD_RC_H
-#define HAD_RC_H
+
 
-@<prototypes@>
-
-#endif /* rc.h */
-
-
-@ tokenizing an rc line
-
-@d<prototypes@>
-char *rc_token(char **linep);
-
-@u
 char *
 rc_token(char **linep)
 {
@@ -60,13 +44,8 @@ rc_token(char **linep)
 	return tok;
 }
 
+
 
-@ constructing a list of the remaining tokens in a line.
-
-@d<prototypes@>
-char **rc_list(char *line);
-
-@u
 char **
 rc_list(char *line)
 {

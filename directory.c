@@ -1,49 +1,23 @@
-@ structure and routines to handle directory listings.
-
-@(directory.h@)
-@<types@>
-@<prototypes@>
-
-@u
 #include <stdio.h>
 #include <string.h>
 #include "directory.h"
 #include "ftp.h"
-@<local types@>
-@<local prototypes@>
-@<local globals@>
 
+typedef struct dircache {
+	directory *dir;
 
-@ a directory entry.
+	struct dircache *next, *prev;
+} dircache;
 
-line is what is displayed, name is the actual name; type is either
-'d'irecotry, sym'l'ink, 'f'ile or 'x' for unknown or special.
+dircache *cache_head = NULL, *cache_tail = NULL;
+int cache_fill;
+int cache_size = 30;
 
-@d<types@>
-typedef struct direntry {
-	char *line;
-	char *name, *link;
-	long size;
-	char type;
-} direntry;
+void cache_remove(dircache *d);
+void cache_insert(dircache *d);
 
+
 
-@ a directory
-
-@d<types@>
-typedef struct directory {
-	char *path;
-	int num;
-	struct direntry *list;
-} directory;
-
-
-@ freeing a directory structure.
-
-@d<prototypes@>
-void dir_free(directory *d);
-
-@u
 void
 dir_free(directory *d)
 {
@@ -62,32 +36,8 @@ dir_free(directory *d)
 	free(d);
 }
 
+
 
-@ the cache of directories.
-
-a cache of cache_size directory listings is maintained, recycled on a
-least recent use basis.
-
-@d<local types@>
-
-typedef struct dircache {
-	directory *dir;
-
-	struct dircache *next, *prev;
-} dircache;
-
-@d<local globals@>
-dircache *cache_head = NULL, *cache_tail = NULL;
-int cache_fill;
-int cache_size = 30;
-
-
-@ high level cache access function.
-
-@d<prototypes@>
-directory *get_dir(char *path);
-
-@u
 directory *
 get_dir(char *path)
 {
@@ -137,14 +87,8 @@ get_dir(char *path)
 	return d->dir;
 }
 
+
 
-@ manipulating the queue.
-
-@d<local prototypes@>
-void cache_remove(dircache *d);
-void cache_insert(dircache *d);
-
-@u
 void
 cache_remove(dircache *d)
 {
@@ -152,6 +96,8 @@ cache_remove(dircache *d)
 	d->next->prev = d->prev;
 	d->next = d->prev = NULL;
 }
+
+
 
 void
 cache_insert(dircache *d)
@@ -162,13 +108,8 @@ cache_insert(dircache *d)
 	cache_head->next = d;
 }
 
+
 
-@ other utility functions
-
-@d<prototypes@>
-int dir_find(directory *dir, char *entry);
-
-@u
 int
 dir_find(directory *dir, char *entry)
 {

@@ -1,6 +1,3 @@
-@ generate binding table.
-
-@u
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,8 +20,8 @@ int num, maxkey;
 
 char *prg;
 
+
 
-@u
 int
 main(int argc, char **argv)
 {
@@ -176,6 +173,7 @@ main(int argc, char **argv)
     exit(0);
 }
 
+
 
 int
 initnames()
@@ -240,6 +238,8 @@ initnames()
 
 	fclose(f);
 }
+
+
 
 int
 getindex(char *name)

@@ -1,28 +1,13 @@
-@ reading and parsing a directory listing.
-
-It is unfortunate that RFC-959 does not specify the format of direcory
-listings, thus turning it into an AI-complete problem.
-
-@(readdir.h@)
-@<prototypes@>
-
-@u
-
 #include "directory.h"
 #include "ftp.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
-@<local prototypes@>
+int parse_unix(direntry *de, char *line);
 
+
 
-@ reading a dir.
-
-@d<prototypes@>
-directory *read_dir(FILE *f);
-
-@u
 #define DIR_STEP	1024
 
 directory *
@@ -66,37 +51,8 @@ read_dir(FILE *f)
 	return dir;
 }
 
+
 
-@ here go the parser routines for different directory listing
-formats.  currently, only unix is implemented; and the
-selecting/hookup system for others is also missing.  phew, still
-a lot to do.
-
-these routines return 0 if the line passed to them is a file, 1
-otherwise.  (e.g., so we can ignore the `total nnn' line that starts
-unix listing.)
-
-
-@ unix
-
-this routine recognizes lines in the following format:
-
-total <n>
-	header line (ignore)
-[-dp]xxxxxxxxx <l> <owner> <group> <size> ............. <name>
-	normal `ls -lg' output, files, pipes and direcotyries.
-lxxxxxxxxx <l> <owner> <group> <size> ............. <name> -> <realname>
-	output for symlinks.
-[bc]xxxxxxxxx <rest of line>
-	special device files are not interpreted; they cannot be downloaded.
-
-directories of the name `.' and `..' are ignored also.
-
-
-@d<local prototypes@>
-int parse_unix(direntry *de, char *line);
-
-@u
 int
 parse_unix(direntry *de, char *line)
 {

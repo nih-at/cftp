@@ -1,11 +1,3 @@
-@ Display routines
-
-@(display.h@)
-#include <stdio.h>
-@<globals@>
-@<prototypes@>
-
-@u
 #include <stdarg.h>
 #include <stdio.h>
 #include "config.h"
@@ -15,27 +7,24 @@
 #include "tty.h"
 #include "keys.h"
 
-@<local globals@>
-@<local prototypes@>
-
-
-@ some state
-
-@d<local globals@>
 int disp_quiet = 0;
 char head[8192], status[8192];
 
-@d<globals@>
-extern int tty_lines;
-#define win_lines	(tty_lines-4)
+int oldtop, oldsel;
+directory *olddir;
 
+
 
-@ initializing display.
+void disp_redir(directory *d, int top, int sel);
+void disp_updir(directory *d, int oldtop, int oldsel, int top, int sel);
+void disp_dndir(directory *d, int oldtop, int oldsel, int top, int sel);
+void disp_sel(directory *d, int top, int sel, int selp);
+void disp_restat(void);
+void disp_rehead(void);
+void win_line(char *line, int sel);
 
-@d<prototypes@>
-int init_disp(void);
+
 
-@u
 int
 init_disp(void)
 {
@@ -52,12 +41,8 @@ init_disp(void)
 	tty_hidecrsr();
 }
 
-@ exiting curses and display.
+
 
-@d<prototypes@>
-void exit_disp();
-
-@u
 void
 exit_disp()
 {
@@ -67,11 +52,8 @@ exit_disp()
 	printf("\n");
 }
 
-@d<prototypes@>
-void escape_disp(int clearp);
-void reenter_disp(void);
+
 
-@u
 void
 escape_disp(int clearp)
 {
@@ -90,6 +72,8 @@ escape_disp(int clearp)
     --disp_quiet;
 }
 
+
+
 void
 reenter_disp(void)
 {
@@ -101,13 +85,8 @@ reenter_disp(void)
     }
 }
 
+
 
-@ redrawing.
-
-@d<prototypes@>
-void disp_redraw(void);
-
-@u
 void
 disp_redraw(void)
 {
@@ -126,17 +105,8 @@ disp_redraw(void)
 	disp_restat();
 }
 
+
 
-@ displaying a screenfull of dir listing.
-
-@d<local globals@>
-int oldtop, oldsel;
-directory *olddir;
-
-@d<prototypes@>
-void disp_dir(directory *d, int top, int sel, int newdir);
-
-@u
 void
 disp_dir(directory *d, int top, int sel, int newdir)
 {
@@ -170,10 +140,8 @@ disp_dir(directory *d, int top, int sel, int newdir)
 	oldsel = sel;
 }
 
-@d<prototypes@>
-void disp_reline(int line);
+
 
-@u
 void
 disp_reline(int line)
 {
@@ -186,10 +154,8 @@ disp_reline(int line)
     win_line(olddir->list[line].line, (line == oldsel));
 }
 
-@d<local prototypes@>
-void disp_redir(directory *d, int top, int sel);
+
 
-@u
 void
 disp_redir(directory *d, int top, int sel)
 {
@@ -204,10 +170,8 @@ disp_redir(directory *d, int top, int sel)
 	disp_restat();
 }
 
-@d<local prototypes@>
-void disp_updir(directory *d, int oldtop, int oldsel, int top, int sel);
+
 
-@u
 void
 disp_updir(directory *d, int oldtop, int oldsel, int top, int sel)
 {
@@ -233,10 +197,8 @@ disp_updir(directory *d, int oldtop, int oldsel, int top, int sel)
 	disp_restat();
 }
 
-@d<local prototypes@>
-void disp_dndir(directory *d, int oldtop, int oldsel, int top, int sel);
+
 
-@u
 void
 disp_dndir(directory *d, int oldtop, int oldsel, int top, int sel)
 {
@@ -264,10 +226,8 @@ disp_dndir(directory *d, int oldtop, int oldsel, int top, int sel)
 	disp_restat();
 }
 
-@d<local prototypes@>
-void disp_sel(directory *d, int top, int sel, int selp);
+
 
-@u
 void
 disp_sel(directory *d, int top, int sel, int selp)
 {
@@ -275,14 +235,8 @@ disp_sel(directory *d, int top, int sel, int selp)
 	win_line(d->list[sel].line, selp);
 }
 
+
 
-@ reading information.
-
-@d<prototypes@>
-char *read_string(char *prompt, int echop);
-int read_char(char *prompt);
-
-@u
 char *
 read_string(char *prompt, int echop)
 {
@@ -335,6 +289,8 @@ read_string(char *prompt, int echop)
 	return line;
 }
 
+
+
 int
 read_char(char *prompt)
 {
@@ -352,13 +308,8 @@ read_char(char *prompt)
 	return c;
 }
 
+
 
-@ reading a character while not in curses.
-
-@d<prototypes@>
-int disp_prompt_char(void);
-
-@u
 int
 disp_prompt_char(void)
 {
@@ -370,16 +321,8 @@ disp_prompt_char(void)
 	/*escape_disp(0);*/
 }
 
+
 
-@ status line.
-
-@d<prototypes@>
-void disp_status(char *fmt, ...);
-
-@d<local prototypes@>
-void disp_restat(void);
-
-@u
 void
 disp_status(char *fmt, ...)
 {
@@ -391,6 +334,8 @@ disp_status(char *fmt, ...)
 	
 	disp_restat();
 }	
+
+
 
 void
 disp_restat(void)
@@ -410,15 +355,8 @@ disp_restat(void)
 	status[tty_cols-tty_noLP] = c;
 }
 
-@ top line.
+
 
-@d<prototypes@>
-void disp_head(char *fmt, ...);
-
-@d<local prototypes@>
-void disp_rehead(void);
-
-@u
 void
 disp_head(char *fmt, ...)
 {
@@ -430,6 +368,8 @@ disp_head(char *fmt, ...)
 	
 	disp_rehead();
 }	
+
+
 
 void
 disp_rehead(void)
@@ -449,13 +389,8 @@ disp_rehead(void)
 	head[tty_cols] = c;
 }
 
+
 
-@ displaying a line
-
-@d<local prototypes@>
-void win_line(char *line, int sel);
-
-@u
 void
 win_line(char *line, int sel)
 {
@@ -486,14 +421,8 @@ win_line(char *line, int sel)
 		tty_standend();
 }
 
+
 
-@ piping stuff to a pager.
-
-@d<prototypes@>
-FILE *disp_open(int lines);
-int disp_close(FILE *f);
-
-@u
 FILE *
 disp_open(int lines)
 {
@@ -506,6 +435,8 @@ disp_open(int lines)
     
     return f;
 }
+
+
 
 int
 disp_close(FILE *f)

@@ -1,13 +1,3 @@
-@ ftp routines
-
-@(ftp.h@)
-#include <stdio.h>
-@<prototypes@>
-
-@<globals@>
-
-
-@u
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
@@ -23,24 +13,8 @@
 #include "options.h"
 #include "util.h"
 
-@<local prototypes@>
-@<local globals@>
+
 
-
-@ keeping state.
-
-@d<globals@>
-struct ftp_hist {
-    char *line;
-    struct ftp_hist *next;
-};
-
-extern struct ftp_hist *ftp_history;
-
-extern char ftp_anon;
-extern char *ftp_host, *ftp_prt, *ftp_user, *ftp_pass;
-
-@d<local globals@>
 char *ftp_head, *ftp_lcwd, *ftp_pcwd = NULL;
 char ftp_curmode = ' ', ftp_anon = 0;
 char *ftp_last_resp = NULL;
@@ -50,28 +24,27 @@ char *ftp_host = NULL, *ftp_prt = NULL,
 struct ftp_hist *ftp_history = NULL, *ftp_hist_last;
 int ftp_hist_cursize;
 
-
-@ last response.
-
-@d<globals@>
-extern char **ftp_response;
-
-@d<local globals@>
 char **ftp_response = NULL;
 long ftp_response_size = 0;
 
-
-@ opening a connection, and logging in.
-
-@d<local globals@>
 FILE *conin=NULL, *conout=NULL;
 unsigned char ftp_addr[4];
 
-@d<prototypes@>
-int ftp_open(char *host, char *port);
-int ftp_login(char *host, char *user, char *pass);
+
 
-@u
+int ftp_put(char *fmt, ...);
+int ftp_resp(void);
+int ftp_port(void);
+FILE *ftp_accept(int fd, char *mode);
+int ftp_mode(char m);
+int ftp_cwd(char *path);
+int ftp_cat(FILE *fin, FILE *fout, long size);
+int ftp_gethostaddr(int fd);
+void ftp_histf(char *fmt, ...);
+void ftp_hist(char *line);
+
+
+
 int
 ftp_open(char *host, char *port)
 {
@@ -96,6 +69,8 @@ ftp_open(char *host, char *port)
 	return 0;
 }
 
+
+
 int
 ftp_login(char *host, char *user, char *pass)
 {
@@ -106,7 +81,7 @@ ftp_login(char *host, char *user, char *pass)
 
 	if (strcmp(user, "ftp") != 0 && strcmp(user, "anonymous") != 0) {
 		ftp_head = (char *)malloc(strlen(user)+strlen(host)+2);
-		sprintf(ftp_head, "%s@@%s", user, host);
+		sprintf(ftp_head, "%s@%s", user, host);
 		ftp_anon = 0;
 	}
 	else {
@@ -130,13 +105,8 @@ ftp_login(char *host, char *user, char *pass)
 	return 0;
 }
 
+
 
-@ reconnecting.
-
-@d<prototypes@>
-int ftp_reconnect(void);
-
-@u
 int
 ftp_reconnect(void)
 {
@@ -156,7 +126,7 @@ ftp_reconnect(void)
 	char *b;
 	
 	b = (char *)malloc(strlen(ftp_user)+strlen(ftp_host)+16);
-	sprintf(b, "Password (%s@@%s): ", ftp_user, ftp_host);
+	sprintf(b, "Password (%s@%s): ", ftp_user, ftp_host);
 	pass = read_string(b, 0);
 	free(b);
     }
@@ -174,12 +144,8 @@ ftp_reconnect(void)
     return 0;
 }
 
-@ closing the connection.
+
 
-@d<prototypes@>
-int ftp_close(void);
-
-@u
 int
 ftp_close(void)
 {
@@ -196,13 +162,8 @@ ftp_close(void)
 	return err;
 }
 
+
 
-@ getting current dir listing.
-
-@d<prototypes@>
-directory *ftp_list(char *path);
-
-@u
 directory *
 ftp_list(char *path)
 {
@@ -242,13 +203,8 @@ ftp_list(char *path)
 	return dir;
 }
 
+
 
-@ changing directory.
-
-@d<prototypes@>
-directory *ftp_cd(char *wd);
-
-@u
 directory *
 ftp_cd(char *wd)
 {
@@ -270,13 +226,8 @@ ftp_cd(char *wd)
 	return dir;
 }
 	
+
 
-@ downloading a file.
-
-@d<prototypes@>
-int ftp_retr(char *file, FILE *fout, long size, int mode);
-
-@u
 int
 ftp_retr(char *file, FILE *fout, long size, int mode)
 {
@@ -314,13 +265,8 @@ ftp_retr(char *file, FILE *fout, long size, int mode)
 	return err;
 }
 
+
 
-@ noop
-
-@d<prototypes@>
-int ftp_noop(void);
-
-@u
 int
 ftp_noop(void)
 {
@@ -332,12 +278,7 @@ ftp_noop(void)
 }
 
 
-@ pwd
 
-@d<prototypes@>
-char *ftp_pwd(void);
-
-@u
 char *
 ftp_pwd(void)
 {
@@ -361,12 +302,8 @@ ftp_pwd(void)
     return dir;
 }
 
-@ low level interface.
+
 
-@d<prototypes@>
-char *ftp_gets(FILE *f);
-
-@u
 char *
 ftp_gets(FILE *f)
 {
@@ -396,11 +333,8 @@ ftp_gets(FILE *f)
 	return line;
 }
 
+
 
-@d<local prototypes@>
-int ftp_put(char *fmt, ...);
-
-@u
 int
 ftp_put(char *fmt, ...)
 {
@@ -423,11 +357,8 @@ ftp_put(char *fmt, ...)
 	fflush(conout);
 }	
 
+
 
-@d<local prototypes@>
-int ftp_resp(void);
-
-@u
 int
 ftp_resp(void)
 {
@@ -456,13 +387,8 @@ ftp_resp(void)
     return resp;
 }
 
+
 
-@ opening data connection.
-
-@d<local prototypes@>
-int ftp_port(void);
-
-@u
 int
 ftp_port(void)
 {
@@ -483,11 +409,8 @@ ftp_port(void)
 	return fd;
 }
 
+
 
-@d<local prototypes@>
-FILE *ftp_accept(int fd, char *mode);
-
-@u
 FILE *
 ftp_accept(int fd, char *mode)
 {
@@ -503,13 +426,8 @@ ftp_accept(int fd, char *mode)
 	return fdopen(ns, mode);
 }
 
+
 
-@ setting transfer mode.
-
-@d<local prototypes@>
-int ftp_mode(char m);
-
-@u
 int
 ftp_mode(char m)
 {
@@ -524,13 +442,8 @@ ftp_mode(char m)
 	return 0;
 }
 
+
 
-@ changing directory at the server.
-
-@d<local prototypes@>
-int ftp_cwd(char *path);
-
-@u
 int
 ftp_cwd(char *path)
 {
@@ -547,11 +460,8 @@ ftp_cwd(char *path)
 	return 0;
 }
 
+
 
-@d<local prototypes@>
-int ftp_cat(FILE *fin, FILE *fout, long size);
-
-@u
 int
 ftp_cat(FILE *fin, FILE *fout, long size)
 {
@@ -599,13 +509,8 @@ ftp_cat(FILE *fin, FILE *fout, long size)
 	return 0;
 }
 
+
 
-@ getting local host address.
-
-@d<local prototypes@>
-int ftp_gethostaddr(int fd);
-
-@u
 int
 ftp_gethostaddr(int fd)
 {
@@ -619,14 +524,8 @@ ftp_gethostaddr(int fd)
 	memcpy(ftp_addr, (char *)&addr.sin_addr.s_addr, 4);
 }
 
+
 
-@ ftp exchange history
-
-@d<local prototypes@>
-void ftp_histf(char *fmt, ...);
-void ftp_hist(char *line);
-
-@u
 void
 ftp_histf(char *fmt, ...)
 {
@@ -644,6 +543,7 @@ ftp_histf(char *fmt, ...)
     ftp_hist(strdup(buf));
 }
 
+
 
 void ftp_hist(char *line)
 {
@@ -685,10 +585,8 @@ void ftp_hist(char *line)
     }
 }
 
+
 
-@ validating and setting options
-
-@u
 void
 ftp_set_hist_size(int size, int *sizep)
 {
@@ -708,8 +606,8 @@ ftp_set_hist_size(int size, int *sizep)
     ftp_hist_size = size;
 }
 
+
 
-@u
 void
 opts_mode(int c, int *cp)
 {

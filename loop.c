@@ -1,9 +1,3 @@
-@ Command loop
-
-@(loop.h@)
-@<prototypes@>
-
-@u
 #include "directory.h"
 #include "functions.h"
 #include "display.h"
@@ -12,14 +6,10 @@
 extern int binding[];
 extern char **binding_args[];
 
-@<local prototypes@>
+int fnexit(void);
 
-@ the loop itself.
+
 
-@d<prototypes@>
-void loop(void);
-
-@u
 void
 loop()
 {
@@ -51,13 +41,8 @@ loop()
 	}
 }
 
+
 
-@ check if we should really exit.
-
-@d<local prototypes@>
-int fnexit(void);
-
-@u
 int
 fnexit(void)
 {

@@ -1,72 +1,40 @@
-@ structures and routines to handle tagging of files for later
-download.
-
-@(tag.h@)
-@<types@>
-@<prototypes@>
-@<globals@>
-
-@u
 #include <stdio.h>
 #include <string.h>
 #include "tag.h"
 
-@<local prototypes@>
-@<local globals@>
+#define tag_getdir(dir)	\
+	((dirtags *)tag_do((filetags *)&tags, (dir), 0, NULL))
+#define tag_insdir(dir)	\
+	((dirtags *)tag_do((filetags *)&tags, (dir), 1, tag_newdir))
 
+#define tag_filep(t, file)	\
+	(tag_do((t), (file), 0, NULL) != NULL)
+#define tag_insfile(t, file)	\
+	(tag_do((t), (file), 1, tag_newfile))
+#define tag_delfile(t, file)	\
+	(tag_do((t), (file), -1, tag_freefile))
 
-@ tagging information is stored in a sorted list (one entry for each
-directory) containing sorted lists (one entry for each file).
-
-@d<types@>
-struct dirtags {
-    char *name;
-    struct dirtags *next;
-    struct filetags *tags;
-};
-
-struct filetags {
-    char *name;
-    struct filetags *next;
-    long size;
-    char type;
-};
-
-typedef struct dirtags dirtags;
-typedef struct filetags filetags;
-
-
-@ all taged files are kept in the global variable tags, all tags in
-the current directory are kept in the variable curtags.
-
-@d<globals@>
-extern dirtags tags;
-extern dirtags *curtags;
-
-@d<local globals@>
 dirtags tags;
 dirtags *curtags;
 
+
 
-@ .
+filetags *tag_do(filetags *root, char *name, int flag, filetags *(*mem)());
+filetags *tag_newdir(filetags *dummy);
+filetags *tag_freedir(filetags *d);
+filetags *tag_newfile(filetags *dummy);
+filetags *tag_freefile(filetags *f);
 
-@d<prototypes@>
-void tag_changecurrent(char *dir);
+
 
-@u
 void
 tag_changecurrent(char *dir)
 {
     curtags = tag_getdir(dir);
 }
 
+
 
-@ functions to manipulate tags lists.
-
-@d<prototypes@>
-int tag_file(char *dir, char *file, long size, char type, int flag);
-
-@u
 int
 tag_file(char *dir, char *file, long size, char type, int flag)
 {
@@ -110,34 +78,8 @@ tag_file(char *dir, char *file, long size, char type, int flag)
 	return filep;
 }
 
+
 
-@ utility functions.
-
-@d<local prototypes@>
-#define tag_getdir(dir)	\
-	((dirtags *)tag_do((filetags *)&tags, (dir), 0, NULL))
-#define tag_insdir(dir)	\
-	((dirtags *)tag_do((filetags *)&tags, (dir), 1, tag_newdir))
-
-#define tag_filep(t, file)	\
-	(tag_do((t), (file), 0, NULL) != NULL)
-#define tag_insfile(t, file)	\
-	(tag_do((t), (file), 1, tag_newfile))
-#define tag_delfile(t, file)	\
-	(tag_do((t), (file), -1, tag_freefile))
-
-
-@ do the actual work:
-	root is the root of the list to be worked on.
-	name is the name of the item to be worked on.
-	flag says what to do: -1 for deletion, 0 for lookup,
-			      1 for insertion.
-	mem is a function called to alloc/dealoc an entry.
-
-@d<local prototypes@>
-filetags *tag_do(filetags *root, char *name, int flag, filetags *(*mem)());
-
-@u
 filetags *
 tag_do(filetags *root, char *name, int flag, filetags *(*mem)())
 {
@@ -177,16 +119,8 @@ tag_do(filetags *root, char *name, int flag, filetags *(*mem)())
     return n;
 }
 
+
 
-@ alloc/dealloc functions.
-
-@d<local prototypes@>
-filetags *tag_newdir(filetags *dummy);
-filetags *tag_freedir(filetags *d);
-filetags *tag_newfile(filetags *dummy);
-filetags *tag_freefile(filetags *f);
-
-@u
 filetags *
 tag_newdir(filetags *dummy)
 {
@@ -200,6 +134,8 @@ tag_newdir(filetags *dummy)
     
     return (filetags *)d;
 }
+
+
 
 filetags *
 tag_freedir(filetags *f)
@@ -220,6 +156,8 @@ tag_freedir(filetags *f)
     return NULL;
 }
 
+
+
 filetags *
 tag_newfile(filetags *dummy)
 {
@@ -233,6 +171,8 @@ tag_newfile(filetags *dummy)
     return f;
 }
 
+
+
 filetags *
 tag_freefile(filetags *f)
 {
@@ -244,13 +184,8 @@ tag_freefile(filetags *f)
     return NULL;
 }
 
+
 
-@ checking if any tags exist.
-
-@d<prototypes@>
-int tag_anytags(void);
-
-@u
 int
 tag_anytags(void)
 {
