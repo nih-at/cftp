@@ -1,3 +1,8 @@
+2002-09-27  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* list.c (list_init): initialize list.
+	(list_do): just return if list is NULL.
+
 2002-09-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* configure.in: step version number to 0.12.

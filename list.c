@@ -1,5 +1,5 @@
 /*
-  $NiH: list.c,v 1.19 2002/09/16 12:42:36 dillo Exp $
+  $NiH: list.c,v 1.20 2002/09/17 11:59:46 dillo Exp $
 
   list.c -- display lists
   Copyright (C) 1996-2002 Dieter Baron
@@ -59,6 +59,9 @@ void
 list_do(int full)
 {
     int up, n, per;
+
+    if (list == NULL)
+	return;
 
     if (disp_quiet ||
 	(!full && list->top == last_top && list->cur == last_sel))
@@ -281,7 +284,7 @@ list_line(struct list *list, int i, int selp, int clreolp)
 void
 list_init(void)
 {
-    last_list = NULL;
+    last_list = list = NULL;
 
     if (*TTY_CAP(cs))
 	list_scrolltype = LIST_SCREGION;
