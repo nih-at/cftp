@@ -30,6 +30,7 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 
+#include "config.h"
 #include "keys.h"
 #include "tty.h"
 
