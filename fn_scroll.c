@@ -31,6 +31,7 @@
 #include "tty.h"
 #include "list.h"
 #include "loop.h"
+#include "options.h"
 
 void aux_scroll(int top, int sel, int force);
 void aux_scroll_line(int n);
@@ -74,16 +75,23 @@ aux_scroll_line(int n)
 	return;
 
     if (n > 0) {
-	sel = (list->cur+n) % list->len;
+	if (opt_wrap)
+	    sel = (list->cur+n) % list->len;
+	else
+	    sel = list->cur+n;
 	if (list->top > sel || list->top <= sel-win_lines)
 	    top = sel-win_lines+1;
 	else
 	    top = list->top;
     }
     else {
-	sel = list->cur-((-n) % list->len);
-	if (sel < 0)
-	    sel += list->len;
+	if (opt_wrap) {
+	    sel = list->cur-((-n) % list->len);
+	    if (sel < 0)
+		sel += list->len;
+	}
+	else
+	    sel = list->cur + n;
 	if (list->top > sel || list->top <= sel-win_lines)
 	    top = sel;
 	else
@@ -103,16 +111,26 @@ aux_scroll_page(int n)
 	return;
 
     if (n > 0) {
-	if (list->cur == list->len-1)
-	    list->top = list->cur = 0;
-	if (list->top >= list->len - win_lines)
+	if (list->cur == list->len-1) {
+	    if (opt_wrap)
+		list->top = list->cur = 0;
+	    else
+		return;
+	}
+	else if (list->top >= list->len - win_lines)
 	    list->cur = list->len-1;
 	else {
 	    top = list->top + n;
 	    if (top > list->len) {
-		list->cur = list->top
-		    + ((list->len-list->top)/win_lines)*win_lines;
-		list->top = list->len - win_lines;
+		if (opt_wrap) {
+		    list->cur = list->top
+			+ ((list->len-list->top)/win_lines)*win_lines;
+		    list->top = list->len - win_lines;
+		}
+		else {
+		    list->cur = list->len-1;
+		    list->top = list->len - win_lines;
+		}
 	    }
 	    else if (top > list->len - win_lines) {
 		list->cur = top;
@@ -126,10 +144,15 @@ aux_scroll_page(int n)
 	if (list->cur > list->top)
 	    list->cur = list->top;
 	else if (list->top == 0) {
-	    list->top = list->len - win_lines;
-	    list->cur = list->len-1;
+	    if (opt_wrap) {
+		list->top = list->len - win_lines;
+		list->cur = list->len-1;
+	    }
+	    else
+		return;
 	}
 	else {
+	    /* XXX: inconsitent with forward scrolling */
 	    top = list->top + n;
 	    if (top < 0)
 		top = 0;

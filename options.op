@@ -79,6 +79,9 @@ alphabetically by file name, in reverse order
 chronologically by modification time, oldest first
 @end table
 })
-dnl will be of type enum (none, name, date, name-reverse, date-reverse).
+
+option(wrap, wa, opt_wrap, NULL, b, 1, ,
+ {wrap around bottom/top when scrolling},
+ {If set, scrolling wraps around bottom/top when scrolling.})
 
 endall
