@@ -95,14 +95,39 @@ aux_scroll_page(int n)
 {
     int top;
     
-    top = list->top + n;
+    if (list->len <= win_lines || n == 0)
+	return;
 
-    if (top < 0)
-	top = 0;
-    if (top > list->len-win_lines)
-	top = list->len-win_lines;
-
-    list->top = list->cur = top;
+    if (n > 0) {
+	if (list->top >= list->len - win_lines)
+	    list->top = list->cur = 0;
+	else {
+	    top = list->top + n;
+	    if (top > list->len) {
+		list->cur = list->top
+		    + ((list->len-list->top)/win_lines)*win_lines;
+		list->top = list->len - win_lines;
+	    }
+	    else if (top > list->len - win_lines) {
+		list->cur = top;
+		list->top = list->len - win_lines;
+	    }
+	    else
+		list->top = list->cur = top;
+	}
+    }
+    else if (n < 0) {
+	if (list->cur > list->top)
+	    list->cur = list->top;
+	else if (list->top == 0)
+	    list->top = list->cur = list->len - win_lines;
+	else {
+	    top = list->top + n;
+	    if (top < 0)
+		top = 0;
+	    list->top = list->cur = top;
+	}
+    }
 
     list_do(0);
 }

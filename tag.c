@@ -73,6 +73,7 @@ change_curdir(directory *dir)
 	    dir->line[i].line[0] = opt_tagchar;
 	}
     }
+    curdir->top = curdir->cur = 0;
 
     curdir = dir;
     if (binding_state == bs_remote)
