@@ -1,21 +1,21 @@
 divert(-1)
 
-changequote({,})
+changequote(<<,>>)
 
 define(type,dnl t, (i)nt, (c)har, (s)tring, (b)oolean (e)num
-{ifelse({$1}, i, {$2}, {$1}, c, {$3}, {$1}, s, {$4}, {$1}, b, {$5}, {$6})})
+<<ifelse(<<$1>>, i, <<$2>>, <<$1>>, c, <<$3>>, <<$1>>, s, <<$4>>, <<$1>>, b, <<$5>>, <<$6>>)>>)
 
 define(option,dnl name, short, variable, function, type, default, values, help, doku
-{divert(0)dnl
-extern type({$5}, {int }, {int }, {char *}, {int }, {int }){$3};
-divert(-1)})
+<<divert(0)dnl
+extern type(<<$5>>, <<int >>, <<int >>, <<char *>>, <<int >>, <<int >>)<<$3>>;
+divert(-1)>>)
 
 define(values,dnl name, values
 )
 
 
 divert(0)dnl
-{#ifndef HAD_OPTIONS_H
+<<#ifndef HAD_OPTIONS_H
 #define HAD_OPTIONS_H
 /*
    This file is automatically created from ``options.op''; don't make
@@ -42,12 +42,12 @@ struct uoption {
     char **values;
 };
 
-extern struct uoption option[];}
+extern struct uoption option[];>>
 
 divert(-1)
 
 define(endall,
-{divert(0)
+<<divert(0)
 #endif /* options.h */
-divert(-1)})
+divert(-1)>>)
 

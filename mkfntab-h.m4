@@ -1,17 +1,17 @@
 divert(-1)
 
-changequote({,})
+changequote(<<,>>)
 
 define(function,dnl name, synopsis, function, flags, help-string, description
-{divert(0)dnl
-ifelse(0,{$3},,{void {$3}(char **args);
-})dnl
-divert(-1)})
+<<divert(0)dnl
+ifelse(0,<<$3>>,,<<void <<$3>>(char **args);
+>>)dnl
+divert(-1)>>)
 
 define(section,dnl file, name
-{divert(0)dnl
-/* {$2}: {$1} */
-divert(-1)})
+<<divert(0)dnl
+/* <<$2>>: <<$1>> */
+divert(-1)>>)
 
 define(endsec)
 

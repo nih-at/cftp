@@ -1,7 +1,7 @@
 dnl -*- text -*-
 
 dnl  fntable.fn -- description of bindable functions
-dnl  Copyright (C) 1996, 1997, 1998 Dieter Baron
+dnl  Copyright (C) 1996, 1997, 1998, 1999, 2000 Dieter Baron
 dnl
 dnl  This file is part of cftp, a fullscreen ftp client.
 dnl  The author can be contacted at <dillo@giga.or.at>.
@@ -24,34 +24,34 @@ dnl  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 section(fn_basic, Basic Functions)
 
 function(exit, [-f], 0, FN_EXIT,
-	 {exit cftp},
- {Close the connection to the remote server and exit @sc{cftp}; if you
+	 <<exit cftp>>,
+ <<Close the connection to the remote server and exit @sc{cftp}; if you
 have tagged files, @sc{cftp} asks for confirmation (unless the
--f option is given).})
+-f option is given).>>)
 
 
 function(version, , fn_version, 0,
-	 {display version number},
- {Display the @sc{cftp} version string.})
+	 <<display version number>>,
+ <<Display the @sc{cftp} version string.>>)
 
 
 function(redraw, [-c], fn_redraw, FN_PRE,
-	 {redraw screen},
- {Clear and redraw the screen.
+	 <<redraw screen>>,
+ <<Clear and redraw the screen.
 
 Use this function if something messed up your display.  If @code{-c}
 is given (as it is in the default bindings), the cursor is centered on
-the screen.})
+the screen.>>)
 
 
 function(show-name, , fn_showname, 0,
-	{show name of file under cursor},
- {Display the name of the file under the cursor in the message area.})
+	<<show name of file under cursor>>,
+ <<Display the name of the file under the cursor in the message area.>>)
 
 
 function(help, , fn_help, 0,
-	 {display help},
- {Display help on a function or option, or the binding of a key.
+	 <<display help>>,
+ <<Display help on a function or option, or the binding of a key.
 
 Asks if you want help on a function, option or key binding.  For
 functions, their help string is displayed.  Help on an option shows
@@ -61,139 +61,139 @@ bindings, @code{help} displays the function with arguments (if any),
 as it is executed when you press the key.
 
 If you press the shifted letter for a category, a list of all
-functions, options, or key bindings will be displayed.})
+functions, options, or key bindings will be displayed.>>)
 
 
 function(lcd, [dir], fn_lcd, FN_RC,
-	 {change directory on local host},
- {Change the current directory on your local host; if you don't supply
+	 <<change directory on local host>>,
+ <<Change the current directory on your local host; if you don't supply
 @var{dir}, you will be prompted for it.  The new current directory is
-printed.})
+printed.>>)
 
 
-function(shell, {[cmd arg @dots{}]}, fn_shell, 0,
-	 {shell escape},
- {Execute shell command; if no command is given, you are prompted for
-it.  Enter empty string to get an interactive shell.})
+function(shell, <<[cmd arg @dots{}]>>, fn_shell, 0,
+	 <<shell escape>>,
+ <<Execute shell command; if no command is given, you are prompted for
+it.  Enter empty string to get an interactive shell.>>)
 
 
-function(colon, {[args @dots{}]}, fn_colon, 0,
-	 {execute cftp command},
- {Execute an arbitrary @sc{cftp} command.
+function(colon, <<[args @dots{}]>>, fn_colon, 0,
+	 <<execute cftp command>>,
+ <<Execute an arbitrary @sc{cftp} command.
 
 Allows you to execute functions not bound to a key.
-})
+>>)
 
 
 function(deidle, , fn_deidle, 0,
-	 {deidle connection},
- {Send a @code{noop} to ftp server, thus resetting idle time on server.
+	 <<deidle connection>>,
+ <<Send a @code{noop} to ftp server, thus resetting idle time on server.
 
 This prevents the server from logging you out due to timeouts.  Since
 @sc{cftp} caches directory listings, a timeout can occur even while
-you're actively using @sc{cftp}.})
+you're actively using @sc{cftp}.>>)
 
 
 function(site, [cmd arg...], fn_site, 0,
-	 {send site specific command},
- {Send a site specific command to ftp server.})
+	 <<send site specific command>>,
+ <<Send a site specific command to ftp server.>>)
 
 
 function(reconnect, , fn_reconnect, 0,
-	 {reconnect to server},
- {Reopen connection to server.
+	 <<reconnect to server>>,
+ <<Reopen connection to server.
 
 You can use this function when you were disconnected after a timeout
-or network hickup.  To prevent timeouts, use @ref{deidle}.})
+or network hickup.  To prevent timeouts, use @ref{deidle}.>>)
 
 
 function(response, , fn_response, 0,
-	 {display dialog with server},
- {Display a log of @sc{cftp}'s communication with the remote host. 
+	 <<display dialog with server>>,
+ <<Display a log of @sc{cftp}'s communication with the remote host. 
 
 Commands sent by @sc{cftp} and the responses from the remote host are
 kept in a log, with commands prefixed with @samp{->}.  You can change
 the number of lines to keep in the log with the option
-@ref{hist-size}.})
+@ref{hist-size}.>>)
 
 function(mkdir, [directory], fn_mkdir, 0,
-         {create directory on server},
- {Create directory @var{directory} on server.})
+         <<create directory on server>>,
+ <<Create directory @var{directory} on server.>>)
 
 function(prefix, , fn_prefix, FN_PRE,
-	 {prefix digit},
- {Enter a digit of the prefix argument for another command.
+	 <<prefix digit>>,
+ <<Enter a digit of the prefix argument for another command.
 @c XXX: ref to the prefix chapter
-})
+>>)
 
 
 
-function(bind, {[<state>]key [cmd [args @dots{}]]}, fn_bind, FN_RC,
-	 {bind key},
- {Change binding for @var{key}.  
+function(bind, <<[<state>]key [cmd [args @dots{}]]>>, fn_bind, FN_RC,
+	 <<bind key>>,
+ <<Change binding for @var{key}.  
 
 If @var{cmd} (the command) is omitted, remove the key binding.
 @var{<state>} specifies the binding state and defaults to
 @c XXX: ref to binding state 
-@code{<global>}.  This command is mainly used in the @ref{cftprc}.})
+@code{<global>}.  This command is mainly used in the @ref{cftprc}.>>)
 
 
 function(set, [option [value]], fn_set, FN_RC,
-	 {set option},
- {Set @var{option} to @var{value}.
+	 <<set option>>,
+ <<Set @var{option} to @var{value}.
 
 If either @var{value} or @var{option} and @var{value} are omitted, you
 will be asked for them.  If you enter an empty string the command will
-be cancelled.})
+be cancelled.>>)
 
 endsec()
 
 
 section(fn_scroll, Scrolling Functions)
 
-function(down, {[@var{n}]}, fn_down, 0,
-	 {move cursor N lines down (default: 1)},
- {Move cursor down @var{n} lines, wrapping around at the bottom.
+function(down, <<[@var{n}]>>, fn_down, 0,
+	 <<move cursor N lines down (default: 1)>>,
+ <<Move cursor down @var{n} lines, wrapping around at the bottom.
 
-@var{n} can be a prefix argument.})
-
-
-function(up, {[@var{n}]}, fn_up, 0,
-	 {move cursor N lines up (default: 1)},
- {Move cursor up @var{n} lines, wrapping around at the top.  
-
-@var{n} can be a prefix argument.})
+@var{n} can be a prefix argument.>>)
 
 
-function(page-down, {[@var{n}]}, fn_pg_down, 0,
-	 {move N screens down (default: 1)},
- {Move down @var{n} screens, placing the cursor at the top of the
+function(up, <<[@var{n}]>>, fn_up, 0,
+	 <<move cursor N lines up (default: 1)>>,
+ <<Move cursor up @var{n} lines, wrapping around at the top.  
+
+@var{n} can be a prefix argument.>>)
+
+
+function(page-down, <<[@var{n}]>>, fn_pg_down, 0,
+	 <<move N screens down (default: 1)>>,
+ <<Move down @var{n} screens, placing the cursor at the top of the
 screen. Wrap around to the first line if at the last screen.  
 
-@var{n} can be a prefix argument.})
+@var{n} can be a prefix argument.>>)
 
 
-function(page-up, {[@var{n}]}, fn_pg_up, 0,
-	 {move N screens up (default: 1)},
- {Move up @var{n} screens, placing the cursor at the top of the
+function(page-up, <<[@var{n}]>>, fn_pg_up, 0,
+	 <<move N screens up (default: 1)>>,
+ <<Move up @var{n} screens, placing the cursor at the top of the
 screen. Wrap around to the last screen if at the first line.  
 
-@var{n} can be a prefix argument.})
+@var{n} can be a prefix argument.>>)
 
 
-function(goto, {[@var{n}]}, fn_goto, 0,
-	 {goto line N (default: last)},
- {Move cursor to line @var{n}.
+function(goto, <<[@var{n}]>>, fn_goto, 0,
+	 <<goto line N (default: last)>>,
+ <<Move cursor to line @var{n}.
 
 @var{n} can be a prefix argument.  If line @var{n} doesn't exist or
-@var{n} is zero, the cursor moves to the last line.})
+@var{n} is zero, the cursor moves to the last line.>>)
 
 
 function(isearch, , fn_isearch, 0,
-	 {incremental search},
- {Search directory listing incrementally.
+	 <<incremental search>>,
+ <<Search directory listing incrementally.
 @c XXX: genau beschreiben :-)
-})
+>>)
 
 endsec()
 
@@ -201,62 +201,62 @@ endsec()
 section(fn_select, Selection Functions)
 
 function(enter/get, [file], fn_enter_get, 0,
-	 {enter directory or get file},
- {Enter directory or get file; default is file/directory at cursor.})
+	 <<enter directory or get file>>,
+ <<Enter directory or get file; default is file/directory at cursor.>>)
 
 
 function(enter/view, [file], fn_enter_view, 0,
-	 {enter directory or view file},
- {Enter directory or view file; default is file under cursor.})
+	 <<enter directory or view file>>,
+ <<Enter directory or view file; default is file under cursor.>>)
 
 
 function(enter, [file], fn_enter, 0,
-	 {enter directory},
- {Enter directory; default is directory under cursor.})
+	 <<enter directory>>,
+ <<Enter directory; default is directory under cursor.>>)
 
 
 function(reload, , fn_reload, 0,
-	 {reload current directory},
- {Reload listing of current directory from server, disregarding cache.})
+	 <<reload current directory>>,
+ <<Reload listing of current directory from server, disregarding cache.>>)
 
 
 function(get, [file], fn_get, 0,
-	 {get file},
- {Get file; default is file under cursor.})
+	 <<get file>>,
+ <<Get file; default is file under cursor.>>)
 
 
 function(view, [file], fn_view, 0,
-	 {view file},
- {View file;  default is file under cursor.})
+	 <<view file>>,
+ <<View file;  default is file under cursor.>>)
 
 
-function(pipe, {[-q] file cmd [arg ...]}, fn_pipe, 0,
-	{pipe file to command},
- {Pipe file to command @var{cmd}.  If @code{-q} is given, display is not escaped (thus, @var{cmd} should not produce any output).})
+function(pipe, <<[-q] file cmd [arg ...]>>, fn_pipe, 0,
+	<<pipe file to command>>,
+ <<Pipe file to command @var{cmd}.  If @code{-q} is given, display is not escaped (thus, @var{cmd} should not produce any output).>>)
 
 
-function(put, {[file]}, fn_put, 0,
-	{put file},
- {Put file; if no file name given, you will be prompted for it.})
+function(put, <<[file]>>, fn_put, 0,
+	<<put file>>,
+ <<Put file; if no file name given, you will be prompted for it.>>)
 
 
 function(leave, , fn_cdup, 0,
-	 {leave current directory},
- {Leave current directory, positioning cursor over it.})
+	 <<leave current directory>>,
+ <<Leave current directory, positioning cursor over it.>>)
 
 
 function(cd, [dir], fn_cd, 0,
-	 {change directory},
- {Change remote directory;  default is to directory under cursor.})
+	 <<change directory>>,
+ <<Change remote directory;  default is to directory under cursor.>>)
 
 function(state, [state], fn_state, 0,
-	 {change binding state},
- {Change binding state to @var{state}. @xref{Binding States}.})
+	 <<change binding state>>,
+ <<Change binding state to @var{state}. @xref{Binding States}.>>)
 
 function(leave-tag, , fn_leave_tag, 0,
-	{leave @code{<tag>} state},
- {Leave @code{<tag>} state, entering whatever state was active before
-entering @code{<tag>} state.})
+	<<leave @code{<tag>} state>>,
+ <<Leave @code{<tag>} state, entering whatever state was active before
+entering @code{<tag>} state.>>)
 
 endsec()
 
@@ -264,37 +264,37 @@ endsec()
 section(fn_tag, Tagging Functions)
 
 function(tag, [file], fn_tag, 0,
-	 {tag/untag file for later download},
- {Tag file; default is file under cursor.})
+	 <<tag/untag file for later download>>,
+ <<Tag file; default is file under cursor.>>)
 
 
 function(clear-tags, , fn_cleartags, 0,
-	 {clear all tags},
- {Clear all tags.})
+	 <<clear all tags>>,
+ <<Clear all tags.>>)
 
 
-function(get-tags, {download tagged files}, fn_gettags, 0,
-	 {get tagged files},
- {Download tagged files.})
+function(get-tags, <<download tagged files>>, fn_gettags, 0,
+	 <<get tagged files>>,
+ <<Download tagged files.>>)
 
 
 function(save-tags, [file], fn_savetags, 0,
-	 {save tag list to file},
- {Save tag list to file, in the same format as the listing in
-@code{<tag>} state.})
+	 <<save tag list to file>>,
+ <<Save tag list to file, in the same format as the listing in
+@code{<tag>} state.>>)
 
 
 function(load-tags, [file], fn_loadtag, 0,
-	 {load tag list from file},
- {Load tags from file and merge them with current tags.  A tags file
+	 <<load tag list from file>>,
+ <<Load tags from file and merge them with current tags.  A tags file
 contains one tag per line, each consisting of up to three whitespace
 separated fields: size (integer, -1 for unknown; optional), type
 (`d'irectory, palin `f'ile, `l'ink, or `x' for unknown; optional), and
-name (mandatory).})
+name (mandatory).>>)
 
 function(save-urls, [file], fn_saveurls, 0,
-	 {save tags as url list},
- {Save tag list to file, in URL notation.})
+	 <<save tags as url list>>,
+ <<Save tag list to file, in URL notation.>>)
 
 
 endsec()

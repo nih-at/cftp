@@ -31,11 +31,11 @@ BUILT_SOURCES=	options.h options.c fntable.h fntable.c bindings.c
 
 functions.texi : fntable.fn mkfntexi.m4
 	m4 $(srcdir)/mkfntexi.m4 $(srcdir)/fntable.fn >> functions.texi-unsort
-	sed -e '/^>>>>>>>>/,$$ d' $(srcdir)/functions.texi-unsort \
+	sed -e '/^<-------/,$$ d' $(srcdir)/functions.texi-unsort \
 		> functions.texi
-	sed -e '1,/^>>>>>>>>/ d' -e '/^<<<<<<<</,$$ d' functions.texi-unsort \
+	sed -e '1,/^<-------/ d' -e '/^------->/,$$ d' functions.texi-unsort \
 		| sort -t: +0 -1 >> functions.texi
-	sed -e '1,/^<<<<<<<</ d' functions.texi-unsort >> functions.texi
+	sed -e '1,/^------->/ d' functions.texi-unsort >> functions.texi
 	rm functions.texi-unsort
 
 fntable.c : fntable.fn fntable.c.proto mkfntab-c.m4
