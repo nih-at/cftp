@@ -1,5 +1,7 @@
 2001-12-11  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* configure.in: step version number to 0.11.2.
+
 	* options.op (user-anon-passwd): add missing comma.
 
 	* Makefile.am: reorder BUILT_SOURCES to avoid bootstrapping
