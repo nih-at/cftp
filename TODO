@@ -1,4 +1,3 @@
-! disable transfer rate display
 ! compatibility checks
 * feature recognition and handling
 * complete getaddrinfo replacement
