@@ -25,8 +25,10 @@
 
 
 
-int sopen(char *host, char *service);
-int spassive(unsigned long *host, int *port);
+int sopen(char *host, char *service, int family);
+int spassive(int family, struct sockaddr *addr, int *lenp);
+
+const char *sockaddr_ntop(struct sockaddr *sa);
 
 #endif /* socket.h */
 

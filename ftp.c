@@ -52,10 +52,6 @@
 #include "status.h"
 #include "signals.h"
 
-#ifndef HAVE_SOCKADDR_STORAGE
-#define sockaddr_storage sockaddr
-#endif
-
 extern char *prg;
 
 
@@ -80,7 +76,14 @@ char **ftp_response;
 long ftp_response_size;
 
 FILE *conin, *conout;		/* control connection to server */
-struct sockaddr_storage ftp_addr; /* local ip address (for port commands) */
+
+#ifdef HAVE_STRUCT_SOCKADDR_STORAGE
+static struct sockaddr_storage _ftp_addr;
+#else
+static struct sockaddr _ftp_addr;
+#endif
+struct sockaddr *ftp_addr = (struct sockaddr *)&_ftp_addr;
+				/* local ip address (for port commands) */
 
 
 
@@ -123,7 +126,7 @@ ftp_open(char *host, char *port)
 {
     int fd;
     
-    if ((fd=sopen(host, port)) == -1)
+    if ((fd=sopen(host, port, AF_UNSPEC)) == -1)
 	return -1;
     
     if (ftp_gethostaddr(fd) == -1) {
@@ -691,56 +694,109 @@ int
 ftp_port(void)
 {
     unsigned long host;
-    int fd, port, val, i;
+    int fd, port, val, i, delim;
+    int len;
     unsigned char addr[4];
-    char saddr[16], sport[6], *s, *e;
+    char baddr[16], bport[6], *s, *e;
+    char *saddr, *sport;
+#ifdef HAVE_STRUCT_SOCKADDR_STORAGE
+    struct sockaddr_storage sa;
+#else
+    struct sockaddr sa;
+#endif
+    struct sockaddr_in *sin;
 
     if (!opt_pasv) {
-	if ((fd=spassive(&host, &port)) == -1)
+	sin = (struct sockaddr_in *)ftp_addr;
+
+	len = sizeof(sa);
+	if ((fd=spassive(ftp_addr->sa_family,
+			 (struct sockaddr *)&sa, &len)) == -1)
 	    return -1;
 
-	ftp_put("port %d,%d,%d,%d,%d,%d", (int)ftp_addr[0],
-		(int)ftp_addr[1], (int)ftp_addr[2], (int)ftp_addr[3], 
-		port>>8, port&0xff);
+	port = htons(((struct sockaddr_in *)&sa)->sin_port);
+
+	if (ftp_addr->sa_family == AF_INET) {
+	    ftp_put("port %d,%d,%d,%d,%d,%d",
+		    (sin->sin_addr.s_addr) & 0xff,
+		    (sin->sin_addr.s_addr>>8) & 0xff,
+		    (sin->sin_addr.s_addr>>16) & 0xff,
+		    (sin->sin_addr.s_addr>>24) & 0xff,
+		    port>>8, port&0xff);
+	}
+	else {
+	    ftp_put("eprt |%d|%s|%d|",
+		    /* proto no */ 2,
+		    sockaddr_ntop(ftp_addr),
+		    port);
+	}
+	
 	if (ftp_resp() != 200) {
 	    close(fd);
 	    return -1;
 	}
     }
     else {
-	ftp_put("pasv");
-	if (ftp_resp() != 227)
-	    return -1;
-
-	if ((s=strchr(ftp_last_resp, ',')) == NULL)
-	    return -1;
-
-	while (isdigit(*(--s)))
-	    ;
-	s++;
-
-	for (i=0; i<4; i++) {
-	    val = strtol(s, &e, 10);
-	    if (val < 0 || val > 255 || *e != ',')
+	if (ftp_addr->sa_family == AF_INET) {
+	    ftp_put("pasv");
+	    if (ftp_resp() != 227)
 		return -1;
-	    addr[i] = val;
-	    s = e+1;
-	}
-	port = strtol(s, &e, 10);
-	if (port < 0 || port > 255 || *e != ',')
-	    return -1;
-	s = e+1;
-	val = strtol(s, &e, 10);
-	if (val < 0 || val > 255)
-	    return -1;
-	port = port*256+val;
-	
-	sprintf(saddr, "%d.%d.%d.%d",
-		addr[0], addr[1], addr[2], addr[3]);
-	sprintf(sport, "%d", port);
-	fd = sopen(saddr, sport);
-    }
 
+	    if ((s=strchr(ftp_last_resp, ',')) == NULL)
+		return -1;
+	    
+	    while (isdigit(*(--s)))
+		;
+	    s++;
+	    
+	    for (i=0; i<4; i++) {
+		val = strtol(s, &e, 10);
+		if (val < 0 || val > 255 || *e != ',')
+		    return -1;
+		addr[i] = val;
+		s = e+1;
+	    }
+	    port = strtol(s, &e, 10);
+	    if (port < 0 || port > 255 || *e != ',')
+		return -1;
+	    s = e+1;
+	    val = strtol(s, &e, 10);
+	    if (val < 0 || val > 255)
+		return -1;
+	    port = port*256+val;
+	    
+	    sprintf(baddr, "%d.%d.%d.%d",
+		    addr[0], addr[1], addr[2], addr[3]);
+	    sprintf(bport, "%d", port);
+	    saddr = baddr;
+	    sport = bport;
+	}
+	else { /* inet 6 passive */
+	    ftp_put("epsv");
+	    if (ftp_resp() != 229)
+		return -1;
+
+	    if ((s=strchr(ftp_last_resp, '(')) == NULL)
+		return -1;
+	    delim = s[1];
+
+	    if ((e=strchr(s+2, delim)) == NULL
+		|| (e=strchr(e+1, delim)) == NULL)
+		return -1;
+
+	    s = e+1;
+	    if ((e=strchr(s, delim)) == NULL)
+		return -1;
+	    if (e-s>5)
+		return -1;
+	    strncpy(bport, s, e-s);
+	    bport[e-s] = '\0';
+	    sport = bport;
+	    saddr = ftp_host;
+	}
+	fd = sopen(saddr, sport, ftp_addr->sa_family);
+    }
+    
     return fd;
 }
 
@@ -962,8 +1018,8 @@ ftp_gethostaddr(int fd)
 {
     int len;
 	
-    len = sizeof(ftp_addr);
-    if (getsockname(fd, (struct sockaddr *)&ftp_addr, &len) == -1) {
+    len = sizeof(_ftp_addr);
+    if (getsockname(fd, ftp_addr, &len) == -1) {
 	if (disp_active)
 	    disp_status("can't get host address: %s",
 			strerror(errno));

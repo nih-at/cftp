@@ -29,8 +29,10 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <errno.h>
 
+#include "config.h"
 #include "display.h"
 
 extern char *prg;
@@ -42,14 +44,14 @@ extern int h_errno;
 
 
 int
-sopen(char *host, char *service)
+sopen(char *host, char *service, int family)
 {
     struct addrinfo hints, *res0, *res;
     int s, err;
     char *cause;
     
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC;
+    hints.ai_family = family;
     hints.ai_socktype = SOCK_STREAM;
     
     if ((err=getaddrinfo(host, service, &hints, &res0)) != 0) {
@@ -96,44 +98,96 @@ sopen(char *host, char *service)
 
 
 int
-spassive(unsigned long *host, int *port)
+spassive(int family, struct sockaddr *addr, int *lenp)
 {
-    int s, len;
-    struct sockaddr_in locaddr;
-    extern int getport();
-    
-    if ((s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1) {
-	fprintf(stderr, "%s: can't allocate socket: %s\n",
-		prg, strerror(errno));
-	return(-1);
+    struct addrinfo hints, *res, *res0;
+    int s;
+    char *cause;
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = family;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE;
+
+    if (getaddrinfo(NULL, "0", &hints, &res0) != 0) {
+	if (disp_active)
+	    disp_status("cannot get address info: %s\n",
+			gai_strerror(errno));
+	else
+	    fprintf(stderr, "%s: cannot get address info: %s\n",
+		    prg, gai_strerror(errno));
+	return -1;
+    }
+	
+    for (res = res0; res; res = res->ai_next) {
+	if ((s=socket(res->ai_family, res->ai_socktype,
+		      res->ai_protocol)) < 0) {
+	    cause = "create socket";
+	    continue;
+	}
+
+	if (bind(s, res->ai_addr, res->ai_addrlen) < 0) {
+	    cause = "bind";
+	    close(s);
+	    continue;
+	}
+
+	if (getsockname(s, addr, lenp) == -1) {
+	    cause = "get socket name";
+	    close(s);
+	    continue;
+	}
+
+	if (listen(s, 1) < 0) {
+	    cause = "listen";
+	    close(s);
+	    continue;
+	}
+	
+	freeaddrinfo(res0);
+	return s;
     }
     
-    locaddr.sin_family = AF_INET;
-    locaddr.sin_addr.s_addr = INADDR_ANY;
-    memset(locaddr.sin_zero, 0, 8);
-    locaddr.sin_port = 0;
-    
-    if (bind(s, (struct sockaddr *)&locaddr, sizeof(struct sockaddr_in))
-	== -1) {
-	fprintf(stderr, "%s: can't bind socket: %s\n",
-		prg, strerror(errno));
-	return(-1);
-    }
-    
-    len = sizeof(locaddr);
-    if (getsockname(s, (struct sockaddr *)&locaddr, &len) == -1) {
-	fprintf(stderr, "%s: can't get socket name: %s\n",
-		prg, strerror(errno));
-	return(-1);
-    }
-    *host = (unsigned long)locaddr.sin_addr.s_addr;
-    *port = ntohs(locaddr.sin_port);
-    
-    if (listen(s, 1) == -1) {
-	fprintf(stderr, "%s: can't listen on socket: %s\n",
-		prg, strerror(errno));
-	return(-1);
-    }
-    
-    return s;
+    freeaddrinfo(res0);
+
+    if (disp_active)
+	disp_status("cannot %s: %s", cause, strerror(errno));
+    else
+	fprintf(stderr, "%s: cannot %s: %s",
+		prg, cause, strerror(errno));
+    return -1;
 }
+
+
+
+const char *
+sockaddr_ntop(struct sockaddr *sa)
+{
+#ifdef HAVE_GETADDRINFO
+
+    static char addrbuf[NI_MAXHOST];
+#ifdef NI_WITHSCOPEID
+    const int niflags = NI_NUMERICHOST | NI_WITHSCOPEID;
+#else
+    const int niflags = NI_NUMERICHOST;
+#endif
+
+    if (getnameinfo(sa, sa->sa_len, addrbuf, sizeof(addrbuf),
+            NULL, 0, niflags) == 0)
+        return addrbuf;
+    else
+        return NULL;
+
+#else /* !HAVE_GETADDRINFO */
+
+    struct sockaddr_in *si;
+    if (sa->sa_family != AF_INET)
+	return NULL;
+
+    si = (struct sockaddr_in *)sa;
+
+    return inet_ntoa(si->sin_addr);
+
+#endif
+}
+

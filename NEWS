@@ -1,3 +1,6 @@
+New in 0.9.4:
+* support for IPv6
+
 New in 0.9.3:
 * downloads: if size is unknown, use size from server response
 * mkdir: make directory on server (not really new, but I forgot to mention it)
