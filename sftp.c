@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.23 2003/07/12 13:58:02 dillo Exp $
+  $NiH: sftp.c,v 1.24 2003/12/21 04:13:43 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001, 2002 Dieter Baron
@@ -1222,10 +1222,13 @@ sftp_retr(char *file, int mode, long *startp, long *sizep)
 
     f->hnd = hnd;
     f->flags = SSH_FXF_READ;
-    if (startp)
+    if (startp && *startp > 0)
 	f->off = *startp;
     else
 	f->off = 0;
+
+    if (sizep)
+	*sizep = -1;
 
     return f;
 }
