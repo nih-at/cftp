@@ -168,11 +168,6 @@ sockaddr_ntop(struct sockaddr *sa)
 #ifdef HAVE_GETADDRINFO
 
     static char addrbuf[NI_MAXHOST];
-#ifdef NI_WITHSCOPEID
-    const int niflags = NI_NUMERICHOST | NI_WITHSCOPEID;
-#else
-    const int niflags = NI_NUMERICHOST;
-#endif
     int len;
 
 #ifdef HAVE_STRUCT_MEMBER_SOCKADDR_SA_LEN
@@ -185,7 +180,7 @@ sockaddr_ntop(struct sockaddr *sa)
 #endif
 
     if (getnameinfo(sa, len, addrbuf, sizeof(addrbuf),
-            NULL, 0, niflags) == 0)
+            NULL, 0, NI_NUMERICHOST) == 0)
         return addrbuf;
     else
         return NULL;
