@@ -214,7 +214,7 @@ ftp_list(char *path)
 		dir = (directory *)malloc(sizeof(directory));
 		dir->line = (direntry *)malloc(sizeof(direntry));
 		dir->path = path;
-		dir->len = 1;
+		dir->len = 0;
 		dir->cur = dir->top = 0;
 		dir->size = sizeof(struct direntry);
 		dir->line->line = strdup("");

@@ -66,9 +66,10 @@ struct binding binding[MAX_FN];
 char *binding_argpool[1];
 int binding_nargpool = 0;
 
-char *prg;
+char *prg, *srcdir;
 
 void print_args(FILE *fout, char **args);
+FILE *vpath_open(char *name);
 
 
 
@@ -86,6 +87,11 @@ main(int argc, char **argv)
     rc_lineno = 0;
     maxkey = max_fnkey + 256;
 
+    if (argc == 2 && strcmp(argv[1], ".") != 0)
+	srcdir = argv[1];
+    else
+	srcdir = NULL;
+
     initnames();
 
     for (i=0; i<maxkey; i++) {
@@ -99,11 +105,8 @@ main(int argc, char **argv)
 
     /* processing ``bindings.desc'' */
 
-    if ((fin=fopen(FNAME ".desc", "r")) == NULL) {
-	fprintf(stderr, "%s: can't open input file (%s): %s.\n",
-		prg, FNAME ".desc", strerror(errno));
+    if ((fin=vpath_open(FNAME ".desc")) == NULL)
 	exit(1);
-    }
 
     while (fgets(line, 4096, fin) != NULL) {
 	rc_lineno++;
@@ -257,9 +260,7 @@ initnames()
 
     num = 0;
 	
-    if ((f=fopen(TABLE, "r")) == NULL) {
-	fprintf(stderr, "%s: can't open input file (%s): %s.\n",
-		prg, TABLE, strerror(errno));
+    if ((f=vpath_open(TABLE)) == NULL) {
 	exit(1);
     }
 
@@ -350,6 +351,42 @@ print_args(FILE *fout, char **args)
 
 
 
+FILE *
+vpath_open(char *name)
+{
+    FILE *f;
+    char *vname;
+
+    if ((f=fopen(name, "r")) != NULL)
+	return f;
+
+    if (srcdir == NULL) {
+	fprintf(stderr, "%s: can't open file `%s': %s\n",
+		prg, name, strerror(errno));
+	return NULL;
+    }
+
+    if ((vname=(char *)malloc(strlen(name)+strlen(srcdir)+2)) == NULL) {
+	fprintf(stderr, "%s: malloc failure\n");
+	exit(1);
+    }
+
+    sprintf(vname, "%s/%s", srcdir, name);
+
+    if ((f=fopen(vname, "r")) != NULL) {
+	free(vname);
+	return f;
+    }
+    
+    fprintf(stderr, "%s: can't find file `%s': %s\n",
+	    prg, name, strerror(errno));
+    free(vname);
+
+    return NULL;
+}
+
+
+
 void
 disp_status(char *fmt, ...)
 {
@@ -361,4 +398,3 @@ read_string(char *prompt, int echop)
 {
     return NULL;
 }
-

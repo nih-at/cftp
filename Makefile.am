@@ -29,36 +29,37 @@ EXTRA_DIST=	bindings.desc fntable.c.proto fntable.h.proto \
 # extra rules
 
 functions.texi : fntable.fn mkfntexi.m4
-	m4 mkfntexi.m4 fntable.fn >> functions.texi-unsort
-	sed -e '/^>>>>>>>>/,$$ d' functions.texi-unsort > functions.texi
+	m4 $(srcdir)/mkfntexi.m4 $(srcdir)/fntable.fn >> functions.texi-unsort
+	sed -e '/^>>>>>>>>/,$$ d' $(srcdir)/functions.texi-unsort \
+		> functions.texi
 	sed -e '1,/^>>>>>>>>/ d' -e '/^<<<<<<<</,$$ d' functions.texi-unsort \
 		| sort -t: +0 -1 >> functions.texi
 	sed -e '1,/^<<<<<<<</ d' functions.texi-unsort >> functions.texi
 	rm functions.texi-unsort
 
 fntable.c : fntable.fn fntable.c.proto mkfntab-c.m4
-	sed -e '/^----/,$$ d' fntable.c.proto > fntable.c
-	m4 mkfntab-c.m4 fntable.fn >> fntable.c
-	sed -e '1,/^----/ d' fntable.c.proto >> fntable.c
+	sed -e '/^----/,$$ d' $(srcdir)/fntable.c.proto > fntable.c
+	m4 $(srcdir)/mkfntab-c.m4 $(srcdir)/fntable.fn >> fntable.c
+	sed -e '1,/^----/ d' $(srcdir)/fntable.c.proto >> fntable.c
 
 fntable.h : fntable.fn fntable.h.proto mkfntab-h.m4
-	sed -e '/^----/,$$ d' fntable.h.proto > fntable.h
-	m4 mkfntab-h.m4 fntable.fn >> fntable.h
-	sed -e '1,/^----/ d' fntable.h.proto >> fntable.h
+	sed -e '/^----/,$$ d' $(srcdir)/fntable.h.proto > fntable.h
+	m4 $(srcdir)/mkfntab-h.m4 $(srcdir)/fntable.fn >> fntable.h
+	sed -e '1,/^----/ d' $(srcdir)/fntable.h.proto >> fntable.h
 
-fntable.o: fntable.c fntable.h
+%fntable.o: fntable.c fntable.h
 
 bindings.c : mkbind bindings.desc fntable.c
-	./mkbind
+	./mkbind $(srcdir)
 
 options.texi: options.op mkoptexi.m4
-	m4 mkoptexi.m4 options.op > options.texi
+	m4 $(srcdir)/mkoptexi.m4 $(srcdir)/options.op > options.texi
 
-options.c: options.op mkoptab-c.m4
-	m4 mkoptab-c.m4 options.op > options.c
+options.c: options.op $(srcdir)/mkoptab-c.m4
+	m4 $(srcdir)/mkoptab-c.m4 $(srcdir)/options.op > options.c
 
 options.h: options.op mkoptab-h.m4
-	m4 mkoptab-h.m4 options.op > options.h
+	m4 $(srcdir)/mkoptab-h.m4 $(srcdir)/options.op > options.h
 
 getdomainname.o: getdomainname.c
 	$(CC) $(CFLAGS) -DDOMAINNAME=\"@DOMAINNAME@\" -c getdomainname.c

@@ -15,6 +15,7 @@ C functions.texi: fix bad next pointer in last section (to first command)
 F if url is file, download
 C display.c: (disp_prompt_char) return after first key, not after newline
 F functions.texi: include default bindings
+P Makefile, mkbind.c: support for srcdir
 ---------------------------------------------------------------- till beta
 F abort transfer
 F fn_search
