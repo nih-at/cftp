@@ -305,13 +305,18 @@ tty_readkey(void)
 	char s[128];
 	int i, j;
 
-	c = getchar();
+	while ((c=getchar())==EOF && errno == EINTR)
+	    ;
+	if (c == EOF)
+	    return -1;
 
 	if (keyflag[c] == KEY_PREF) {
 		tty_vmin(0, 5);
 		s[0] = c;
 		i = 1;
 		while (1) {
+		    while ((c=getchar())==EOF && errno == EINTR)
+			;
 			if ((c=getchar()) == EOF) {
 				tty_vmin(1, 0);
 				clearerr(stdin);
