@@ -36,6 +36,8 @@
 #include "rc.h"
 #include "options.h"
 #include "tty.h"
+#include "list.h"
+#include "tag.h"
 
 extern char version[];
 
@@ -424,4 +426,77 @@ void fn_set(char **args)
     return;
 }
 
+
 
+void
+fn_state(char **args)
+{
+    char *state, *line;
+    enum state st;
+    int freestatep;
+
+    freestatep = 0;
+    line = NULL;
+
+    if (args) {
+	if (args[0][0] != '<') {
+	    if ((state=(char *)malloc(strlen(args[0])+3)) == NULL)
+		return;
+	    sprintf(state, "<%s>", args[0]);
+	    freestatep = 1;
+	}
+	else
+	    state = args[0];
+    }
+    else {
+	line = read_string("State: ", 1);
+	if (line == NULL || line[0] == '\0')
+	    return;
+	if (line[0] != '<') {
+	    if ((state=(char *)malloc(strlen(line)+3)) == NULL)
+		return;
+	    sprintf(state, "<%s>", line);
+	    freestatep = 1;
+	}
+	else
+	    state = line;
+    }
+
+    st = parse_state(state);
+    if (st == binding_state)
+	return;
+    
+    switch (st) {
+    case bs_remote:
+	binding_state = bs_remote;
+	list = curdir;
+	list_do(1);
+	/* XXX: status line */
+	break;
+
+    case bs_local:
+	disp_status("state <local> not implemented yet");
+
+    case bs_tag:
+	if (!tag_anytags()) {
+	    disp_status("no tags");
+	    break;
+	}
+	binding_state = bs_tag;
+	list = &tags;
+	list_do(1);
+	/* XXX: status line */
+	break;
+
+    case bs_none:
+	disp_status("can't enter state <global>");
+	break;
+
+    default:
+	disp_status("no such state: %s", state);
+    }
+
+    if (freestatep)
+	free(state);
+    free(line);
+}	

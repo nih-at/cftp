@@ -39,6 +39,7 @@ B (fn_isearch) repeaded search sets start to wrong match
 F (fn_isearch) show status (failed, wrapped)
 P tty.c: handle terminfo parameterized capabilities
 B tag.c: rewrite completely
+B tag.c: (tag_file) check for file name while searching
 ----------------------------------------------- done
 F fn_basic.c: (fn_help) display arguments for key bindings
 C fntable.fn: doku for bind, update doku for help

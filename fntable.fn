@@ -173,6 +173,9 @@ function(cd, [dir], fn_cd, 0,
 	 {change directory},
  {Change remote directory;  default is to directory under cursor.})
 
+function(state, [state], fn_state, 0,
+	 {change binding state},
+ {})
 endsec()
 
 

@@ -43,6 +43,8 @@ struct taglist {
 
 enum tagopt { TAG_ON, TAG_OFF, TAG_TOGGLE };
 
+struct taglist tags;
+
 
 
 int tag_init(void);

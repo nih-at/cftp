@@ -66,7 +66,7 @@ aux_scroll_line(int n)
 {
     int sel, top;
 
-    if (n == 0)
+    if (n == 0 || list->len == 0)
 	return;
 
     if (n > 0) {

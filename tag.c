@@ -84,13 +84,19 @@ change_curdir(directory *dir)
 int
 tag_file(char *dir, char *file, long size, char type, enum tagopt what)
 {
-    char *canon;
+    char *canon, c;
     struct tagentry *t;
+    int freedirp, cmp;
 
     canon = NULL;
 
     if (dir == NULL) {
 	canon = canonical(file, NULL);
+	if ((dir=dirname(canon)) == NULL) {
+	    free(canon);
+	    return 0;
+	}
+	freedirp = 1;
     }
     else {
 	if ((canon=(char *)malloc(strlen(dir)+strlen(file)+2)) == NULL)
@@ -99,12 +105,16 @@ tag_file(char *dir, char *file, long size, char type, enum tagopt what)
 		(strcmp(dir, "/") == 0 ? "" : "/"), file);
     }
 
-    for (t=tags_s.next;
-	 t != &tags_s && strncmp(dir, t->name, t->dirl) < 0;
-	 t=t->next)
-	;
+    cmp = -1;
 
-    if (strncmp(dir, t->name, t->dirl) == 0 && t != &tags_s) {
+    for (t=tags_s.next; t != &tags_s && cmp < 0; t=t->next) {
+	c = t->name[t->dirl];
+	t->name[t->dirl] = '\0';
+	cmp = strcmp(dir, t->name);
+	t->name[t->dirl] = c;
+    }
+
+    if (t != &tags_s && cmp == 0) {
 	if (what == TAG_ON) {
 	    free(canon);
 	    return 0;
@@ -189,6 +199,8 @@ _tag_insert(int n, struct tagentry *t, char *file, long size, char type)
     u->name = file;
     u->file = basename(file);
     u->dirl = tags.line[n].file - file;
+    if (u->dirl > 1)
+	--u->dirl;
     u->size = size;
     u->type = type;
 
@@ -197,6 +209,8 @@ _tag_insert(int n, struct tagentry *t, char *file, long size, char type)
     t->next = u;
     u->next->prev = u;
 
+    tags.len++;
+    
     return 0;
 }
 

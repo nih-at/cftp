@@ -23,24 +23,25 @@ bind		7	prefix 7
 bind		8	prefix 8
 bind		9	prefix 9
 
+bind		T	state <tag>
+
 bind	<remote> ^j	enter/get
 bind	<remote> ^m	enter/get
 bind	<remote> t	tag
-bind	<remote> T	list-tags
 bind	<remote> D	get-tags
+bind	<remote> ^b	leave
 bind	<remote> ^f	enter/get
+bind	<remote> h	leave
 bind	<remote> l	enter/get
+bind	<remote> left	leave
 bind	<remote> right	enter/get
 bind	<remote> v	view
 bind	<remote> d	get
 
-bind		^b	leave
 bind		^p	up
 bind		^n	down
-bind		h	leave
 bind		j	down
 bind		k	up
-bind		left	leave
 bind		up	up
 bind		down	down
 bind		spc 	page-down
