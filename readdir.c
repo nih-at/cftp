@@ -1,5 +1,5 @@
 /*
-  $NiH: readdir.c,v 1.20 2001/12/12 04:43:31 dillo Exp $
+  $NiH: readdir.c,v 1.21 2001/12/12 04:47:25 dillo Exp $
 
   readdir -- read directory listing
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -55,7 +55,7 @@ read_dir(FILE *f)
 {
     directory *dir;
     direntry entry;
-    int i, n, pf, ret;
+    int n, pf, ret;
     char *line;
     time_t oldt, newt;
 
