@@ -1,3 +1,9 @@
+1997-10-25  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* fn_basic.c (fn_help): listings, more info on options.
+
+	* display.c (disp_open): reenter display if open failed.
+
 1997-10-24  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* main.c: (main): moved version tail text variable version_tail;

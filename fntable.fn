@@ -55,10 +55,13 @@ function(help, , fn_help, 0,
 
 Asks if you want help on a function, option or key binding.  For
 functions, their help string is displayed.  Help on an option shows
-its short name (e. g. 'mo' for mode), its type (boolean, character,
-integer, or string), its current value and help string.  For key
+its short name (e. g., 'mo' for mode), its type (boolean, character,
+integer, string, or enum), its current value and help string.  For key
 bindings, @code{help} displays the function with arguments (if any),
-as it is executed when you press the key.})
+as it is executed when you press the key.
+
+If you press the shifted letter for a category, a list of all
+functions, options, or key bindings will be displayed.})
 
 
 function(lcd, [dir], fn_lcd, FN_RC,
@@ -78,8 +81,7 @@ function(colon, {[args @dots{}]}, fn_colon, 0,
 	 {execute cftp command},
  {Execute an arbitrary @sc{cftp} command.
 
-Allows you to execute functions even if they are not bound to a key.
-@c XXX: Press "" to get a listing of all functions.
+Allows you to execute functions not bound to a key.
 })
 
 
@@ -96,8 +98,8 @@ function(reconnect, , fn_reconnect, 0,
 	 {reconnect to server},
  {Reopen connection to server.
 
-You can use this function when you were disconnected after a
-timeout.  To prevent timeouts, use @ref{deidle}.})
+You can use this function when you were disconnected after a timeout
+or network hickup.  To prevent timeouts, use @ref{deidle}.})
 
 
 function(response, , fn_response, 0,
@@ -106,7 +108,8 @@ function(response, , fn_response, 0,
 
 Commands sent by @sc{cftp} and the responses from the remote host are
 kept in a log, with commands prefixed with @samp{->}.  You can change
-the size of the log with the option @ref{hist-size}.})
+the number of lines to keep in the log with the option
+@ref{hist-size}.})
 
 
 function(prefix, , fn_prefix, FN_PRE,
@@ -132,8 +135,8 @@ function(set, [option [value]], fn_set, FN_RC,
  {Set @var{option} to @var{value}.
 
 If either @var{value} or @var{option} and @var{value} are omitted, you
-will be asked for them.  In either case, if you enter an empty string
-the command will be cancelled.})
+will be asked for them.  If you enter an empty string the command will
+be cancelled.})
 
 endsec()
 

@@ -1,4 +1,5 @@
-* better help system (e. g., key bindings listing)
+* document motion commands plus bindings
 * support for servers with dos directory names
 * site exec
 * <local> mode
+* decent documentation

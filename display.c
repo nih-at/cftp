@@ -291,8 +291,11 @@ disp_open(char *cmd, int quietp)
     if (quietp)
 	escape_disp(1);
 
-    if ((f=popen(cmd, "w")) == NULL)
+    if ((f=popen(cmd, "w")) == NULL) {
+	if (quietp)
+	    reenter_disp();
 	return NULL;
+    }
     
     return f;
 }

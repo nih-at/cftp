@@ -27,6 +27,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <ctype.h>
+
 #include "util.h"
 #include "directory.h"
 #include "ftp.h"
@@ -39,6 +41,7 @@
 #include "list.h"
 #include "tag.h"
 #include "status.h"
+#include "keys.h"
 
 extern char version[];
 
@@ -74,6 +77,8 @@ fn_showname(char **args)
 	    disp_status("ftp://%s%s", status.host,
 			LIST_LINE(list, list->cur)->name);
 	    break;
+	default:
+	    disp_status("");
 	}
     }
     else
@@ -84,9 +89,12 @@ fn_showname(char **args)
 
 void fn_help(char **args)
 {
+    static char spaces[] = "                ";
+
     struct binding *b;
-    int what, c, i;
-    char *s;
+    FILE *f;
+    int what, c, i, j, l;
+    char *s, *t;
 
     what = read_char("Help on <f>unction, <k>ey, or <o>ption "
 		     "(shift for list)? ");
@@ -106,6 +114,18 @@ void fn_help(char **args)
 	    disp_status("%s: %s", functions[i].name, functions[i].help);
 
 	free(s);
+	break;
+
+    case 'F':
+	if ((f=disp_open(opt_pager, 1)) == NULL)
+	    return;
+
+	for (i=0; functions[i].name; i++) {
+	    fprintf(f, "%-16.16s %s\n", functions[i].name, functions[i].help);
+	}
+
+	disp_close(f, 1);
+	disp_status("");
 	break;
 
     case 'k':
@@ -151,6 +171,33 @@ void fn_help(char **args)
 	}
 	break;
 
+    case 'K':
+	if ((f=disp_open(opt_pager, 1)) == NULL)
+	    return;
+
+	for (i=0; i<max_fnkey+256; i++) {
+	    for (b=&binding[i]; b; b=b->next) {
+		if (b->fn != -1) {
+		    s = (b->state != bs_none ?
+			 binding_statename[b->state] : "");
+		    t = print_key(i, 0);
+		    l = strlen(s)+strlen(t);
+		    fprintf(f, "%s%s%s%s",
+			    s, t, spaces+((l>16) ? 16 : l),
+			    functions[b->fn].name);
+		    if (b->args) {
+			for (j=0; b->args[j]; j++)
+			    fprintf(f, " %s", b->args[j]);
+		    }
+		    fputc('\n', f);
+		}
+	    }
+	}
+
+	disp_close(f, 1);
+	disp_status("");
+	break;
+
     case 'o':
 	s = read_string("Option: ", 1);
 	if (s == NULL || s[0] == '\0') {
@@ -166,11 +213,96 @@ void fn_help(char **args)
 	
 	if (option[i].name == NULL)
 	    disp_status("no such option: %s", s);
-	else
-	    disp_status("%s (%s): %s", option[i].name, option[i].shrt,
-			option[i].help);
+	else {
+	    char *buf;
+	    
+	    switch(option[i].type) {
+	    case OPT_INT:
+		if ((buf=(char *)malloc(30)) == NULL)
+		    break;
+		sprintf(buf, "(int) %d", *(option[i].var.i));
+		break;
+		
+	    case OPT_CHR:
+		if ((buf=(char *)malloc(30)) == NULL)
+		    break;
+		sprintf(buf, "(char) `%c'", *(option[i].var.i));
+		break;
+
+	    case OPT_STR:
+		if ((buf=(char *)malloc(strlen(*(option[i].var.s))+10))
+		    == NULL)
+		    break;
+		sprintf(buf, "(str) ``%s''", *(option[i].var.s));
+		break;
+
+	    case OPT_BOOL:
+		if ((buf=(char *)malloc(30)) == NULL)
+		    break;
+		sprintf(buf, "(bool) %s",
+			(*(option[i].var.i) ? "on" : "off"));
+		break;
+
+	    case OPT_ENUM:
+		if ((buf=(char *)malloc(strlen(option[i].values[*(option[i].var.i)])+10))
+		    == NULL)
+		    break;
+		sprintf(buf, "(enum) %s",
+			option[i].values[*(option[i].var.i)]);
+		break;
+	    default:
+		buf = NULL;
+	    }
+
+	    if (buf == NULL)
+		break;
+
+	    disp_status("%s (%s) [%s]: %s", 
+			option[i].name, option[i].shrt,
+			buf, option[i].help);
+	}
 	free(s);
 	break;
+	
+    case 'O':
+	if ((f=disp_open(opt_pager, 1)) == NULL)
+	    return;
+	
+	for (i=0; option[i].name; i++) {
+	    if (i > 0)
+		fputc('\n', f);
+	    
+	    fprintf(f, "%s %-15.15s",
+		     option[i].shrt, option[i].name);
+
+	    switch(option[i].type) {
+	    case OPT_INT:
+		fprintf(f, "(int) %d\n", *(option[i].var.i));
+		break;
+		
+	    case OPT_CHR:
+		fprintf(f, "(char) `%c'\n", *(option[i].var.i));
+		break;
+
+	    case OPT_STR:
+		fprintf(f, "(str) ``%s''\n", *(option[i].var.s));
+		break;
+		
+	    case OPT_BOOL:
+		fprintf(f, "(bool) %s\n",
+			(*(option[i].var.i) ? "on" : "off"));
+		break;
+		
+	    case OPT_ENUM:
+		fprintf(f, "(enum) %s\n",
+			option[i].values[*(option[i].var.i)]);
+		break;
+	    }
+	    fprintf(f, "        %s\n", option[i].help);
+	}
+
+	disp_close(f, 1);
+	disp_status("");
 	
     default:
 	disp_status("");
@@ -217,7 +349,7 @@ void fn_lcd(char **args)
 
 void fn_shell(char **args)
 {
-	char *cmd, b[128];
+	char *cmd;
 
 	if (args)
 	    cmd = args[0];
@@ -241,8 +373,8 @@ void fn_shell(char **args)
 
 void fn_colon(char **args)
 {
-	char *cmd, *tok, *p, *line = NULL;
-	int i, j;
+	char *cmd, *p, *line = NULL;
+	int i;
 
 	if (args) {
 	    cmd = args[0];
@@ -308,7 +440,6 @@ void fn_response(char **args)
 {
     struct ftp_hist *h;
     FILE *f;
-    long i;
 
     if (ftp_history == NULL) {
 	disp_status("no exchange available");
@@ -326,7 +457,7 @@ void fn_response(char **args)
 
 
 
-int
+void
 fn_prefix(char **args)
 {
     if (args == NULL) {
@@ -548,8 +679,6 @@ fn_state(char **args)
 void
 fn_leave_tag(char **args)
 {
-    char *arg[2];
-    
     if (binding_state != bs_tag) {
 	disp_status("not in <tag> mode");
 	return;
