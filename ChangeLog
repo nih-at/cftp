@@ -1,3 +1,14 @@
+2002-09-15  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* mkfntab-c.m4: don't output empty line at beginning of functions
+	array.
+
+	* mkbind.c (initnames): fix line number counting.
+
+	* sftp.c (_sftp_put_uint32, _sftp_put_uint64, _sftp_writev,
+	sftp_read, sftp_xfer_read), tty.c (tty_init), url.c (url_decode):
+	fix OSF/1 c89 warnings.
+
 2002-09-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (_ftp_update_transfer): print estimated remaining time to
