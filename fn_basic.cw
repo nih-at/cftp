@@ -138,6 +138,7 @@ void fn_shell(char **args)
 	}
 	else
 		system("$SHELL -i");
+	disp_status("");
 	reenter_disp();
 }
 
