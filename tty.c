@@ -34,7 +34,7 @@
 #ifdef HAVE_TERMCAP_H
 #include <termcap.h>
 #endif
-#ifndef USE_NCURSES
+#ifndef HAVE_DECL_OSPEED
 char PC, *BC, *UP;
 short ospeed;
 #endif
