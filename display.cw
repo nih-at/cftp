@@ -49,6 +49,7 @@ init_disp(void)
 	    return err;
 
 	tty_clear();
+	tty_hidecrsr();
 }
 
 @ exiting curses and display.
@@ -61,6 +62,7 @@ void
 exit_disp()
 {
 	tty_goto(0, tty_lines-1);
+	tty_showcrsr();
 	tty_restore();
 	printf("\n");
 }
@@ -73,6 +75,7 @@ void reenter_disp(void);
 void
 escape_disp(int clearp)
 {
+	tty_showcrsr();
 	if (clearp) {
 		tty_clear();
 		fflush(stdout);
@@ -90,6 +93,7 @@ reenter_disp(void)
 {
 	disp_quiet = 0;
 	tty_setup();
+	tty_hidecrsr();
 	disp_redraw();
 }
 
@@ -266,6 +270,7 @@ read_string(char *prompt)
 	
 	line = (char *)malloc(tty_cols+1);
 	
+	tty_showcrsr();
 	disp_status("%s", prompt);
 	x = strlen(prompt);
 
@@ -297,6 +302,9 @@ read_string(char *prompt)
 
 	line[i]	= '\0';
 
+	tty_hidecrsr();
+	fflush(stdout);
+	
 	return line;
 }
 
@@ -304,10 +312,14 @@ int
 read_char(char *prompt)
 {
 	int c;
-	disp_status("%s", prompt);
 
+	tty_showcrsr();
+	disp_status("%s", prompt);
+	
 	c = tty_readkey();
 	printf(print_key(c, 0));
+
+	tty_hidecrsr();
 	fflush(stdout);
 
 	return c;
