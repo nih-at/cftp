@@ -1,3 +1,13 @@
+2001-07-30  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* main.c (main): if initial url is file, download before listing
+	directory.
+
+	* ftp.c (ftp_cat): check for sig_intr after calling
+	_ftp_update_transfer.
+	* ftp.c (_ftp_update_transfer): detect stalled connections, abort
+	(by setting sig_intr) after opt_stall seconds.
+
 2001-03-29  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (ftp_cat): new parameter (upload: direction of ASCII
