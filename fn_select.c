@@ -1,5 +1,5 @@
 /*
-  $NiH: fn_select.c,v 1.28 2002/10/23 09:19:47 dillo Exp $
+  $NiH: fn_select.c,v 1.29 2003/05/13 15:46:08 dillo Exp $
 
   fn_select.c -- bindable functions: selecting
   Copyright (C) 1996-2002 Dieter Baron
@@ -67,14 +67,14 @@ aux_enter(char *name)
 
 
 int
-aux_download(char *name, long size, int restart)
+aux_download(char *name, off_t size, int restart)
 {
     int err;
     void *fin;
     FILE *fout;
     struct stat st;
     char *mode;
-    long start, rsize;
+    off_t start, rsize;
 
     start = 0;
     
@@ -116,7 +116,7 @@ aux_download(char *name, long size, int restart)
 
 
 int
-aux_pipe(char *name, long size, int mode, char *cmd, int quietp)
+aux_pipe(char *name, off_t size, int mode, char *cmd, int quietp)
 {
     int err;
     void *fin;
@@ -143,7 +143,7 @@ int
 aux_upload(char *name)
 {
     int err;
-    long size;
+    off_t size;
     struct stat st;
     FILE *fin;
     void *fout;
@@ -181,7 +181,7 @@ fn_enter_get(char **args)
 {
     char *name;
     int type;
-    long size;
+    off_t size;
 
     if (args) {
 	name = args[0];
@@ -311,7 +311,7 @@ fn_get(char **args)
 {
     char *name;
     int type;
-    long size;
+    off_t size;
 
     if (args) {
 	name = args[0];
@@ -372,7 +372,7 @@ fn_pipe(char **args)
 {
     char *name, *cmd, *line;
     int type, freecmdp, quietp;
-    long size;
+    off_t size;
 
     line = NULL;
     cmd = NULL;

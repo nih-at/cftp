@@ -1,5 +1,5 @@
 /*
-  $NiH: tag.c,v 1.36 2002/09/16 12:42:44 dillo Exp $
+  $NiH: tag.c,v 1.37 2003/05/13 15:46:08 dillo Exp $
 
   tag.c -- tagging
   Copyright (C) 1996-2002 Dieter Baron
@@ -41,7 +41,7 @@ struct taglist tags;
 struct tagentry tags_s;
 
 static int _tag_insert(int n, struct tagentry *t, char *file,
-		       long size, char type);
+		       off_t size, char type);
 static int _tag_update_curdir(struct tagentry *u, enum tagopt what);
 
 
@@ -92,7 +92,7 @@ change_curdir(directory *dir)
 
 
 int
-tag_file(char *dir, char *file, long size, char type, enum tagopt what)
+tag_file(char *dir, char *file, off_t size, char type, enum tagopt what)
 {
     char *canon;
     struct tagentry *t;
@@ -184,7 +184,7 @@ tag_delete(int n)
 
 
 static int
-_tag_insert(int n, struct tagentry *t, char *file, long size, char type)
+_tag_insert(int n, struct tagentry *t, char *file, off_t size, char type)
 {
     int i;
     char *line;
@@ -220,7 +220,7 @@ _tag_insert(int n, struct tagentry *t, char *file, long size, char type)
 	tags.line[i+1] = tags.line[i];
     }
 
-    sprintf(line, "%8ld  %c  %s", size, type, file);
+    sprintf(line, "%8lld  %c  %s", size, type, file);
 
     u = tags.line+n;
 

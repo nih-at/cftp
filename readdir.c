@@ -1,5 +1,5 @@
 /*
-  $NiH: readdir.c,v 1.24 2002/09/16 12:42:41 dillo Exp $
+  $NiH: readdir.c,v 1.25 2002/10/23 09:19:48 dillo Exp $
 
   readdir.c -- read directory listing
   Copyright (C) 1996-2002 Dieter Baron
@@ -143,7 +143,7 @@ parse_unix(direntry *de, char *line)
 	free(line);
 	return 1;
     }
-    de->size = strtol(p, &q, 10);
+    de->size = strtoll(p, &q, 10);
 			/* size  */
     if (p == q)
 	de->size = -1;
@@ -276,7 +276,7 @@ parse_ms(direntry *de, char *line)
     }
     else {
 	de->type = 'f';
-	de->size = strtol(line+17, NULL, 10);
+	de->size = strtoll(line+17, NULL, 10);
     }
 
     /* time */

@@ -2,7 +2,7 @@
 #define HAD_FUNCTIONS_H
 
 /*
-  $NiH: functions.h,v 1.11 2002/09/16 12:42:34 dillo Exp $
+  $NiH: functions.h,v 1.12 2002/09/17 11:59:46 dillo Exp $
 
   functions.h -- auxiliary functions for bindable function handling
   Copyright (C) 1996-2002 Dieter Baron
@@ -57,8 +57,8 @@ struct binding *get_function(int key, enum state state);
 
 void aux_scroll(int top, int sel, int force);
 int aux_enter(char *name);
-int aux_download(char *name, long size, int restart);
-int aux_pipe(char *name, long size, int mode, char *cmd, int quietp);
+int aux_download(char *name, off_t size, int restart);
+int aux_pipe(char *name, off_t size, int mode, char *cmd, int quietp);
 #define aux_view(name)	(aux_pipe((name), -1, 'a', opt_pager, 1))
 
 #endif /* functions.h */

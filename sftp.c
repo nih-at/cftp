@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.24 2003/12/21 04:13:43 dillo Exp $
+  $NiH: sftp.c,v 1.25 2003/12/30 20:11:50 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001, 2002 Dieter Baron
@@ -82,7 +82,7 @@ enum sftp_file_state {
 struct sftp_file {
     int flags;
     struct handle *hnd;	/* sftp handle */
-    size_t off;		/* current offset within file */
+    off_t off;		/* current offset within file */
     enum sftp_file_state state;
     			/* current state */
     int doff;		/* offset to unreturned data */
@@ -1210,7 +1210,7 @@ sftp_deidle(void)
 */
 
 void *
-sftp_retr(char *file, int mode, long *startp, long *sizep)
+sftp_retr(char *file, int mode, off_t *startp, off_t *sizep)
 {
     struct handle *hnd;
     struct sftp_file *f;

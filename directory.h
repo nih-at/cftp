@@ -2,7 +2,7 @@
 #define HAD_DIRECTORY_Y
 
 /*
-  $NiH: directory.h,v 1.12 2001/12/12 04:43:32 dillo Exp $
+  $NiH: directory.h,v 1.13 2002/09/16 12:42:29 dillo Exp $
 
   directory.h -- handle directory cache
   Copyright (C) 1996-2002 Dieter Baron
@@ -32,7 +32,7 @@
 struct direntry {
     char *line, *name;
     char *link;
-    long size;
+    off_t size;
     time_t mtime;
     int pos;
     char type;

@@ -1,4 +1,3 @@
-! don't use int for file size (can overflow)
 ! sftp: lost connection during download causes tight loop
 ! tagging segfaults on linux
 ! abort doesn't work

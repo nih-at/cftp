@@ -2,7 +2,7 @@
 #define HAD_TAG_H
 
 /*
-  $NiH: tag.h,v 1.12 2001/12/11 14:37:43 dillo Exp $
+  $NiH: tag.h,v 1.13 2002/09/16 12:42:45 dillo Exp $
 
   tag.h -- tagging
   Copyright (C) 1996-2002 Dieter Baron
@@ -34,7 +34,7 @@ struct tagentry {
     struct tagentry *next, *prev;
     char *file;
     int dirl;
-    long size;
+    off_t size;
     char type;
 };
 
@@ -52,7 +52,7 @@ extern struct taglist tags;
 
 
 int tag_init(void);
-int tag_file(char *dir, char *file, long size, char type, enum tagopt what);
+int tag_file(char *dir, char *file, off_t size, char type, enum tagopt what);
 void tag_delete(int n);
 void tag_clear(void);
 int tag_anytags(void);

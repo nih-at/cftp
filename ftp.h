@@ -2,7 +2,7 @@
 #define HAD_FTP_H
 
 /*
-  $NiH: ftp.h,v 1.23 2001/12/20 05:53:59 dillo Exp $
+  $NiH: ftp.h,v 1.24 2002/09/16 12:42:33 dillo Exp $
 
   ftp.h -- ftp protocol functions
   Copyright (C) 1996-2002 Dieter Baron
@@ -45,7 +45,7 @@ extern char *ftp_pcwd;
 
 
 int ftp_anon(void);
-int ftp_cat(void *fin, void *fout, long start, long size, int upload);
+int ftp_cat(void *fin, void *fout, off_t start, off_t size, int upload);
 directory *ftp_cd(char *wd, int force);
 char *ftp_gets(FILE *f);
 void ftp_hist(char *line);

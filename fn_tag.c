@@ -1,5 +1,5 @@
  /*
-  $NiH: fn_tag.c,v 1.31 2003/05/13 15:46:08 dillo Exp $
+  $NiH: fn_tag.c,v 1.32 2003/12/19 10:06:15 dillo Exp $
 
   fn_tag.c -- bindable functions: 
   Copyright (C) 1996-2002 Dieter Baron
@@ -55,7 +55,7 @@ void
 fn_tag(char **args)
 {
     char *dir, *file, *base;
-    long size;
+    off_t size;
     char type;
     int tagged, i;
 
@@ -251,7 +251,7 @@ fn_savetags(char **args)
 			status.host,
 			tags.line[i].name);
 	    else
-		fprintf(f, "%8ld  %c  %s\n",
+		fprintf(f, "%8lld  %c  %s\n",
 			tags.line[i].size,
 			tags.line[i].type,
 			tags.line[i].name);
@@ -279,7 +279,7 @@ fn_loadtag(char **args)
     FILE *f;
     int count, len;
     char *name;
-    long size;
+    off_t size;
     int type;
     
     if (args)
@@ -301,7 +301,7 @@ fn_loadtag(char **args)
     count = 0;
     while ((line=ftp_gets(f)) != NULL) {
 	p = line;
-	size = strtol(p, &e, 10);
+	size = strtoll(p, &e, 10);
 	if (size < -1 ||
 	    e == NULL || e == p || (*e != '\0' && !isspace(*e))) {
 	    size = -1;

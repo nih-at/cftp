@@ -1,6 +1,6 @@
 dnl -*- text -*-
 dnl
-dnl  $NiH: methods.mt,v 1.3 2001/12/17 05:44:05 dillo Exp $
+dnl  $NiH: methods.mt,v 1.4 2002/09/16 12:42:37 dillo Exp $
 dnl
 dnl  methods.mt -- definition and documentation for protocol methods
 dnl  Copyright (C) 2001, 2002 Dieter Baron
@@ -22,7 +22,7 @@ dnl  You should have received a copy of the GNU General Public License
 dnl  along with this program; if not, write to the Free Software
 dnl  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-rcsid(<<$NiH: methods.mt,v 1.3 2001/12/17 05:44:05 dillo Exp $>>)
+rcsid(<<$NiH: methods.mt,v 1.4 2002/09/16 12:42:37 dillo Exp $>>)
 
 method(int, close, void,
   <<Close connection to server.>>)
@@ -54,7 +54,7 @@ user.>>)
 method(<<char *>>, pwd, void,
   <<Return current directory.>>)
 
-method(<<void *>>, retr, <<char *file, int mode, long *startp, long *sizep>>,
+method(<<void *>>, retr, <<char *file, int mode, off_t *startp, off_t *sizep>>,
   <<Start retrieval of FILE in mode MODE, starting at offset *STARTP,
 if possible.  The real starting offset is returned in *STARTP, the
 file length, if known, is returned in *SIZEP.>>)

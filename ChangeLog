@@ -1,3 +1,9 @@
+2004-03-08  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* directory.h, fn_select.c, fn_tag.c, ftp.c, functions.h,
+	methods.mt, readdir.c, sftp.c, tag.c: use off_t to store file
+	size.
+
 2003-12-30  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (rftp_retr): consistent style when checking for non-NULL.

@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.82 2003/12/19 10:06:31 dillo Exp $
+  $NiH: ftp.c,v 1.83 2003/12/30 20:11:37 dillo Exp $
 
   ftp.c -- ftp protocol functions
   Copyright (C) 1996-2002 Dieter Baron
@@ -89,10 +89,10 @@ struct sockaddr *ftp_addr = (struct sockaddr *)&_ftp_addr;
 
 
 struct _ftp_transfer_stats {
-    long got, start, size;
+    off_t got, start, size;
     int secs, stall_sec;
     int ncur, ccur;
-    long *cur;
+    off_t *cur;
 };
 
 
@@ -110,9 +110,9 @@ static int _ftp_ascii2host(char *buf, char *buf2, int n, int *trail_cr);
 static int _ftp_host2ascii(char *buf, char *buf2, int n, int *trail_cr);
 
 static void _ftp_transfer_stats_init(struct _ftp_transfer_stats *tr,
-				     long start, long size, int ncur);
+				     off_t start, off_t size, int ncur);
 static void _ftp_transfer_stats_cleanup(struct _ftp_transfer_stats *tr);
-static void _ftp_update_transfer(struct _ftp_transfer_stats *tr, long got,
+static void _ftp_update_transfer(struct _ftp_transfer_stats *tr, off_t got,
 				 int secs);
 
 
@@ -372,7 +372,7 @@ ftp_cd(char *wd, int force)
 
 
 void *
-rftp_retr(char *file, int mode, long *startp, long *sizep)
+rftp_retr(char *file, int mode, off_t *startp, off_t *sizep)
 {
     int fd, resp;
     char *dir, *name, *can, *p;
@@ -389,7 +389,7 @@ rftp_retr(char *file, int mode, long *startp, long *sizep)
 	return NULL;
     
     if (startp && *startp > 0) {
-	ftp_put("rest %ld", *startp);
+	ftp_put("rest %lld", *startp);
 	if (ftp_resp() != 350)
 	    *startp = 0;
     }
@@ -403,7 +403,7 @@ rftp_retr(char *file, int mode, long *startp, long *sizep)
 	/* XXX: check how other servers format 150s */
 	if (strcmp(ftp_last_resp+strlen(ftp_last_resp)-8, " bytes).") == 0) {
 	    if ((p=strrchr(ftp_last_resp, '(')) != NULL)
-		*sizep = strtol(p+1, NULL, 10);
+		*sizep = strtoll(p+1, NULL, 10);
 	}
 	else
 	    *sizep = -1;
@@ -940,13 +940,13 @@ rftp_cwd(char *path)
 
 
 int
-ftp_cat(void *fin, void *fout, long start, long size, int upload)
+ftp_cat(void *fin, void *fout, off_t start, off_t size, int upload)
 {
     char buf[4096], buf2[8192], *p;
     int nread, nwritten, err, trail_cr, errno_copy;
     enum { ERR_NONE, ERR_FIN, ERR_FOUT } error_cause;
     int old_alarm;
-    long got;
+    off_t got;
     struct itimerval itv;
     struct _ftp_transfer_stats trstat;
     int do_read;
@@ -1069,9 +1069,9 @@ ftp_cat(void *fin, void *fout, long start, long size, int upload)
 
 
 static void
-_ftp_update_transfer(struct _ftp_transfer_stats *tr, long got, int secs)
+_ftp_update_transfer(struct _ftp_transfer_stats *tr, off_t got, int secs)
 {
-    long base, step;
+    off_t base, step;
     int nsec, i, stsec, eta;
     double rtot, rcur, rbps;
     char b[512];
@@ -1136,11 +1136,11 @@ _ftp_update_transfer(struct _ftp_transfer_stats *tr, long got, int secs)
 
 	if (tr->size != -1)
 	    disp_status(DISP_STATUS,
-			"transferred %ld/%ld (tot: %.2fkb/s, %s)",
+			"transferred %lld/%lld (tot: %.2fkb/s, %s)",
 			got, tr->size, rtot, b);
 	else
 	    disp_status(DISP_STATUS,
-			"transferred %ld (tot: %.2fkb/s, %s)",
+			"transferred %lld (tot: %.2fkb/s, %s)",
 			got, rtot, b);
     }
 }
@@ -1149,13 +1149,13 @@ _ftp_update_transfer(struct _ftp_transfer_stats *tr, long got, int secs)
 
 static void
 _ftp_transfer_stats_init(struct _ftp_transfer_stats *tr,
-			 long start, long size, int cur_secs)
+			 off_t start, off_t size, int cur_secs)
 {
     int i;
 
     /* XXX: check return value */
     tr->ncur = cur_secs+1;
-    tr->cur = malloc(tr->ncur*sizeof(long));
+    tr->cur = malloc(tr->ncur*sizeof(off_t));
     tr->ccur = 0;
     for (i=0; i<tr->ncur; i++)
 	tr->cur[i] = start;
