@@ -160,7 +160,8 @@ disp_dir(directory *d, int top, int sel, int newdir)
 		disp_sel(d, top, oldsel, 0);
 		disp_sel(d, top, sel, 1);
 	}
-	else if (tty_getcap("dl") == NULL || abs(oldtop-top) > win_lines-2)
+	else if (newdir || tty_getcap("dl") == NULL ||
+		 abs(oldtop-top) > win_lines-2)
 		disp_redir(d, top, sel);
 	else if (top > oldtop)
 		disp_updir(d, oldtop, oldsel, top, sel);
