@@ -15,4 +15,4 @@
 * write passwd and port in save-urls
 * segfault while tagging on GNU/Linux
 * improve abort handling, especially when downloading tagged files
-* don't exit if initiol connect/login fails (allow reading message log)
+* don't exit if initial connect/login fails (allow reading message log)
