@@ -11,6 +11,7 @@ endsec()
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include "util.h"
 #include "directory.h"
 #include "ftp.h"
 #include "functions.h"

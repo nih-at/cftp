@@ -78,7 +78,7 @@ readdir.o: readdir.c directory.h ftp.h display.h
 loop.o: loop.c directory.h display.h functions.h tty.h
 functions.o: functions.c directory.h display.h tag.h options.h
 ftp.o: ftp.c directory.h display.h readdir.h sockets.h util.h
-fn_basic.o: fn_basic.c directory.h functions.h display.h ftp.h
+fn_basic.o: fn_basic.c directory.h functions.h display.h ftp.h util.h
 fn_scroll.o: fn_scroll.c directory.h functions.h display.h
 fn_select.o: fn_select.c directory.h functions.h display.h ftp.h options.h \
 	util.h
