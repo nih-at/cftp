@@ -1,8 +1,8 @@
-dnl  fntable.fn -- description of binable functions
+dnl  fntable.fn -- description of bindable functions
 dnl  Copyright (C) 1996, 1997 Dieter Baron
 dnl
-dnl  This file is part of cftp, a fullscreen ftp client
-dnl  The author can be contacted at <dillo@giga.or.at>
+dnl  This file is part of cftp, a fullscreen ftp client.
+dnl  The author can be contacted at <dillo@giga.or.at>.
 dnl
 dnl  This program is free software; you can redistribute it and/or modify
 dnl  it under the terms of the GNU General Public License as published by
@@ -23,116 +23,157 @@ section(fn_basic, Basic Functions)
 
 function(exit, [-f], 0, FN_EXIT,
 	 {exit cftp},
-{Close connection and exit @sc{cftp}; if you have tagged files, @sc{cftp}
-asks for confirmation (unless the -f option is given).})
+ {Close the connection to the remote server and exit @sc{cftp}; if you
+have tagged files, @sc{cftp} asks for confirmation (unless the
+-f option is given).})
 
 
 function(version, , fn_version, 0,
 	 {display version number},
- {Display @sc{cftp} version string.})
+ {Display the @sc{cftp} version string.})
 
 
 function(redraw, , fn_redraw, FN_PRE,
 	 {redraw screen},
- {Clear and redraw screen.  Use this function if something messed up
-your display.})
+ {Clear and redraw the screen.
+
+Use this function if something messed up your display.})
 
 
 function(help, , fn_help, 0,
 	 {display help},
- {Display function help string, option help string and value, or key
-binding.
+ {Display help on a function or option, or the binding of a key.
 
-For functions, their help string is displayed; for options, short
-name, type, value and help string; for bindings, the function plus
-arguments.})
+Asks if you want help on a function, option or key binding.  For
+functions, their help string is displayed.  Help on an option shows
+its short name (e. g. 'mo' for mode), its type (boolean, character,
+integer, or string), its current value and help string.  For key
+bindings, @code{help} displays the function with arguments (if any),
+as it is executed when you press the key.})
 
 
 function(lcd, [dir], fn_lcd, FN_RC,
 	 {change directory on local host},
- {Change directory on localhost; dir is prompted for if ommited.  The
-new current directory is printed.})
+ {Change the current directory on your local host; if you don't supply
+@var{dir}, you will be prompted for it.  The new current directory is
+printed.})
 
 
 function(shell, {[cmd arg @dots{}]}, fn_shell, 0,
 	 {shell escape},
- {Execute shell command; if no command is given, it is prompted for.
-Enter empty string to get an interactive shell.}) 
+ {Execute shell command; if no command is given, you are prompted for
+it.  Enter empty string to get an interactive shell.})
 
 
 function(colon, {[args @dots{}]}, fn_colon, 0,
 	 {execute cftp command},
- {Execute an arbitrary @sc{cftp} command.})
+ {Execute an arbitrary @sc{cftp} command.
+
+Allows you to execute functions even if they are not bound to a key.
+@c XXX: Press "" to get a listing of all functions.
+})
 
 
 function(deidle, , fn_deidle, 0,
 	 {deidle connection},
- {Send a @code{noop} to ftp server, thus resetting idle time on server.})
+ {Send a @code{noop} to ftp server, thus resetting idle time on server.
+
+This prevents the server from logging you out due to timeouts.  Since
+@sc{cftp} caches directory listings, a timeout can occur even while
+you're actively using @sc{cftp}.})
 
 
 function(reconnect, , fn_reconnect, 0,
 	 {reconnect to server},
- {Reopen connection to server after timeout.})
+ {Reopen connection to server.
+
+You can use this function when you were disconnected after a
+timeout.  To prevent timeouts, use @ref{deidle}.})
 
 
 function(response, , fn_response, 0,
-	 {display last multiline response},
- {Display last N lines exchanged with ftp server.})
+	 {display dialog with server},
+ {Display a log of @sc{cftp}'s communication with the remote host. 
+
+Commands sent by @sc{cftp} and the responses from the remote host are
+kept in a log, with commands prefixed with @samp{->}.  You can change
+the size of the log with the option @ref{hist-size}.})
 
 
 function(prefix, , fn_prefix, FN_PRE,
 	 {prefix digit},
- {Enter digit of prefix argument to other commands.})
+ {Enter a digit of the prefix argument for another command.
+@c XXX: ref to the prefix chapter
+})
 
 
 
-function(bind, {[<state>] key [cmd [args @dots{}]]}, fn_bind, FN_RC,
+function(bind, {[<state>]key [cmd [args @dots{}]]}, fn_bind, FN_RC,
 	 {bind key},
- {Bind @var{key} to command.  If command (plus arguments) is ommited,
-remove key binding.  @var{<state>} specifies the binding state and
-defaults to @code{<global>}.})
+ {Change binding for @var{key}.  
+
+If @var{cmd} (the command) is omitted, remove the key binding.
+@var{<state>} specifies the binding state and defaults to
+@c XXX: ref to binding state 
+@code{<global>}.  This command is mainly used in the @ref{cftprc}.})
 
 
 function(set, [option [value]], fn_set, FN_RC,
 	 {set option},
- {Set user option.})
+ {Set @var{option} to @var{value}.
+
+If either @var{value} or @var{option} and @var{value} are omitted, you
+will be asked for them.  In either case, if you enter an empty string
+the command will be cancelled.})
 
 endsec()
 
 
 section(fn_scroll, Scrolling Functions)
 
-function(down, [n], fn_down, 0,
-	 {move N lines down (default: 1)},
- {Move cursor down N lines, wrapping around at bottom.  (N is the
-prefix argument.)})
+function(down, [@var{n}], fn_down, 0,
+	 {move cursor N lines down (default: 1)},
+ {Move cursor down @var{n} lines, wrapping around at the bottom.
+
+@var{n} can be a prefix argument.})
 
 
-function(up, [n], fn_up, 0,
-	 {move N lines up (default: 1)},
- {Move cursor up N lines, wrapping around at top.  (N is the prefix
-argument.)})
+function(up, [@var{n}], fn_up, 0,
+	 {move cursor N lines up (default: 1)},
+ {Move cursor up @var{n} lines, wrapping around at the top.  
+
+@var{n} can be a prefix argument.})
 
 
-function(page-down, [n], fn_pg_down, 0,
-	 {move N screenfulls down (default: 1)},
- {Move cursor down N screenfulls, or to bottom.  (N is the prefix
-argument.)})
+function(page-down, [@var{n}], fn_pg_down, 0,
+	 {move N screens down (default: 1)},
+ {Move down @var{n} screens, placing the cursor at the top of the
+screen. Wrap around to the first line if at the last screen.  
+
+@var{n} can be a prefix argument.})
 
 
-function(page-up, [n], fn_pg_up, 0,
-	 {move N screenfulls up (default: 1)},
- {Move cursor up N screenfulls, or to top.  (N is the prefix argument.)})
+function(page-up, [@var{n}], fn_pg_up, 0,
+	 {move N screens up (default: 1)},
+ {Move up @var{n} screens, placing the cursor at the top of the
+screen. Wrap around to the last screen if at the first line.  
+
+@var{n} can be a prefix argument.})
 
 
-function(goto, [line], fn_goto, 0,
+function(goto, [@var{n}], fn_goto, 0,
 	 {goto line N (default: last)},
- {Move cursor to line N.  (N is the prefix argument.)})
+ {Move cursor to line @var{n}.
+
+@var{n} can be a prefix argument.  If line @var{n} doesn't exist or
+@var{n} is zero, the cursor moves to the last line.})
 
 
 function(isearch, , fn_isearch, 0,
 	 {incremental search},
- {Search directory listing incrementally.})
+ {Search directory listing incrementally.
+@c XXX: genau beschreiben :-)
+})
 
 endsec()
 
@@ -141,7 +182,7 @@ section(fn_select, Selection Functions)
 
 function(enter/get, [file], fn_enter_get, 0,
 	 {enter directory or get file},
- {Enter directory or get file; default is file under cursor.})
+ {Enter directory or get file; default is file/directory at cursor.})
 
 
 function(enter/view, [file], fn_enter_view, 0,

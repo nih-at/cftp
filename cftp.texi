@@ -82,16 +82,44 @@ approved by the Free Software Foundation.
 @node Top, , ,(dir)
 @top cftp
 
-This file documents @sc{cftp}, a fullscreen ftp client.  This edition
-documents version @value{VERSION}.
+This file documents @sc{cftp}, a fullscreen ftp client running on
+ASCII-terminals.  This edition documents version @value{VERSION}.
 
 @menu
+* Introduction::        An introduction to @sc{cftp}
+* Invoking cftp::       How to start @sc{cftp}
 * Customizability::     How to customize and configure @sc{cftp}
 * Functions::           Description of all bindable functions
-* Options::             User settable options
-* Index::               Index
+* Options::             User setable options
+* Index::               Listing of all keywords
 @end menu
 @end ifinfo
+
+
+@c ********************************************************************
+@node Introduction
+@chapter Introduction
+@cindex Introduction
+
+@sc{cftp} is used to transfer files from a remote computer to your local
+computer via the ftp-protocol. It's advantages over most standard
+ftp-clients is its "graphical" representation of the remote directory so
+you can easily choose what to get or where to go. 
+
+
+@c ****************************************************************
+@node Invoking cftp
+@chapter Invoking @sc{cftp}
+@cindex Invokation
+
+@c XXX das mach ich schon
+
+
+@include functions.texi
+
+
+@include options.texi
+
 
 @c ********************************************************************
 @node Customizability
@@ -99,9 +127,10 @@ documents version @value{VERSION}.
 @cindex Customizability
 
 @menu
-* cftprc::             startup file
+* cftprc::             startup file for user-defined settings
 * netrc::              @sc{cftp}'s use of the .netrc file
 @end menu
+
 
 @c ====================================================================
 @node cftprc
@@ -110,9 +139,12 @@ documents version @value{VERSION}.
 @cindex cftprc
 
 On startup @sc{cftp} reads @file{.cftprc} (in your home directory) if it
-exists.  This file should contain @sc{cftp} functions (optionally with
-arguments), just as in the @code{bind} function.  Not all functions are
-allowed in @file{.cftprc}, however.
+exists.  This file contains @sc{cftp} functions (optionally with
+arguments), just as in the @code{bind} function.  Put @sc{cftp} commands
+in it you want to be executed every time @sc{cftp} starts.  Not all
+functions are allowed in @file{.cftprc}, however.
+
+@c XXX: include all allowed commands
 
 
 @c ====================================================================
@@ -121,8 +153,8 @@ allowed in @file{.cftprc}, however.
 @cindex .netrc
 @cindex netrc
 
-In addition to its own config file, @sc{cftp} scanns your .netrc file
-for this information:
+In addition to its own config file @file{.cftprc}, see @ref{cftprc},
+@sc{cftp} scans your @file{.netrc} file for this information:
 
 @itemize @bullet
 @item @code{host} or @code{default} lines for @code{login} and
@@ -130,12 +162,6 @@ for this information:
 @item @code{macdef init} definition for @code{cd} commands (used as
 initial directory)
 @end itemize
-
-
-@include functions.texi
-
-
-@include options.texi
 
 
 @c *********************************************************************
@@ -150,3 +176,4 @@ initial directory)
 @contents
 
 @bye
+
