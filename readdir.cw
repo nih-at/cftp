@@ -124,17 +124,18 @@ parse_unix(direntry *de, char *line)
 	de->type = 'x';
     }
 
-    strtok(line, " ");	/* perms */
-    strtok(NULL, " ");	/* links */
+    strtok(line+10, " ");	/* skip perms, links */
     strtok(NULL, " ");	/* owner */
     strtok(NULL, " ");	/* group */
     if ((p=strtok(NULL, " ")) == NULL) {
 	free(line);
 	return 1;
     }
-    de->size = strtol(p, NULL, 10);
+    de->size = strtol(p, &q, 10);
 			/* size  */
-    if ((p=strtok(NULL, " ")) == NULL) {
+    if (p == q)
+	de->size = 0;
+    else if ((p=strtok(NULL, " ")) == NULL) {
 	free(line);
 	return 1;
     }
