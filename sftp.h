@@ -2,7 +2,7 @@
 #define HAD_FTP_H
 
 /*
-  $NiH$
+  $NiH: sftp.h,v 1.1 2001/12/11 20:23:21 dillo Exp $
 
   sftp.h -- sftp protocol functions
   Copyright (C) 2001 Dieter Baron
@@ -27,6 +27,7 @@
 
 
 
+directory *sftp_list(char *path);
 int sftp_mkdir(char *path);
 int sftp_rmdir(char *path);
 

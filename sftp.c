@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.5 2001/12/11 19:52:08 dillo Exp $
+  $NiH: sftp.c,v 1.6 2001/12/12 06:09:02 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001 Dieter Baron
@@ -53,6 +53,9 @@ static unsigned long long _sftp_get_uint64(unsigned char *p);
 static void _sftp_log_packet(int dir, int type, char *data, int len);
 static int _sftp_parse_name(unsigned char **pp, direntry *e);
 static int _sftp_parse_status(int type, char *buf, int len);
+static int _sftp_put_packet(FILE *f, int type, char *buf, int len,
+			    int log_req);
+static void _sftp_put_uint32(unsigned char *p, unsigned int i);
 static directory *_sftp_read_dir(char *hnd);
 static char *_sftp_strerror(int error);
 
@@ -274,7 +277,7 @@ _sftp_get_packet(FILE *f, char *buf, int *lenp, int log_resp)
 	return -1;
     --len;
 
-    if (fread(buf, len, 1, f) != len)
+    if (fread(buf, 1, len, f) != len)
 	return -1;
 
     if (lenp)
@@ -459,4 +462,90 @@ _sftp_parse_status(int type, char *buf, int len)
 	return -1;
 
     return _sftp_get_uint32(buf+4);
+}
+
+
+
+char *
+sftp_get_handle(void)
+{
+    int len;
+
+    if (_sftp_get_packet(conin, _sftp_buffer, &len, 1) != SSH_FXP_HANDLE)
+	return NULL;
+
+    return _sftp_get_string(_sftp_buffer+4, NULL);
+}
+
+
+
+int
+sftp_file_close(char *hnd)
+{
+    return sftp_put_str(SSH_FXP_CLOSE, hnd, 0);
+}
+
+
+
+int
+sftp_readdir(char *hnd, char *buf, int *lenp)
+{
+    sftp_put_str(SSH_FXP_READDIR, hnd, 0);
+
+    return _sftp_get_packet(conin, buf, lenp, 0);
+}
+
+
+
+int
+sftp_put_str(int type, char *str, int is_path)
+{
+    int len;
+
+    len = 8;
+    if (is_path) {
+	strcpy(_sftp_buffer+len, ftp_lcwd);
+	len += strlen(ftp_lcwd);
+	_sftp_buffer[len++] = '/';
+    }
+    strcpy(_sftp_buffer+len, str);
+    len += strlen(str);
+
+    _sftp_put_uint32(_sftp_buffer, _sftp_nextid++);
+    _sftp_put_uint32(_sftp_buffer+4, len-8);
+    
+    return _sftp_put_packet(conout, type, _sftp_buffer, len, 1);
+}
+
+
+
+static void
+_sftp_put_uint32(unsigned char *p, unsigned int i)
+{
+    p[0] = (i>>24) & 0xff;
+    p[1] = (i>>16) & 0xff;
+    p[2] = (i>>8) & 0xff;
+    p[3] = i & 0xff;
+}
+
+
+
+static int
+_sftp_put_packet(FILE *f, int type, char *buf, int len, int log_req)
+{
+    char b[9];
+
+    _sftp_put_uint32(b, len+1);
+    b[5] = type;
+
+    if (fwrite(b, 1, 5, f) != 5)
+	return -1;
+    
+    if (fwrite(buf, 1, len, f) != len)
+	return -1;
+
+    if (log_req)
+	_sftp_log_packet(0, type, buf, len);
+
+    return 0;
 }
