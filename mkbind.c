@@ -22,10 +22,12 @@
 
 
 
+#include <sys/types.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
+#include <unistd.h>
 
 #include "keys.h"
 #include "rc.h"
@@ -259,7 +261,7 @@ main(int argc, char **argv)
 
     if (rename(tmp, FNAME ".c") < 0) {
 	fprintf(stderr, "%s: cannot rename `%s' to `%s': %s\n",
-		tmp, FNAME ".c", strerror(errno));
+		prg, tmp, FNAME ".c", strerror(errno));
 	exit(1);
     }
 

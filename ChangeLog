@@ -1,3 +1,8 @@
+2000-12-15  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* mkbind.c (main): include <unistd.h>, include prg in args to
+	fprintf.
+
 2000-12-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* mkbind.c (main): create output in temp file and rename when
