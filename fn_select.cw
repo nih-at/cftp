@@ -227,7 +227,7 @@ fn_get(char **args)
 	aux_download(name, size);
 	break;
     default:
-	disp_status("Can only download plain files.\n");
+	disp_status("Can only download plain files.");
     }
 }
 
@@ -258,7 +258,7 @@ fn_view(char **args)
 	aux_view(name);
 	break;
     default:
-	disp_status("Can only view plain files.\n");
+	disp_status("Can only view plain files.");
     }
 }
 
