@@ -214,7 +214,13 @@ main(int argc, char **argv)
 
     ftp_init();
 
-    if (ftp_open(host, port) == -1)
+    ftp_host = host;
+    ftp_prt = port;
+    ftp_user = user;
+    if (keep_pass)
+	ftp_pass = pass;
+
+    if (ftp_open(ftp_host, ftp_prt) == -1)
 	exit(1);
 
     if (init_disp() < 0)
@@ -280,12 +286,6 @@ main(int argc, char **argv)
 	    }
 	}
     }
-
-    ftp_host = host;
-    ftp_prt = port;
-    ftp_user = user;
-    if (keep_pass)
-	ftp_pass = pass;
 
     curdir = dir;
     list = (struct list *)curdir;
