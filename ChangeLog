@@ -1,3 +1,7 @@
+2000-10-16  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* sockets.c (sopen): include hostname in connect error message.
+
 2000-06-28  Dieter Baron  <dillo@danbala.ifoer.tuwien.ac.at>
 
 	* ftp.c (ftp_accept): set close-on-exec flag, so piping works.

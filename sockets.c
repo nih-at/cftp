@@ -91,10 +91,11 @@ sopen(char *host, char *service)
     }
     if (connect(s, (struct sockaddr *)&sa, sizeof(sa)) < 0) {
 	if (disp_active)
-	    disp_status("can't connect: %s", strerror(errno));
+	    disp_status("can't connect to %s: %s",
+			host, strerror(errno));
 	else
-	    fprintf(stderr, "%s: can't connect: %s\n",
-		    prg, strerror(errno));
+	    fprintf(stderr, "%s: can't connect to %s: %s\n",
+		    prg, host, strerror(errno));
 	return(-1);
     }
     return(s);
