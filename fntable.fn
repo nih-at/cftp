@@ -77,6 +77,12 @@ function(shell, {[cmd arg @dots{}]}, fn_shell, 0,
 it.  Enter empty string to get an interactive shell.})
 
 
+function(guile, {[cmd arg @dots{}]}, fn_guile, 0,
+	 {guile trial},
+ {Execute guile command; if no command is given, you are prompted for
+it.})
+
+
 function(colon, {[args @dots{}]}, fn_colon, 0,
 	 {execute cftp command},
  {Execute an arbitrary @sc{cftp} command.

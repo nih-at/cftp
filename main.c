@@ -32,6 +32,7 @@
 #include <getopt.h>
 #include <unistd.h>
 
+#include "config.h"
 
 #include "directory.h"
 #include "display.h"
@@ -46,6 +47,8 @@
 #include "status.h"
 #include "tty.h"
 #include "util.h"
+
+void real_main(int argc, char **argv);
 
 /* in readrc.c */
 int readrc(char **userp, char **passp, char **hostp, char **portp,
@@ -103,6 +106,19 @@ void sig_reenter(int i);
 int
 main(int argc, char **argv)
 {
+#ifdef HAVE_GUILE
+    gh_enter(argc, argv, real_main);
+#else
+    real_main(argc, argv);
+#endif
+    return 1;
+}
+
+
+
+void
+real_main(int argc, char **argv)
+{
     extern int opterr, optind;
     extern char *optarg;
 
@@ -115,7 +131,7 @@ main(int argc, char **argv)
     int check_alias;
 
     prg = argv[0];
-	
+
     signal(SIGPIPE, SIG_IGN);
 
     if ((opt_pager=getenv("PAGER")) == NULL)

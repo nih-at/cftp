@@ -87,5 +87,12 @@ fi
 
 dnl system services
 
+dnl guile kluge.  real code to follow
+
+CFLAGS="$CFLAGS `guile-config compile`"
+LDFLAGS="$LDFLAGS -L/usr/local/lib"
+LIBS="$LIBS  -lguile -lreadline -ltermcap -lm"
+AC_DEFINE(HAVE_GUILE)
+
 dnl output
 AC_OUTPUT(Makefile)
