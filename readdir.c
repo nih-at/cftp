@@ -138,7 +138,6 @@ parse_unix(direntry *de, char *line)
     p += 13;
     
     if (de->type == 'l') {
-	de->size = -1;
 	q = p + strlen(p) - de->size;
 	if (strncmp(q-4, " -> ", 4) == 0) {
 	    q[-4] = '\0';
@@ -157,6 +156,7 @@ parse_unix(direntry *de, char *line)
 		de->link = strdup(q+4);
 	    }
 	}
+	de->size = -1;
     }
     else {
 	de->name = strdup(p);
