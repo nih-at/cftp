@@ -37,6 +37,7 @@ extern struct ftp_hist *ftp_history;
 extern char ftp_anon;
 extern char *ftp_host, *ftp_prt, *ftp_user, *ftp_pass;
 extern char **ftp_response;
+extern char *ftp_pcwd;
 
 
 
@@ -46,7 +47,7 @@ int ftp_login(char *host, char *user, char *pass);
 int ftp_reconnect(void);
 int ftp_close(void);
 directory *ftp_list(char *path);
-directory *ftp_cd(char *wd);
+directory *ftp_cd(char *wd, int force);
 FILE *ftp_retr(char *file, int mode);
 FILE *ftp_stor(char *file, int mode);
 int ftp_fclose(FILE *f);

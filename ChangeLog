@@ -1,3 +1,13 @@
+1997-11-20  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* fn_select.c (fn_reload): new function.
+
+	* tag.c (change_curdir): handle NULL `curdir'.
+
+	* ftp.c (ftp_cd): new argument `force'; changed callers.
+
+	* directory.c (get_dir): new argument `force'; fixed memory leak.
+
 1997-11-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (ftp_init): new function

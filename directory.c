@@ -70,7 +70,7 @@ dir_free(directory *d)
 
 
 directory *
-get_dir(char *path)
+get_dir(char *path, int force)
 {
     dircache *d;
     directory *dir;
@@ -95,6 +95,15 @@ get_dir(char *path)
 	/* found: put d to front of queue and return it */
 	cache_remove(d);
 	cache_insert(d);
+
+	if (force) {
+	    dir = ftp_list(path);
+	    if (dir == NULL)
+		return NULL;
+
+	    dir_free(d->dir);
+	    d->dir = dir;
+	}
     }
     else {
 	dir = ftp_list(path);
@@ -111,7 +120,8 @@ get_dir(char *path)
 	    d = (dircache *)malloc(sizeof(dircache));
 	    cache_fill++;
 	}
-	    
+
+	free(dir->path);
 	dir->path = strdup(path);
 	d->dir = dir;
 	cache_insert(d);

@@ -292,14 +292,14 @@ ftp_list(char *path)
 
 
 directory *
-ftp_cd(char *wd)
+ftp_cd(char *wd, int force)
 {
 	directory *dir;
 	char *nwd;
 	
 	nwd = canonical(wd, NULL);
 
-	dir = get_dir(nwd);
+	dir = get_dir(nwd, force);
 	if (dir != NULL) {
 		free(ftp_lcwd);
 		ftp_lcwd = nwd;
@@ -428,8 +428,7 @@ ftp_pwd(void)
     dir[e-s-1] = '\0';
 
     if (ftp_dosnames == -1) {
-	if (dir[0] >= 'A' && dir[0] <= 'Z'
-	    && dir[1] == ':' && dir[2] == '\\')
+	if (isalpha(dir[0]) && dir[1] == ':' && dir[2] == '\\')
 	    ftp_dosnames = 1;
 	else
 	    ftp_dosnames = 0;
@@ -720,7 +719,7 @@ ftp_cwd(char *path)
     if (ftp_dosnames == -1) {
 	if ((s=strchr(ftp_last_resp, '"')) != NULL
 	    && (e=strchr(s+1, '"')) != NULL) {
-	    if (s[1] >= 'A' && s[1] >= 'Z' && s[2] == ':' && s[3] == '\\')
+	    if (isalpha(s[1]) && s[2] == ':' && s[3] == '\\')
 		ftp_dosnames = 1;
 	    else
 		ftp_dosnames = 0;

@@ -207,6 +207,11 @@ function(enter, [file], fn_enter, 0,
  {Enter directory; default is directory under cursor.})
 
 
+function(reload, , fn_reload, 0,
+	 {reload current directory},
+ {Reload listing of current directory from server, disregarding cache.})
+
+
 function(get, [file], fn_get, 0,
 	 {get file},
  {Get file; default is file under cursor.})

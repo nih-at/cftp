@@ -61,22 +61,24 @@ change_curdir(directory *dir)
     struct tagentry *t;
     int i, cmp, c;
 
-    for (i=0; i<curdir->len; i++)
-	curdir->line[i].line[0] = ' ';
+    if (curdir) {
+	for (i=0; i<curdir->len; i++)
+	    curdir->line[i].line[0] = ' ';
 
-    cmp = 1;
+	cmp = 1;
 
-    for (t=tags_s.next; t != &tags_s && cmp >= 0; t = t->next) {
-	c = t->name[t->dirl];
-	t->name[t->dirl] = '\0';
-	cmp = strcmp(dir->path, t->name);
-	t->name[t->dirl] = c;
-	if (cmp == 0 && (i=dir_find(dir, t->file)) >= 0) {
-	    dir->line[i].line[0] = opt_tagchar;
+	for (t=tags_s.next; t != &tags_s && cmp >= 0; t = t->next) {
+	    c = t->name[t->dirl];
+	    t->name[t->dirl] = '\0';
+	    cmp = strcmp(dir->path, t->name);
+	    t->name[t->dirl] = c;
+	    if (cmp == 0 && (i=dir_find(dir, t->file)) >= 0) {
+		dir->line[i].line[0] = opt_tagchar;
+	    }
 	}
+	curdir->top = curdir->cur = 0;
     }
-    curdir->top = curdir->cur = 0;
-
+    
     curdir = dir;
     if (binding_state == bs_remote)
 	list = (struct list *)curdir;

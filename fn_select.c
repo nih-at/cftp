@@ -49,7 +49,7 @@ aux_enter(char *name)
 {
     directory *d;
 
-    d = ftp_cd(name);
+    d = ftp_cd(name, 0);
 
     if (d == NULL)
 	return -1;
@@ -244,6 +244,33 @@ void fn_enter(char **args) { char *name; int type;
 
 
 void
+fn_reload(char **args)
+{
+    directory *d;
+    char *name;
+    int sel;
+
+    name = strdup(curdir->line[curdir->cur].name);
+
+    d = ftp_cd(ftp_pcwd, 1);
+    if (d == NULL) {
+	free(name);
+	return;
+    }
+
+    curdir = NULL;
+    change_curdir(d);
+
+    if ((sel=dir_find(curdir, name)) < 0)
+	sel = 0;
+    free(name);
+    
+    aux_scroll(sel-(win_lines/2), sel, 1);
+}
+
+
+
+void
 fn_get(char **args)
 {
     char *name;
@@ -391,7 +418,7 @@ fn_cdup(char **args)
     if (strcmp(curdir->path, "/") == 0)
 	return;
 
-    d = ftp_cd("..");
+    d = ftp_cd("..", 0);
 
     if (d == NULL)
 	return;
@@ -424,7 +451,7 @@ fn_cd(char **args)
 	return;
     }
 
-    d = ftp_cd(path);
+    d = ftp_cd(path, 0);
 
     if (!args)
 	free(path);

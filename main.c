@@ -252,10 +252,10 @@ main(int argc, char **argv)
 	}
     }
 	
-    if ((dir=ftp_cd(wdir)) == NULL) {
+    if ((dir=ftp_cd(wdir, 0)) == NULL) {
 	if ((wdir=ftp_pwd()) == NULL)
 	    wdir = strdup("/");
-	if ((dir=ftp_cd(wdir)) == NULL) {
+	if ((dir=ftp_cd(wdir, 0)) == NULL) {
 	    escape_disp(0);
 	    ftp_close();
 	    exit_disp();

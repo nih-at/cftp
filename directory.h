@@ -51,7 +51,7 @@ typedef struct directory directory;
 
 
 void dir_free(directory *d);
-directory *get_dir(char *path);
+directory *get_dir(char *path, int force);
 int dir_find(directory *dir, char *entry);
 
 void dir_sort(directory *dir, int sort_type);

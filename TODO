@@ -1,5 +1,4 @@
-* document motion commands plus bindings
-* support for servers with dos directory names
+* wrap option; wrap around like tin
 * site exec
 * <local> mode
 * decent documentation

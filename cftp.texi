@@ -171,9 +171,37 @@ directory) if it exists.  It contains @sc{cftp} functions invocations
 @sc{cftp} commands in it you want to be executed every time @sc{cftp}
 starts.  Not all functions are allowed in @file{.cftprc}, however.
 
-@c XXX: alias
+@menu
+* alias::               Shortcuts for hosts and directories.
+* cftprc example::     
+@end menu
+
 @c XXX: include all allowed commands
 
+
+@c ----------------------------------------------------------------
+@node alias
+@subsection alias
+@cindex alias
+
+@itemize @bullet
+@item
+Synopsis: alias @var{short} @{@var{url} | @var{host} [@var{dir}]@}
+@end itemize
+
+
+
+@c ----------------------------------------------------------------
+@node cftprc example
+@subsection .cftp example
+
+Here is an example .cftprc file:
+
+@example
+alias cftp-dist ftp://ftp.giga.or.at/pub/nih/cftp
+set sort date
+bind p set beep toggle
+@end example
 
 @c ====================================================================
 @node netrc
