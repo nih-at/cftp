@@ -22,7 +22,10 @@ P display.cw: check for missing capabilities
 B tty.cw: (tty_readkey) don't discard chars by failed multibyte code
 F display.cw: (disp_redir) don't clear screen, overwrite
 P configure.in: add -posix for NeXTStep
+B tty.cw: cursor keys on linux console (broken)
 ----------------------------------------------- done
+B main.cw, display.cw, ftp.cw: init_disp after opening connection
+
 Mar 30 (0.4)
 B main.cw: (main) crashes when TERM is unknown -- fixed
 B tty.cw: check for window size & size change

@@ -40,9 +40,6 @@ init_disp(void)
 {
 	int err;
 
-	if (err=tty_init())
-		return err;
-
 	disp_quiet = 0;
 
 	if (err=tty_setup())

@@ -52,6 +52,12 @@ main(int argc, char **argv)
 	
 	@<process command line arguments@>
 	
+	if (tty_init() < 0)
+	    exit(1);
+
+	if (ftp_open(host) == -1)
+		exit(1);
+
 	if (init_disp() < 0)
 	    exit(1);
 	    
@@ -61,7 +67,7 @@ main(int argc, char **argv)
 	signal(SIGTSTP, sig_escape);
 	signal(SIGCONT, sig_reenter);
 
-	if (ftp_open(host, user, pass) == -1) {
+	if (ftp_login(host, user, pass) == -1) {
 		exit_disp();
 		exit(1);
 	}

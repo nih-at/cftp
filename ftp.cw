@@ -36,11 +36,12 @@ FILE *conin=NULL, *conout=NULL;
 unsigned char ftp_addr[4];
 
 @d<prototypes@>
-int ftp_open(char *host, char *user, char *pass);
+int ftp_open(char *host);
+int ftp_login(char *host, char *user, char *pass);
 
 @u
 int
-ftp_open(char *host, char *user, char *pass)
+ftp_open(char *host)
 {
 	int fd, resp;
 
@@ -60,6 +61,12 @@ ftp_open(char *host, char *user, char *pass)
 		return -1;
 	}
 
+	return 0;
+}
+
+int
+ftp_login(char *host, char *user, char *pass)
+{
 	if (ftp_resp() != 220)
 		return -1;
 
