@@ -24,6 +24,7 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "config.h"
 #include "display.h"
@@ -54,13 +55,15 @@ init_disp(void)
     disp_quiet = 0;
     disp_active = 1;
 
-    if (err=tty_setup())
+    if ((err=tty_setup()))
 	return err;
 
     tty_redraw = disp_redraw;
 
     tty_clear();
     tty_hidecrsr();
+
+    return 0;
 }
 
 
@@ -113,8 +116,6 @@ reenter_disp(void)
 void
 disp_redraw(void)
 {
-    int i;
-
     if (disp_quiet)
 	return;
 
@@ -210,6 +211,8 @@ disp_prompt_char(void)
 	while ((c=tty_readkey()) != EOF && c != '\n')
 	    ;
 	/*escape_disp(0);*/
+
+	return 0;
 }
 
 

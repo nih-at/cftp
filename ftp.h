@@ -47,9 +47,11 @@ int ftp_close(void);
 directory *ftp_list(char *path);
 directory *ftp_cd(char *wd);
 FILE *ftp_retr(char *file, int mode);
+FILE *ftp_stor(char *file, int mode);
 int ftp_fclose(FILE *f);
 int ftp_noop(void);
 char *ftp_pwd(void);
 char *ftp_gets(FILE *f);
+int ftp_cat(FILE *fin, FILE *fout, long size);
 
 #endif /* ftp.h */

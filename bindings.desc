@@ -41,6 +41,7 @@ bind	<remote> right	enter/get
 bind	<remote> v	view
 bind	<remote> d	get
 bind	<remote> |	pipe :
+bind	<remote> p	put
 
 bind	<tag>	h	leave-tag
 bind	<tag>	q	leave-tag

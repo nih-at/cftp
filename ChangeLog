@@ -1,3 +1,12 @@
+1997-10-21  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* fn_select.c (aux_download): ftp_close(fout), fclose(fin) -- not
+	the other way around.
+	(aux_upload): new function.
+	(fn_put): new function.
+
+	* ftp.c (ftp_stor): new function.
+
 1997-10-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (ftp_close): return if not connected
@@ -6,7 +15,7 @@
 	* sockets.c (sopen): write error in message area when display is
 	active.
 
-	* display.c: new variable `disp_active
+	* display.c: new variable `disp_active'.
 
 1997-10-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 

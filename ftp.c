@@ -326,6 +326,38 @@ ftp_retr(char *file, int mode)
 
 
 
+FILE *
+ftp_stor(char *file, int mode)
+{
+	int fd;
+	char *dir, *name, *can;
+	FILE *fin;
+
+	can = canonical(file, NULL);
+	dir = dirname(can);
+	name = (char *)basename(can);
+	
+	if (ftp_mode(mode) == -1 || ftp_cwd(dir) == -1)
+		return NULL;
+
+	if ((fd=ftp_port()) == -1)
+		return NULL;
+	
+	ftp_put("stor %s", name);
+	if (ftp_resp() != 150) {
+		close(fd);
+		return NULL;
+	}
+	if ((fin=ftp_accept(fd, "w")) == NULL) {
+		close(fd);
+		return NULL;
+	}
+
+	return fin;
+}
+
+
+
 int
 ftp_fclose(FILE *f)
 {

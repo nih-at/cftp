@@ -219,6 +219,11 @@ function(pipe, {[-q] file cmd [arg ...]}, fn_pipe, 0,
  {Pipe file to command @var{cmd}.  If @code{-q} is given, display is not escaped (thus, @var{cmd} should not produce any output).})
 
 
+function(put, {[file]}, fn_put, 0,
+	{put file},
+ {Put file; if no file name given, you will be prompted for it.})
+
+
 function(leave, , fn_cdup, 0,
 	 {leave current directory},
  {Leave current directory, positioning cursor over it.})

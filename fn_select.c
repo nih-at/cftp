@@ -23,8 +23,11 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "directory.h"
 #include "bindings.h"
 #include "functions.h"
@@ -71,15 +74,15 @@ aux_download(char *name, long size)
 
     if ((fout=fopen((char *)basename(name), "w")) == NULL) {
 	disp_status("can't create `%s': %s",
-		    basename(name), strerror(errno));
+		    (char *)basename(name), strerror(errno));
 	return -2;
     }
 
     err = ftp_cat(fin, fout, size);
 
-    err |= ftp_fclose(fout);
+    err |= ftp_fclose(fin);
     
-    if (fclose(fin)) {
+    if (fclose(fout)) {
 	disp_status("error closing `%s': %s",
 		    basename(name), strerror(errno));
 	return -2;
@@ -107,6 +110,41 @@ aux_pipe(char *name, long size, int mode, char *cmd, int quietp)
     err |= ftp_fclose(fin);
     
     err |= disp_close(fout, quietp);
+
+    return err;
+}
+
+
+
+int
+aux_upload(char *name)
+{
+    int err;
+    long size;
+    struct stat st;
+    FILE *fin, *fout;
+
+    if ((fin=fopen(name, "r")) == NULL) {
+	disp_status("can't open `%s': %s", name, strerror(errno));
+	return -2;
+    }
+
+    if ((fout=ftp_stor((char *)basename(name), opt_mode)) == NULL)
+	return -2;
+
+    if (stat(name, &st) >= 0)
+	size = st.st_size;
+    else
+	size = -1;
+    
+    err = ftp_cat(fin, fout, size);
+
+    err |= ftp_fclose(fout);
+    
+    if (fclose(fin)) {
+	disp_status("error closing `%s': %s", name, strerror(errno));
+	return -2;
+    }
 
     return err;
 }
@@ -397,5 +435,23 @@ fn_cd(char **args)
     change_curdir(d);
     
     list_do(1);
+}
+
+
+
+void
+fn_put(char **args)
+{
+    char *name;
+
+    if (args)
+	name = args[0];
+    else {
+	name = read_string("put ", 1);
+	if (name == NULL || name[0] == '\0')
+	    return;
+    }
+
+    aux_upload(name);
 }
 
