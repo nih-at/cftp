@@ -172,6 +172,16 @@ sockaddr_ntop(struct sockaddr *sa)
 #else
     const int niflags = NI_NUMERICHOST;
 #endif
+    int len;
+
+#ifdef HAVE_STRUCT_MEMBER_SOCKADDR_SA_LEN
+    len = sa->sa_len;
+#else
+    if (sa->sa_family == AF_INET)
+	len = sizeof(struct sockaddr_in);
+    else
+	len = sizeof(struct sockaddr_in6);
+#endif
 
     if (getnameinfo(sa, sa->sa_len, addrbuf, sizeof(addrbuf),
             NULL, 0, niflags) == 0)

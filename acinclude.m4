@@ -37,3 +37,24 @@ AC_MSG_RESULT(no)
 ifelse([$4], , , [$4])
 fi])
 
+dnl Usage:
+dnl NIH_CHECK_STRUCT_MEMBER(includes, struct, member, a-if-fnd, a-if-not-fnd)
+
+AC_DEFUN(NIH_CHECK_STRUCT_MEMBER,
+[AC_MSG_CHECKING(for member $3 of struct $2)
+AC_CACHE_VAL(nih_cv_check_struct_member_$2_$3,
+[AC_TRY_COMPILE([$1], [struct $2 *var; var->$3],
+ [nih_cv_check_struct_member_$2_$3=yes],
+ [nih_cv_check_struct_member_$2_$3=no])])
+if test "x$nih_cv_check_struct_member_$2_$3" = xyes; then
+AC_MSG_RESULT(yes)
+ifelse([$4], ,
+[AC_DEFINE([HAVE_STRUCT_MEMBER_]translit($2, [a-z], [A-Z])[_]translit($3,
+ [a-z], [A-Z]),
+  1,[Define if you have member $3 in struct $2])],
+[$4])
+else
+AC_MSG_RESULT(no)
+ifelse([$5], , , [$5])
+fi])
+

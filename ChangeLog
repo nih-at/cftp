@@ -1,5 +1,10 @@
 2000-12-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* sockets.c (sockaddr_ntop): work around mising sa_len.
+	* configure.in: check for member sa_len of struct sockaddr.
+	* acinclude.m4 (NIH_HAVE_STRUCT_MEMBER): generic check for a
+	member of a struct.
+
 	* ftp.c (ftp_port): support for inet6.
 	(ftp_addr, ftp_gethostaddr): store address in struct
 	sockaddr_storage for protocol independence.
