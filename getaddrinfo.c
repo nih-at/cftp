@@ -91,7 +91,6 @@ getaddrinfo(const char *nodename, const char *servname,
 	    case TRY_AGAIN:
 		return EAI_AGAIN;
 	    case HOST_NOT_FOUND:
-		return EAI_NONAME;
 	    case NO_DATA:
 		return EAI_NODATA;
 	    case NO_RECOVERY:
@@ -153,18 +152,18 @@ char *
 gai_strerror(int ecode)
 {
     static char *estr[] = {
-	"no error",
-	"address family for hostname not supported",
-	"temporary failure in name resolution",
-	"invalid value for ai_flags",
-	"non-recoverable failure in name resolution",
+	"Success",
+	"Address family for hostname not supported",
+	"Temporary failure in name resolution",
+	"Invalid value for ai_flags",
+	"Non-recoverable failure in name resolution",
 	"ai_family not supported",
-	"memory allocation failure",
-	"no address associated with hostname",
-	"hostname nor servname provided, or not kn",
+	"Memory allocation failure",
+	"No address associated with hostname",
+	"hostname nor servname provided, or not known",
 	"servname not supported for ai_socktype",
 	"ai_socktype not supported",
-	"system error returned in errno"
+	"System error returned in errno"
     };
     static const int nestr = sizeof(estr)/sizeof(estr[0]);
 

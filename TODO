@@ -1,5 +1,6 @@
 ! compatibility checks
 * fix warnings in GNU source (tparam, getopt)
+* fix compile on HPUX (struct sockaddr)
 * feature recognition and handling
 * complete getaddrinfo replacement
 * check warnings on NextSTEP
