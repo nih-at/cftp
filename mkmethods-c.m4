@@ -1,4 +1,4 @@
-dnl  $NiH$
+dnl  $NiH: mkmethods-c.m4,v 1.1 2001/12/13 21:14:53 dillo Exp $
 dnl
 dnl  mkmethods-c.m4 -- create methods.c from methods.mt
 dnl  Copyright (C) 2001 Dieter Baron
@@ -28,7 +28,7 @@ define(rcsid, dnl id
 <<divert(3)    $1
 divert(-1)>>)
 
-rcsid($NiH$)
+rcsid(<<$NiH: mkmethods-c.m4,v 1.1 2001/12/13 21:14:53 dillo Exp $>>)
 
 define(method, dnl rettype, name, args, docu
 <<divert(1)    rftp_<<$2>>,
