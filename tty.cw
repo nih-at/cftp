@@ -324,7 +324,7 @@ tty_readkey(void)
 		while (1) {
 		    while ((c=getchar())==EOF && errno == EINTR)
 			;
-			if ((c=getchar()) == EOF) {
+			if (c == EOF) {
 				tty_vmin(1, 0);
 				clearerr(stdin);
 				return s[0];

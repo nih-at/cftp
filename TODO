@@ -22,8 +22,8 @@ P display.cw: check for missing capabilities
 B tty.cw: (tty_readkey) don't discard chars by failed multibyte code
 F display.cw: (disp_redir) don't clear screen, overwrite
 P configure.in: add -posix for NeXTStep
-B tty.cw: cursor keys on linux console (broken)
 ----------------------------------------------- done
+B tty.cw: (tty_readkey): fixed bug in multi-char read
 F ftp.cw: (ftp_cat): update status at most once a second
 B main.cw, display.cw, ftp.cw: init_disp after opening connection
 
