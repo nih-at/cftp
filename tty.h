@@ -28,6 +28,7 @@
 enum {
     _TTY_cl, _TTY_ho, _TTY_cd, _TTY_ce, _TTY_so, _TTY_se, _TTY_vi,
     _TTY_ve, _TTY_cs, _TTY_sf, _TTY_sr, _TTY_SF, _TTY_SR,
+    _TTY_ll,
     _TTY_al, _TTY_dl, _TTY_AL, _TTY_DL   
 };
 extern char *_tty_caps[];
@@ -39,6 +40,7 @@ extern int fputchar();
 
 #define tty_clear()	(tty_put0(cl, tty_lines))
 #define tty_home()	(tty_put0(ho, 1))
+#define tty_lowleft()	(tty_put0(ll, 1))
 #define tty_clreos(l)	(tty_put0(cd, (l)))
 #define tty_clreol()	(tty_put0(ce, 1))
 #define tty_standout()	(tty_put0(so, 1))

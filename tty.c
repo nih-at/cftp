@@ -468,7 +468,7 @@ tty_parp(char *cap, char *pcap, int n, int pad)
 
 char *_tty_capnames[] = {
     "cl", "ho", "cd", "ce", "so", "se", "vi", "ve", "cs",
-    "sf", "sr", "SF", "SR", "al", "dl", "AL", "DL"
+    "sf", "sr", "SF", "SR", "ll", "al", "dl", "AL", "DL"
 };
 
 char *_tty_caps[sizeof(_tty_capnames)/sizeof(_tty_capnames[0])];

@@ -120,24 +120,30 @@ list_full(struct list *list)
 void
 list_region(struct list *list, int up, int n)
 {
+    /* 
     if (up)
 	tty_goto(0, 2+win_lines-1);
     else
 	tty_goto(0, 2);
+    */
 	
-    tty_scregion(2, 2+win_lines-1); 
+    tty_scregion(2, 2+win_lines-1);
+    
     if (up) {
+	tty_goto(0, 2+win_lines-1);
 	tty_scrollup(n, win_lines);
 	if (n > 1)
 	    tty_goto(0, 2+win_lines-n);
 	list_refill(list, list->top+win_lines-n, n);
     }
     else {
+	tty_goto(0, 2);
 	tty_scrolldown(n, win_lines);
 	list_refill(list, list->top, n);
     }
 
     tty_scregion(0, tty_lines);
+    tty_lowleft();
 }
 
 

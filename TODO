@@ -26,28 +26,28 @@ F forced reload of directory listing
 B handle immensly long lines in ftp_gets (malloc failure)
 P display.c: check for missing capabilities
 F display.c: (disp_redir) don't clear screen, overwrite
-P configure.in: add -posix for NeXTStep
 B propagate errors (conn hung or eof?) up to fn_gettags
 F cftp.texi: introduction, invoking, cftprc
-C fn_basic.cw: docu for bind
-F fn_basic.cw: (fn_help) help for `f'unktions, `k'eys, and `o'ptions
-C untangle fn_* files
-F (fn_isearch) search backwards
-B (fn_isearch) repeaded search sets start to wrong match
 F readrc: host
+P configure.in: add -posix for NeXTStep
 P cc on HPUX: -Aa -D_POSIX_SOURCE, prototypes for LIBOBJS
 B version.c: is created before Makefile is updated
 B options.h: dependencies seem wrong -- doesn't get remade
 F fn_basic.c: (fn_help) display value for options
+F (fn_isearch) search backwards
+B (fn_isearch) repeaded search sets start to wrong match
+F (fn_isearch) show status (failed, wrapped)
+C fntable.fn: doku for bind, update doku for help
 B list.c: scrolling region broken
 ----------------------------------------------- done
+F fn_basic.cw: (fn_help) help for `f'unktions, `k'eys, and `o'ptions
 C check and update copyright notices
 
 Jan 28 1997 (0.5d)
 F readrc: alias and commands
 F long options
 B main.c: (main) canonify pathname if not starting with `/'
-B tty.c: (tty_init) sanity checks on screen size detecion
+B tty.c: (tty_init) sanity checks on screen size detection
 P hstrerror.c: AIX: Service unavailable (5); include h_errno in unknown msg
 
 Dec 19 1996 (0.5c)
