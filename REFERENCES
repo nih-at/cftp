@@ -12,6 +12,8 @@ RFCs:
 Internet Drafts:
 
 draft-ietf-ftpext-mlst-12: Extensions to FTP
+draft-ietf-secsh-filexfer-00: SSH File Transfer Protocol
+	(http://www.openssh.org/txt/draft-ietf-secsh-filexfer-00.txt)
 
 
 
