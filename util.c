@@ -1,5 +1,5 @@
 /*
-  $NiH: util.c,v 1.18 2001/12/14 07:04:06 dillo Exp $
+  $NiH: util.c,v 1.19 2001/12/14 08:12:12 dillo Exp $
 
   util -- auxiliary functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -271,18 +271,29 @@ mkhoststr(int passp, int urlp)
 
 
 
+/*
+  Set FD to blocking if BLOCKING, non-blocking otherwise.  Return 0 if
+  FD was in non-blocking mode, 1 if it was in blocking mode, -1 in
+  case of error.
+*/
+
 int
 set_file_blocking(int fd, int blocking)
 {
-    int flags;
+    int ret, flags;
     
     if ((flags=fcntl(fd, F_GETFL, 0)) == -1)
 	return -1;
+
+    ret = flags & O_NONBLOCK ? 0 : 1;
 
     if (blocking)
 	flags &= ~O_NONBLOCK;
     else
 	flags |= O_NONBLOCK;
 
-    return fcntl(fd, F_SETFL, flags);
+    if (fcntl(fd, F_SETFL, flags) == -1)
+	return -1;
+
+    return ret;
 }

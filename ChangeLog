@@ -1,9 +1,11 @@
 2001-12-20  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* util.c (set_file_blocking): Return old blocking mode.
+
 	* ftp.c (_ftp_update_transfer): display time stalled in m:s when
 	more than 59 seconds.  Don't display total size if unknown.
 
-	* sftp.c: rewrite without stdio.
+	* sftp.c: rewritten without stdio.
 	
 	* sftp.c (_sftp_start_ssh) send status packet in case of error.
 
