@@ -2,10 +2,10 @@
 #define HAD_RC_H
 
 /*
-  $NiH$
+  $NiH: rc.h,v 1.9 2001/12/11 14:37:39 dillo Exp $
 
   rc.h -- auxiliary functions for parsing .cftprc file
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

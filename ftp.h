@@ -2,10 +2,10 @@
 #define HAD_FTP_H
 
 /*
-  $NiH: ftp.h,v 1.22 2001/12/14 08:10:20 dillo Exp $
+  $NiH: ftp.h,v 1.23 2001/12/20 05:53:59 dillo Exp $
 
   ftp.h -- ftp protocol functions
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

@@ -1,8 +1,8 @@
 /*
-  $NiH$
+  $NiH: strdup.c,v 1.9 2001/12/11 14:37:42 dillo Exp $
 
-  strdup -- save a copy of a string
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  strdup.c -- save a copy of a string
+  Copyright (C) 1996-2002 Dieter Baron
 
   The author can be contacted at <dillo@giga.or.at>
 

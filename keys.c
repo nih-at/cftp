@@ -1,8 +1,8 @@
 /*
-  $NiH$
+  $NiH: keys.c,v 1.10 2001/12/11 14:37:34 dillo Exp $
 
-  keys -- parse and print key specifications
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  keys.c -- parse and print key specifications
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

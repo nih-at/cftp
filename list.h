@@ -2,10 +2,10 @@
 #define HAD_LIST_Y
 
 /*
-  $NiH$
+  $NiH: list.h,v 1.9 2001/12/11 14:37:35 dillo Exp $
 
   list.h -- display lists
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

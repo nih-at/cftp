@@ -1,8 +1,8 @@
 /*
-  $NiH$
+  $NiH: list.c,v 1.18 2001/12/11 14:37:35 dillo Exp $
 
-  list -- display lists
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  list.c -- display lists
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

@@ -1,8 +1,8 @@
 /*
-  $NiH: url.c,v 1.4 2001/12/13 21:14:57 dillo Exp $
+  $NiH: url.c,v 1.5 2002/09/15 13:06:07 dillo Exp $
 
-  url -- functions to parse and create URLs
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  url.c -- functions to parse and create URLs
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

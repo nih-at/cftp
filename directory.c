@@ -1,8 +1,8 @@
 /*
-  $NiH: directory.c,v 1.18 2001/12/12 04:43:32 dillo Exp $
+  $NiH: directory.c,v 1.19 2002/04/10 15:49:30 wiz Exp $
 
-  directory -- handle directory cache
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  directory.c -- handle directory cache
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

@@ -1,8 +1,8 @@
 /*
-  $NiH: ftp.c,v 1.71 2002/03/12 07:40:38 dillo Exp $
+  $NiH: ftp.c,v 1.72 2002/09/05 16:14:27 dillo Exp $
 
-  ftp -- ftp protocol functions
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  ftp.c -- ftp protocol functions
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

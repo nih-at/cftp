@@ -1,8 +1,8 @@
 /*
-  $NiH: loop.c,v 1.14 2001/12/11 14:37:35 dillo Exp $
+  $NiH: loop.c,v 1.15 2001/12/20 05:44:13 dillo Exp $
 
-  loop -- main loop
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  loop.c -- main loop
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

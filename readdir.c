@@ -1,8 +1,8 @@
 /*
-  $NiH: readdir.c,v 1.21 2001/12/12 04:47:25 dillo Exp $
+  $NiH: readdir.c,v 1.23 2001/12/20 05:44:14 dillo Exp $
 
-  readdir -- read directory listing
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  readdir.c -- read directory listing
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

@@ -1,8 +1,8 @@
 /*
-  $NiH$
+  $NiH: inet_aton.c,v 1.3 2001/12/11 14:37:34 dillo Exp $
 
-  inet_aton -- replacement function (using inet_addr)
-  Copyright (C) 2000, 2001 Dieter Baron
+  inet_aton.c -- replacement function (using inet_addr)
+  Copyright (C) 2000-2002 Dieter Baron
 
   The author can be contacted at <dillo@giga.or.at>
 

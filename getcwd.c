@@ -1,8 +1,8 @@
 /*
-  $NiH$
+  $NiH: getcwd.c,v 1.8 2001/12/11 14:37:33 dillo Exp $
 
-  getcwd -- get working directory pathname
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  getcwd.c -- get working directory pathname
+  Copyright (C) 1996-2002 Dieter Baron
 
   The author can be contacted at <dillo@giga.or.at>
 

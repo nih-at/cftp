@@ -2,10 +2,10 @@
 #define _HAD_SIGNALS_H
 
 /*
-  $NiH$
+  $NiH: signals.h,v 1.7 2001/12/11 14:37:40 dillo Exp $
 
   signals.h -- signal handling functions
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

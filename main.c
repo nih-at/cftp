@@ -1,8 +1,8 @@
 /*
-  $NiH: main.c,v 1.45 2001/12/13 21:14:51 dillo Exp $
+  $NiH: main.c,v 1.46 2001/12/23 02:53:25 dillo Exp $
 
-  main -- main function
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  main.c -- main function
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -80,7 +80,7 @@ char help[] = "\
 Report bugs to <dillo@giga.or.at>.\n";
 
 char version_tail[] = "\
-Copyright (C) 2001 Dieter Baron\n\
+Copyright (C) 2002 Dieter Baron\n\
 cftp comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
 You may redistribute copies of\n\
 cftp under the terms of the GNU General Public License.\n\

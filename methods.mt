@@ -1,9 +1,9 @@
 dnl -*- text -*-
 dnl
-dnl  $NiH: methods.mt,v 1.2 2001/12/14 08:12:29 dillo Exp $
+dnl  $NiH: methods.mt,v 1.3 2001/12/17 05:44:05 dillo Exp $
 dnl
 dnl  methods.mt -- definition and documentation for protocol methods
-dnl  Copyright (C) 2001 Dieter Baron
+dnl  Copyright (C) 2001, 2002 Dieter Baron
 dnl
 dnl  This file is part of cftp, a fullscreen ftp client
 dnl  The author can be contacted at <dillo@giga.or.at>
@@ -22,7 +22,7 @@ dnl  You should have received a copy of the GNU General Public License
 dnl  along with this program; if not, write to the Free Software
 dnl  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-rcsid(<<$NiH: methods.mt,v 1.2 2001/12/14 08:12:29 dillo Exp $>>)
+rcsid(<<$NiH: methods.mt,v 1.3 2001/12/17 05:44:05 dillo Exp $>>)
 
 method(int, close, void,
   <<Close connection to server.>>)

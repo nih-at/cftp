@@ -1,8 +1,8 @@
 /*
-  $NiH: tty.c,v 1.22 2001/12/11 14:37:43 dillo Exp $
+  $NiH: tty.c,v 1.23 2002/09/15 13:06:05 dillo Exp $
 
-  tty -- lowlevel tty handling
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  tty.c -- lowlevel tty handling
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

@@ -1,8 +1,8 @@
 /*
-  $NiH: fn_select.c,v 1.24 2001/12/20 05:44:12 dillo Exp $
+  $NiH: fn_select.c,v 1.25 2002/02/14 10:14:46 dillo Exp $
 
-  fn_select -- bindable functions: selecting
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  fn_select.c -- bindable functions: selecting
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

@@ -1,8 +1,8 @@
 /*
-  $NiH$
+  $NiH: strerror.c,v 1.8 2001/12/11 14:37:42 dillo Exp $
 
-  strerror -- get error message string
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  strerror.c -- get error message string
+  Copyright (C) 1996-2002 Dieter Baron
 
   The author can be contacted at <dillo@giga.or.at>
 

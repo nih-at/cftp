@@ -1,8 +1,8 @@
 /*
-  $NiH: util.c,v 1.19 2001/12/14 08:12:12 dillo Exp $
+  $NiH: util.c,v 1.20 2001/12/20 17:58:48 dillo Exp $
 
-  util -- auxiliary functions
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  util.c -- auxiliary functions
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

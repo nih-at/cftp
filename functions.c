@@ -1,8 +1,8 @@
 /*
-  $NiH: functions.c,v 1.11 2001/12/11 14:37:32 dillo Exp $
+  $NiH: functions.c,v 1.12 2001/12/20 05:44:13 dillo Exp $
 
-  functions -- auxiliary functions for bindable function handling
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  functions.c -- auxiliary functions for bindable function handling
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

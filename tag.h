@@ -2,10 +2,10 @@
 #define HAD_TAG_H
 
 /*
-  $NiH$
+  $NiH: tag.h,v 1.12 2001/12/11 14:37:43 dillo Exp $
 
   tag.h -- tagging
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

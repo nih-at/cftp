@@ -2,10 +2,10 @@
 #define HAD_DIRECTORY_Y
 
 /*
-  $NiH: directory.h,v 1.11 2001/12/11 14:37:29 dillo Exp $
+  $NiH: directory.h,v 1.12 2001/12/12 04:43:32 dillo Exp $
 
   directory.h -- handle directory cache
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

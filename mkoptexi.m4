@@ -1,7 +1,7 @@
-dnl  $NiH: mkoptexi.m4,v 1.5 2001/12/13 21:14:54 dillo Exp $
+dnl  $NiH: mkoptexi.m4,v 1.6 2001/12/23 03:34:01 dillo Exp $
 dnl
 dnl  mkoptexi.m4 -- create options.texi from options.op
-dnl  Copyright (C) 1996, 1997, 2000, 2001 Dieter Baron
+dnl  Copyright (C) 1996-2002 Dieter Baron
 dnl
 dnl  This file is part of cftp, a fullscreen ftp client
 dnl  The author can be contacted at <dillo@giga.or.at>
@@ -33,7 +33,7 @@ define(rcsid, dnl id
 <<divert(3)@c   $1
 divert(-1)>>)
 
-rcsid(<<$NiH: mkoptab-h.m4,v 1.7 2001/12/13 21:14:54 dillo Exp $>>)
+rcsid(<<$NiH: mkoptexi.m4,v 1.6 2001/12/23 03:34:01 dillo Exp $>>)
 
 
 define(menuentry, dnl node, description

@@ -1,8 +1,8 @@
 /*
-  $NiH: display.c,v 1.20 2001/12/11 14:37:30 dillo Exp $
+  $NiH: display.c,v 1.21 2001/12/20 05:44:10 dillo Exp $
 
-  display -- display functions
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  display.c -- display functions
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

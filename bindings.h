@@ -2,10 +2,10 @@
 #define HAD_BINDINGS_H
 
 /*
-  $NiH$
+  $NiH: bindings.h,v 1.7 2001/12/11 14:37:29 dillo Exp $
 
   bindings.h -- key bindings
-  Copyright (C) 1996, 1997, 1998, 2000, 2001 Dieter Baron
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

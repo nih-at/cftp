@@ -1,7 +1,7 @@
-dnl  $NiH$
+dnl  $NiH: acinclude.m4,v 1.6 2001/12/13 21:14:49 dillo Exp $
 dnl
 dnl  acinclude.m4 -- test for autoconf
-dnl  Copyright (C) 2000, 2001 Dieter Baron
+dnl  Copyright (C) 2000-2002 Dieter Baron
 dnl
 dnl  This file is part of cftp, a fullscreen ftp client
 dnl  The author can be contacted at <dillo@giga.or.at>

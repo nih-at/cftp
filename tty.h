@@ -2,10 +2,10 @@
 #define HAD_TTY_H
 
 /*
-  $NiH$
+  $NiH: tty.h,v 1.16 2001/12/11 14:37:44 dillo Exp $
 
   tty.h -- lowlevel tty handling
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

@@ -1,9 +1,9 @@
 dnl -*- text -*-
 dnl
-dnl  $NiH$
+dnl  $NiH: options.op,v 1.22 2001/12/23 03:34:02 dillo Exp $
 dnl
 dnl  options.op -- definition and documentation for user settable options
-dnl  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+dnl  Copyright (C) 1996-2002 Dieter Baron
 dnl
 dnl  This file is part of cftp, a fullscreen ftp client
 dnl  The author can be contacted at <dillo@giga.or.at>
@@ -24,7 +24,7 @@ dnl  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
 
-rcsid(<<$NiH$>>)
+rcsid(<<$NiH: options.op,v 1.22 2001/12/23 03:34:02 dillo Exp $>>)
 
 dnl option(name, short, variable, function, type, default, help, doku)
 

@@ -1,8 +1,8 @@
 /*
-  $NiH$
+  $NiH: rc.c,v 1.11 2001/12/11 14:37:38 dillo Exp $
 
-  rc -- auxiliary functions for parsing .cftprc file
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  rc.c -- auxiliary functions for parsing .cftprc file
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

@@ -1,8 +1,8 @@
 /*
-  $NiH: sftp.c,v 1.20 2002/01/08 22:07:52 dillo Exp $
+  $NiH: sftp.c,v 1.21 2002/09/15 13:06:06 dillo Exp $
 
   sftp.c -- sftp protocol functions
-  Copyright (C) 2001 Dieter Baron
+  Copyright (C) 2001, 2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

@@ -1,8 +1,8 @@
 /*
-  $NiH: readrc.c,v 1.15 2001/12/11 14:37:40 dillo Exp $
+  $NiH: readrc.c,v 1.16 2001/12/13 21:14:55 dillo Exp $
 
-  readrc -- read .cftprc file
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  readrc.c -- read .cftprc file
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

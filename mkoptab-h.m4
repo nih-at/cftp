@@ -1,7 +1,7 @@
-dnl  $NiH: mkoptab-h.m4,v 1.7 2001/12/13 21:14:54 dillo Exp $
+dnl  $NiH: mkoptab-h.m4,v 1.8 2001/12/23 03:34:01 dillo Exp $
 dnl
 dnl  mkoptab-h.m4 -- create options.h from options.op
-dnl  Copyright (C) 1996, 1997, 2000, 2001 Dieter Baron
+dnl  Copyright (C) 1996-2002 Dieter Baron
 dnl
 dnl  This file is part of cftp, a fullscreen ftp client
 dnl  The author can be contacted at <dillo@giga.or.at>
@@ -32,7 +32,7 @@ define(rcsid, dnl id
 <<divert(3)    $1
 divert(-1)>>)
 
-rcsid(<<$NiH: mkoptab-h.m4,v 1.7 2001/12/13 21:14:54 dillo Exp $>>)
+rcsid(<<$NiH: mkoptab-h.m4,v 1.8 2001/12/23 03:34:01 dillo Exp $>>)
 
 define(type,dnl t, (i)nt, (c)har, (s)tring, (b)oolean (e)num
 <<ifelse(<<$1>>, i, <<$2>>, <<$1>>, c, <<$3>>, <<$1>>, s, <<$4>>, <<$1>>, b, <<$5>>, <<$6>>)>>)

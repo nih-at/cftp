@@ -1,8 +1,8 @@
 /*
-  $NiH: basename.c,v 1.10 2001/12/11 14:37:28 dillo Exp $
+  $NiH: basename.c,v 1.11 2002/09/15 17:56:58 dillo Exp $
 
-  basename -- return the last component of a pathname
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  basename.c -- return the last component of a pathname
+  Copyright (C) 1996-2002 Dieter Baron
 
   The author can be contacted at <dillo@giga.or.at>
 

@@ -1,7 +1,7 @@
-dnl  $NiH: mkfntexi.m4,v 1.4 2001/12/13 21:14:53 dillo Exp $
+dnl  $NiH: mkfntexi.m4,v 1.5 2001/12/23 03:52:34 dillo Exp $
 dnl
 dnl  mkfntexi.m4 -- create functions.texi from fntable.fn
-dnl  Copyright (C) 1996, 1997, 2000, 2001 Dieter Baron
+dnl  Copyright (C) 1996-2002 Dieter Baron
 dnl
 dnl  This file is part of cftp, a fullscreen ftp client
 dnl  The author can be contacted at <dillo@giga.or.at>
@@ -35,7 +35,7 @@ define(rcsid, dnl id
 <<divert(5)@c   $1
 divert(-1)>>)
 
-rcsid(<<$NiH$>>)
+rcsid(<<$NiH: mkfntexi.m4,v 1.5 2001/12/23 03:52:34 dillo Exp $>>)
 
 define(menuentry, dnl node, description
 <<* <<$1>>::dnl

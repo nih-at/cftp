@@ -2,10 +2,10 @@
 #define HAD_UTIL_H
 
 /*
-  $NiH: util.h,v 1.14 2001/12/11 14:37:45 dillo Exp $
+  $NiH: util.h,v 1.15 2001/12/14 07:04:19 dillo Exp $
 
   util.h -- auxiliary functions
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

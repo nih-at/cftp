@@ -1,8 +1,8 @@
 /*
-  $NiH: mkbind.c,v 1.20 2001/12/23 03:09:33 dillo Exp $
+  $NiH: mkbind.c,v 1.21 2002/09/15 13:09:19 dillo Exp $
 
-  mkbind -- make binding table
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  mkbind.c -- make binding table
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

@@ -1,7 +1,7 @@
-dnl  $NiH: mkmethods-h.m4,v 1.1 2001/12/13 21:14:53 dillo Exp $
+dnl  $NiH: mkmethods-h.m4,v 1.2 2001/12/13 21:25:27 dillo Exp $
 dnl
 dnl  mkmethods-h.m4 -- create methods.h from methods.mt
-dnl  Copyright (C) 2001 Dieter Baron
+dnl  Copyright (C) 2001, 2002 Dieter Baron
 dnl
 dnl  This file is part of cftp, a fullscreen ftp client
 dnl  The author can be contacted at <dillo@giga.or.at>
@@ -37,7 +37,7 @@ define(rcsid, dnl id
 <<divert(6)    $1
 divert(-1)>>)
 
-rcsid(<<$NiH: mkmethods-h.m4,v 1.1 2001/12/13 21:14:53 dillo Exp $>>)
+rcsid(<<$NiH: mkmethods-h.m4,v 1.2 2001/12/13 21:25:27 dillo Exp $>>)
 
 define(method, dnl rettype, name, args, docu
 <<divert(1)   <<$1>> (*fn_<<$2>>)(<<$3>>);

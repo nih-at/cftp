@@ -1,8 +1,8 @@
  /*
-  $NiH: fn_tag.c,v 1.27 2001/12/11 14:37:31 dillo Exp $
+  $NiH: fn_tag.c,v 1.28 2001/12/20 05:44:12 dillo Exp $
 
-  fn_tag -- bindable functions: 
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  fn_tag.c -- bindable functions: 
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

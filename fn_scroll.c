@@ -1,8 +1,8 @@
 /*
-  $NiH: fn_scroll.c,v 1.20 2001/12/11 14:37:31 dillo Exp $
+  $NiH: fn_scroll.c,v 1.21 2001/12/20 05:44:11 dillo Exp $
 
-  fn_scroll -- bindable functions: scrolling
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  fn_scroll.c -- bindable functions: scrolling
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

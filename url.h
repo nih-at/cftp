@@ -2,10 +2,10 @@
 #define HAD_URL_H
 
 /*
-  $NiH: url.h,v 1.3 2001/12/11 14:37:44 dillo Exp $
+  $NiH: url.h,v 1.4 2001/12/13 21:14:57 dillo Exp $
 
   url.h -- functions to parse and create URLs
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

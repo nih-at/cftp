@@ -1,8 +1,8 @@
 /*
-  $NiH: status.c,v 1.17 2001/12/20 05:44:15 dillo Exp $
+  $NiH: status.c,v 1.18 2001/12/23 03:08:47 dillo Exp $
 
-  status.h -- status line
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  status.c -- status line
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

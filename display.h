@@ -2,10 +2,10 @@
 #define HAD_DISPLAY_H
 
 /*
-  $NiH: display.h,v 1.15 2001/12/11 14:37:30 dillo Exp $
+  $NiH: display.h,v 1.16 2001/12/20 05:39:00 dillo Exp $
 
   display.h -- display functions
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
+  Copyright (C) 1996-2002 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
