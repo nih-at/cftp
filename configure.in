@@ -52,15 +52,11 @@ dnl header files
 
 AC_CHECK_HEADERS(libgen.h sys/select.h termcap.h)
 
-AC_CACHE_CHECK([whether h_errno is declared in netdb.h],
-	dlo_cv_decl_h_errno,
-	AC_TRY_COMPILE([#include "netdb.h"], [h_errno = 0;],
-		[dlo_cv_decl_h_errno=yes],
-		[dlo_cv_decl_h_errno=no]))
-if test "$dlo_cv_decl_h_errno" = yes; then
-    AC_DEFINE(H_ERRNO_DECLARED, 1, [Define if netdb.h declares h_errno])
+if test "$ac_cv_header_termcap_h" = yes; then
+NIH_CHECK_DECL([#include "termcap.h"], ospeed)
 fi
 
+NIH_CHECK_DECL([#include "netdb.h"], h_errno)
 
 dnl typedefs
 dnl structures
@@ -85,7 +81,6 @@ then
 fi
 
 AC_CHECK_FUNCS(getopt_long, , [LIBOBJS="$LIBOBJS getopt1.o getopt.o"])
-
 
 dnl system services
 
