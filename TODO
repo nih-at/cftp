@@ -3,6 +3,7 @@
 ! sftp: ^c kills ssh subprocess (how to avoid?!)
 ! test ftp_cat error cases
 ! allow reading response if initial connect/login failes
+! stop when local disk is full during download
 - move ftp_gets to util.c and rename
 - move history from ftp.c
 - add function comments
