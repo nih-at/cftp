@@ -39,6 +39,9 @@ bind	<remote> right	enter/get
 bind	<remote> v	view
 bind	<remote> d	get
 
+bind	<tag>	h	leave-tag
+bind	<tag>	q	leave-tag
+
 bind		^p	up
 bind		^n	down
 bind		j	down

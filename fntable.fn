@@ -175,7 +175,13 @@ function(cd, [dir], fn_cd, 0,
 
 function(state, [state], fn_state, 0,
 	 {change binding state},
- {})
+ {Change binding state to @var{state}. @xref{Binding States}.})
+
+function(leave-tag, , fn_leave_tag, 0,
+	{leave @code{<tag>} state},
+ {Leave @code{<tag>} state, entering whatever state was active before
+entering @code{<tag>} state.})
+
 endsec()
 
 

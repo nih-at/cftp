@@ -428,6 +428,8 @@ void fn_set(char **args)
 
 
 
+enum state leave_tag;
+
 void
 fn_state(char **args)
 {
@@ -482,6 +484,8 @@ fn_state(char **args)
 	    disp_status("no tags");
 	    break;
 	}
+	if (binding_state != bs_tag)
+	    leave_tag = binding_state;
 	binding_state = bs_tag;
 	list = &tags;
 	list_do(1);
@@ -500,3 +504,20 @@ fn_state(char **args)
 	free(state);
     free(line);
 }	
+
+
+
+void
+fn_leave_tag(char **args)
+{
+    char *arg[2];
+    
+    if (binding_state != bs_tag) {
+	disp_status("not in <tag> mode");
+	return;
+    }
+
+    arg[0] = binding_statename[leave_tag];
+    arg[1] = NULL;
+    fn_state(arg);
+}

@@ -100,6 +100,13 @@ fn_cleartags(char **args)
 
     tag_clear();
 
+    for (i=0; i<curdir->len; i++) {
+	if (curdir->line[i].line[0] != ' ') {
+	    curdir->line[i].line[0] == ' ';
+	    list_reline(i);
+	}
+    }
+
     disp_status("all tags cleared");
 }
 
