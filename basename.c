@@ -1,5 +1,5 @@
 /*
-  basename
+  basename -- return the last component of a pathname
   Copyright (C) 1996, 1997, 1998, 1999, 2000 Dieter Baron
 
   The author can be contacted at <dillo@giga.or.at>
@@ -35,7 +35,7 @@ basename(char *name)
 
     len = strlen(name);
 
-    if (strspn(name, '/') == len)
+    if (strspn(name, "/") == len)
 	return name + len-1;
 
     while (name[len-1] == '/')
