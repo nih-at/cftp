@@ -94,7 +94,7 @@ int parse_url(char *url, char **user, char **pass,
 	      char **host, char **port, char **dir);
 char *deurl(char *u);
 void print_usage(int flag);
-char *get_annon_passwd(void);
+char *get_anon_passwd(void);
 void read_netrc(char *host, char **user, char **pass, char **wdir);
 void sig_end(int i);
 void sig_escape(int i);
@@ -196,7 +196,7 @@ main(int argc, char **argv)
 	if (user == NULL)
 	    user = "ftp";
 	if (pass == NULL)
-	    pass = get_annon_passwd();
+	    pass = get_anon_passwd();
     }
     else {
 	if (pass == NULL) {
@@ -346,7 +346,7 @@ print_usage(int flag)
 
 
 char *
-get_annon_passwd(void)
+get_anon_passwd(void)
 {
     char pass[8192], host[1024], domain[1024];
     struct passwd *pwd;
