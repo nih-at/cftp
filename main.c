@@ -259,6 +259,7 @@ main(int argc, char **argv)
 		list = (struct list *)curdir;
 		if ((sel=dir_find(curdir, poss_fn)) >= 0) {
 		    aux_scroll(sel-(win_lines/2), sel, 0);
+		    list_do(1);
 		    if (curdir->line[sel].type == 'f'
 			|| curdir->line[sel].type == 'l')
 			aux_download(curdir->line[sel].name,
