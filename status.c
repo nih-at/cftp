@@ -22,6 +22,8 @@
 
 
 
+#include <string.h>
+
 #include "display.h"
 #include "bindings.h"
 #include "status.h"
@@ -74,6 +76,9 @@ status_do(enum state when)
 		strncpy(status_line, "tag  ", cols);
 	    else
 		strncpy(status_line, "<tag>", 5);
+	    break;
+
+	default:
 	    break;
 	}
     }
@@ -132,6 +137,9 @@ status_do(enum state when)
 	    
 	case bs_tag:
 	    strcpy(status_line+cols-15, "<tag>-----");
+	    break;
+
+	default:
 	    break;
 	}
 	

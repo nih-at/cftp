@@ -47,6 +47,7 @@ extern char *prg;
 
 void tty_keypad_init(void);
 void _tty_capinit(void);
+int tty_ispref(char *s, int l);
 
 #ifdef SIGWINCH
 void tty_winch(int s);
@@ -308,7 +309,7 @@ int
 tty_readkey(void)
 {
     static unsigned char s[128];
-    static l = 0;
+    static int l = 0;
     int c, len;
     int vmin = 0;
 
@@ -371,11 +372,12 @@ int tty_ispref(char *s, int l)
     int j;
     
     for (j=0; j<max_fnkey; j++)
-	if (fnkey[j].seq)
+	if (fnkey[j].seq) {
 	    if (!strncmp(s, fnkey[j].seq, l) && fnkey[j].seq[l] == '\0')
 		return 256+j;
 	    else if (!strncmp(fnkey[j].seq, s, l))
 		return EOF;
+	}
 
     return -2;
 }

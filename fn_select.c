@@ -38,10 +38,6 @@
 #include "list.h"
 #include "tag.h"
 
-int aux_enter(char *name);
-int aux_download(char *name, long size, int restart);
-int aux_pipe(char *name, long size, int mode, char *cmd, int quietp);
-#define aux_view(name)	(aux_pipe((name), -1, 'a', opt_pager, 1))
 
 
 

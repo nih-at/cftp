@@ -31,6 +31,7 @@
 #include "rc.h"
 #include "bindings.h"
 #include "functions.h"
+#include "fntable.h"
 
 #define FNAME	"bindings"
 #define NAME	"binding"

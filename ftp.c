@@ -693,7 +693,6 @@ void ftp_unresp(int resp)
 int
 ftp_port(void)
 {
-    unsigned long host;
     int fd, port, val, i, delim;
     int len;
     unsigned int iaddr;
@@ -976,7 +975,6 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size)
 static void
 _ftp_update_transfer(char *fmt, long got, long *cur, int old_sec, int new_sec)
 {
-    float ckbs, tkbs;
     long step;
     int nsec;
 

@@ -1,5 +1,13 @@
 2000-12-06  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* ftp.c, mkbind.c, readdir.c, sockets.c, status.c, tag.c, tty.c:
+	code cleanup for -Wall.
+	
+	* mkfntab-h.m4: emit correct prototypes for bindable functions.
+	
+	* functions.h: move aux_* prototypes from fn_select here
+	(aux_download used in main.c)
+	
 	* util.h: fix function name in prototype.
 	* getaddrinfo.c (getaddrinfo): don't free airet before it is
 	initialized.
@@ -28,7 +36,7 @@
 	* configure.in: check for presence of getaddrinfo.
 	* getaddrinfo.c: new replacement function.
 
-2000-11-26  Dieter Baron  <dillo@danbala.ifoer.tuwien.ac.at>
+2000-11-26  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* readdir.c (read_dir): don't call pfunc[npfunc], as it doesn't
 	exist.
@@ -36,7 +44,7 @@
 	permissions and number of links (as is the case on some servers on
 	files with more than 99 links).
 
-2000-10-19  Dieter Baron  <dillo@danbala.ifoer.tuwien.ac.at>
+2000-10-19  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* configure.in: search for tgetent in libc (needed on Darvin).
 
@@ -44,7 +52,7 @@
 
 	* sockets.c (sopen): include hostname in connect error message.
 
-2000-06-28  Dieter Baron  <dillo@danbala.ifoer.tuwien.ac.at>
+2000-06-28  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (ftp_accept): set close-on-exec flag, so piping works.
 

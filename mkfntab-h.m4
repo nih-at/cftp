@@ -4,7 +4,7 @@ changequote({,})
 
 define(function,dnl name, synopsis, function, flags, help-string, description
 {divert(0)dnl
-ifelse(0,{$3},,{void {$3}(void);
+ifelse(0,{$3},,{void {$3}(char **args);
 })dnl
 divert(-1)})
 

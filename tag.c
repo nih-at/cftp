@@ -23,7 +23,9 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+
 #include "tag.h"
 #include "directory.h"
 #include "options.h"
@@ -61,7 +63,7 @@ void
 change_curdir(directory *dir)
 {
     struct tagentry *t;
-    int i, cmp, c;
+    int i, cmp;
 
     if (curdir) {
 	for (i=0; i<curdir->len; i++)
@@ -88,7 +90,7 @@ change_curdir(directory *dir)
 int
 tag_file(char *dir, char *file, long size, char type, enum tagopt what)
 {
-    char *canon, c;
+    char *canon;
     struct tagentry *t;
     int cmp;
 
@@ -259,6 +261,8 @@ _tag_update_curdir(struct tagentry *u, enum tagopt what)
 		list_reline(i);
 	}
     }
+
+    return 0;
 }
 
 

@@ -54,5 +54,9 @@ int find_function(char *f);
 struct binding *get_function(int key, enum state state);
 
 void aux_scroll(int top, int sel, int force);
+int aux_enter(char *name);
+int aux_download(char *name, long size, int restart);
+int aux_pipe(char *name, long size, int mode, char *cmd, int quietp);
+#define aux_view(name)	(aux_pipe((name), -1, 'a', opt_pager, 1))
 
 #endif /* functions.h */
