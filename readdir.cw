@@ -86,7 +86,7 @@ total <n>
 [-dp]xxxxxxxxx <l> <owner> <group> <size> ............. <name>
 	normal `ls -lg' output, files, pipes and direcotyries.
 lxxxxxxxxx <l> <owner> <group> <size> ............. <name> -> <realname>
-	`ls -lg' output for symlinks.
+	output for symlinks.
 [bc]xxxxxxxxx <rest of line>
 	special device files are not interpreted; they cannot be downloaded.
 
@@ -100,62 +100,65 @@ int parse_unix(direntry *de, char *line);
 int
 parse_unix(direntry *de, char *line)
 {
-	char *p, *q;
+    char *p, *q;
 	
-	if (strncmp(line, "total ", 6) == 0)
-		return 1;
+    if (strncmp(line, "total ", 6) == 0)
+	return 1;
 
-	de->line = (char *)malloc(strlen(line)+2);
-	de->line[0] = ' ';
-	strcpy(de->line+1, line);
+    if ((de->line=(char *)malloc(strlen(line)+2)) == NULL)
+	return 1;
+    
+    de->line[0] = ' ';
+    strcpy(de->line+1, line);
 
-	switch (line[0]) {
-	case 'l':
-	case 'd':
-		de->type = line[0];
-		break;
-	case '-':
-	case 'p':
-		de->type = 'f';
-		break;
-	default:
-		de->type = 'x';
-	}
+    switch (line[0]) {
+    case 'l':
+    case 'd':
+	de->type = line[0];
+	break;
+    case '-':
+    case 'p':
+	de->type = 'f';
+	break;
+    default:
+	de->type = 'x';
+    }
 
-	strtok(line, " ");	/* perms */
-	strtok(NULL, " ");	/* links */
-	strtok(NULL, " ");	/* owner */
-	strtok(NULL, " ");	/* group */
-	if ((p=strtok(NULL, " ")) == NULL) {
-		free(line);
-		return 1;
-	}
-	de->size = strtol(p, NULL, 10);
-				/* size  */
-	if ((p=strtok(NULL, " ")+13) == NULL) {
-		free(line);
-		return 1;
-	}
+    strtok(line, " ");	/* perms */
+    strtok(NULL, " ");	/* links */
+    strtok(NULL, " ");	/* owner */
+    strtok(NULL, " ");	/* group */
+    if ((p=strtok(NULL, " ")) == NULL) {
+	free(line);
+	return 1;
+    }
+    de->size = strtol(p, NULL, 10);
+			/* size  */
+    if ((p=strtok(NULL, " ")) == NULL) {
+	free(line);
+	return 1;
+    }
+    p += 13;
+    
+    if (de->type == 'l') {
+	q = p + strlen(p) - de->size;
+	q[-4] = '\0';
+	de->name = strdup(p);
+	de->link = strdup(q);
+	de->size = 0;
+    }
+    else {
+	de->name = strdup(p);
+	de->link = NULL;
+    }
 
-	if (de->type == 'l') {
-		q = p + strlen(p) - de->size;
-		q[-4] = '\0';
-		de->name = strdup(p);
-		de->link = strdup(q);
-		de->size = 0;
-	}
-	else {
-		de->name = strdup(p);
-		de->link = NULL;
-	}
+    free(line);	
 
-	free(line);	
+    if (de->type == 'd' && (strcmp(de->name, "..")==0 ||
+			    strcmp(de->name, ".")==0)) {
+	free(de->name);
+	return 1;
+    }
 
-	if (de->type == 'd' && (strcmp(de->name, "..")==0 ||
-				strcmp(de->name, ".")==0)) {
-		free(de->name);
-		return 1;
-	}
-
-	return 0;
+    return 0;
 }
