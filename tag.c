@@ -145,9 +145,10 @@ tag_clear(void)
 void
 _tag_delete(int n)
 {
+    int i;
     struct tagentry *t;
 
-    t = tags.line[n];
+    t = tags.line+n;
 
     free(t->line);
     free(t->file);
@@ -181,7 +182,7 @@ _tag_insert(int n, struct tagentry *t, char *file, long size, char type)
 
     sprintf(line, "%8ld  %c  %s", size, type, file);
 
-    u = tags.line[n];
+    u = tags.line+n;
 
     u->line = line;
     u->name = file;
