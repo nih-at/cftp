@@ -1,3 +1,6 @@
+New in 0.9.1:
+* passive mode
+
 New in 0.9:
 * wildcard tagging/untagging (tag -t, tag -u)
 * wrap option to control wrap around of scrolling

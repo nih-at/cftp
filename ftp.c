@@ -644,21 +644,58 @@ void ftp_unresp(int resp)
 int
 ftp_port(void)
 {
-	unsigned long host;
-	int fd, port;
+    unsigned long host;
+    int fd, port, val, i;
+    unsigned char addr[4];
+    char saddr[16], sport[6], *s, *e;
 
+    if (!opt_pasv) {
 	if ((fd=spassive(&host, &port)) == -1)
-		return -1;
+	    return -1;
 
 	ftp_put("port %d,%d,%d,%d,%d,%d", (int)ftp_addr[0],
 		(int)ftp_addr[1], (int)ftp_addr[2], (int)ftp_addr[3], 
 		port>>8, port&0xff);
 	if (ftp_resp() != 200) {
-		close(fd);
-		return -1;
+	    close(fd);
+	    return -1;
 	}
+    }
+    else {
+	ftp_put("pasv");
+	if (ftp_resp() != 227)
+	    return -1;
 
-	return fd;
+	if ((s=strchr(ftp_last_resp, ',')) == NULL)
+	    return -1;
+
+	while (isdigit(*(--s)))
+	    ;
+	s++;
+
+	for (i=0; i<4; i++) {
+	    val = strtol(s, &e, 10);
+	    if (val < 0 || val > 255 || *e != ',')
+		return -1;
+	    addr[i] = val;
+	    s = e+1;
+	}
+	port = strtol(s, &e, 10);
+	if (port < 0 || port > 255 || *e != ',')
+	    return -1;
+	s = e+1;
+	val = strtol(s, &e, 10);
+	if (val < 0 || val > 255)
+	    return -1;
+	port = port*256+val;
+	
+	sprintf(saddr, "%d.%d.%d.%d",
+		addr[0], addr[1], addr[2], addr[3]);
+	sprintf(sport, "%d", port);
+	fd = sopen(saddr, sport);
+    }
+
+    return fd;
 }
 
 
@@ -666,16 +703,19 @@ ftp_port(void)
 FILE *
 ftp_accept(int fd, char *mode)
 {
-	int len, ns;
-	struct sockaddr addr;
+    int len, ns;
+    struct sockaddr addr;
 
+    if (!opt_pasv) {
 	len = sizeof(addr);
 	if ((ns=accept(fd, &addr, &len)) == -1)
-		return NULL;
-
-	close(fd);
+	    return NULL;
 	
+	close(fd);
 	return fdopen(ns, mode);
+    }
+    else
+	return fdopen(fd, mode);
 }
 
 

@@ -29,6 +29,10 @@ option(mode, mo, opt_mode, opts_mode, c, 'i', ,
  {Transfer mode used for downloads; set to `i' for image (binary), `a'
 for ascii.})
 
+option(passive, pv, opt_pasv, NULL, b, 0, ,
+ {use passive mode to establish data connections},
+ {})
+
 option(tag-char, tc, opt_tagchar, NULL, c, '>', ,
  {char to mark tagged files with},
  {Tagged files in the current directory are marked with this character
