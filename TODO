@@ -2,13 +2,13 @@
 ! sftp: lost connection not reported
 ! sftp: ^c kills ssh subprocess (how to avoid?!)
 ! test ftp_cat error cases
+! ftp: xfer_read blocks.
 - fix --disable-sftp
 - avoid magic numbers in sftp xfer
 - finish _sftp_log_packet
 - move ftp_gets to util.c and rename
 - move history from ftp.c
 - add rcsid to m4 created files
-- display stalled time in m:s
 
 * ftp.univie.ac.at: abort hoses connection state
 * sftp options: ssh command & flags, sftp server filename
