@@ -1,9 +1,12 @@
+! tagging segfaults on linux
+! abort doesn't work
+! sftp:// urls in aliases don't work
 ! sftp: reconnect doesn't work
 ! sftp: lost connection not reported
-! sftp: ^c kills ssh subprocess (how to avoid?!)
-! test ftp_cat error cases
-! allow reading response if initial connect/login fails
 ! stop when local disk is full during download
++ fix buffer overflows
++ sftp: ^c kills ssh subprocess (how to avoid?!)
++ test ftp_cat error cases
 - move ftp_gets to util.c and rename
 - move history from ftp.c
 - add function comments
