@@ -15,7 +15,7 @@
 
 char *usage[] = {
 	"{-h|-V}",
-	"[-p port] [-u user] host [directory]",
+	"[-p port] [-u user] {host|alias} [directory]",
 	"url",
 	NULL };
 
@@ -53,6 +53,7 @@ main(int argc, char **argv)
 	int keep_pass = 1;
 	int c, err = 0;
 	char *b;
+	int check_alias;
 
 	prg = argv[0];
 	
@@ -92,6 +93,8 @@ main(int argc, char **argv)
 		}
 		if (parse_url(argv[optind], &user, &host, &port, &wdir) < 0)
 		    exit(1);
+
+		check_alias = 0;
 	}
 	else {
 		if (argc > optind+2) {
@@ -101,7 +104,11 @@ main(int argc, char **argv)
 		host = argv[optind];
 		if (argc > optind+1)
 			wdir = argv[optind+1];
+
+			check_alias = 0;
 	}
+
+	/* XXX */ readrc(&user, &pass, &host, &port, &wdir, check_alias);
 
 	if (user == NULL) {
 		read_netrc(host, &user, &pass, &wdir);
@@ -212,7 +219,7 @@ parse_url(char *url, char **user, char **host, char **port, char **dir)
 	    fprintf(stderr, "%s: malloc failure\n", prg);
 	    return -1;
 	}
-	    sprintf(*dir, "%s%s", userp ? "~/" : "/", p);
+	    sprintf(*dir, "%s%s", userp ? "" : "/", p);
     }
 
     return 0;

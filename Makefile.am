@@ -11,7 +11,7 @@ info_TEXINFOS=	cftp.texi
 cftp_TEXINFOS=	functions.texi options.texi
 noinst_PROGRAMS=mkbind
 cftp_SOURCES=	directory.c display.c readdir.c loop.c functions.c \
-		ftp.c sockets.c main.c options.c keys.c tty.c rc.c \
+		ftp.c sockets.c main.c options.c keys.c tty.c rc.c readrc.c \
 		tag.c util.c version.c bindings.c fntable.c \
 		fn_basic.c fn_scroll.c fn_select.c fn_tag.c
 noinst_HEADERS= directory.h display.h readdir.h loop.h functions.h tag.h \
