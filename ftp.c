@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.59 2001/12/11 13:45:09 dillo Exp $
+  $NiH: ftp.c,v 1.60 2001/12/11 19:52:07 dillo Exp $
 
   ftp -- ftp protocol functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -107,17 +107,16 @@ struct _ftp_transfer_stats {
 
 
 
-int ftp_put(char *fmt, ...);
 int ftp_abort(FILE *fin);
-int ftp_resp(void);
-void ftp_unresp(int resp);
-int ftp_port(void);
 FILE *ftp_accept(int fd, char *mode);
-int ftp_mode(char m);
 int ftp_cwd(char *path);
 int ftp_gethostaddr(int fd);
-void ftp_histf(char *fmt, ...);
-void ftp_hist(char *line);
+int ftp_mode(char m);
+int ftp_port(void);
+int ftp_put(char *fmt, ...);
+int ftp_resp(void);
+void ftp_unresp(int resp);
+
 static int _ftp_ascii2host(char *buf, char *buf2, int n, int *trail_cr);
 static int _ftp_host2ascii(char *buf, char *buf2, int n, int *trail_cr);
 

@@ -1,5 +1,8 @@
 2001-12-12  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* ftp.h, ftp.c: move prototypes for ftp_hist and ftp_histf to
+	ftp.h.
+
 	* readdir.c (read_dir): make use of new dir functions.
 	* directory.c (dir_new, dir_add): new functions.
 	* directory.h (struct directory): add member alloc_len.
