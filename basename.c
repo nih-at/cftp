@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: basename.c,v 1.10 2001/12/11 14:37:28 dillo Exp $
 
   basename -- return the last component of a pathname
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -28,7 +28,6 @@
 char *
 basename(char *name)
 {
-    static char dot[] = ".";
     char *p;
     int len;
 
