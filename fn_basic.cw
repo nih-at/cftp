@@ -144,7 +144,7 @@ void fn_shell(char **args)
 	escape_disp(0);
 	if (cmd[0] != '\0') {
 		system(cmd);
-		printf("[Press any key] ");
+		printf("[Press return] ");
 		fflush(stdout);
 		disp_prompt_char();
 	}

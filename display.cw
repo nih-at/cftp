@@ -359,7 +359,8 @@ disp_prompt_char(void)
 	int c;
 	
 	tty_cbreak();
-	c = tty_readkey();
+	while ((c=tty_readkey()) != EOF && c != '\n')
+	    ;
 	/*escape_disp(0);*/
 }
 

@@ -17,6 +17,7 @@ F quiet if in background
 F automatically deidle connection
 C functions.texi: fix bad next pointer in last section (to first command)
 F if url is file, download
+C display.cw: (disp_prompt_char) return after first key, not after newline
 ---------------------------------------------------------------- till beta
 F fn_search
 F tag files: tag regexp
@@ -29,11 +30,10 @@ B tty.cw: (tty_readkey) don't discard chars by failed multibyte code
 F display.cw: (disp_redir) don't clear screen, overwrite
 P configure.in: add -posix for NeXTStep
 B propagate errors (conn hung or eof?) up to fn_gettags
-B display.cw: (disp_prompt_char) only returns after RET is pressed (but only
-	reads first char)
 F cftp.texi: introduction, invoking, cftprc
 F user options
 ----------------------------------------------- done
+B display.cw: (disp_prompt_char) eat up chars till newline
 F fn_basic.cw: (fn_lcd) handle ~, ~user
 F main.cw: (main) if startup dir doesn't exist, don't close connection
 F exchange backlog instead of last multiline response
