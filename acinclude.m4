@@ -1,4 +1,4 @@
-dnl  $NiH: acinclude.m4,v 1.6 2001/12/13 21:14:49 dillo Exp $
+dnl  $NiH: acinclude.m4,v 1.7 2002/09/16 12:42:28 dillo Exp $
 dnl
 dnl  acinclude.m4 -- test for autoconf
 dnl  Copyright (C) 2000-2002 Dieter Baron
@@ -23,7 +23,7 @@ dnl  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 dnl Usage:
 dnl NIH_CHECK_STRUCT(includes, struct, action-if-found, action-if-not-found)
 
-AC_DEFUN(NIH_CHECK_STRUCT,
+AC_DEFUN([NIH_CHECK_STRUCT],
 [AC_MSG_CHECKING(for struct $2)
 AC_CACHE_VAL(nih_cv_check_struct_$2,
 [AC_TRY_COMPILE([$1], [struct $2 var;],
@@ -42,7 +42,7 @@ fi])
 dnl Usage:
 dnl NIH_CHECK_STRUCT_MEMBER(includes, struct, member, a-if-fnd, a-if-not-fnd)
 
-AC_DEFUN(NIH_CHECK_STRUCT_MEMBER,
+AC_DEFUN([NIH_CHECK_STRUCT_MEMBER],
 [AC_MSG_CHECKING(for member $3 of struct $2)
 AC_CACHE_VAL(nih_cv_check_struct_member_$2_$3,
 [AC_TRY_COMPILE([$1], [struct $2 *var; var->$3],
@@ -62,7 +62,7 @@ fi])
 
 dnl Usage:
 dnl NIH_CHECK_DECL(includes, variable, a-if-fnd, a-if-not-fnd)
-AC_DEFUN(NIH_CHECK_DECL,
+AC_DEFUN([NIH_CHECK_DECL],
 [AC_MSG_CHECKING(for declaration of $2)
 AC_CACHE_VAL(nih_cv_check_decl_$2,
 [AC_TRY_COMPILE([$1], [$2 = 0;],
