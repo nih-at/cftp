@@ -1,5 +1,5 @@
 /*
-  $NiH: fn_select.c,v 1.23 2001/12/13 21:14:50 dillo Exp $
+  $NiH: fn_select.c,v 1.24 2001/12/20 05:44:12 dillo Exp $
 
   fn_select -- bindable functions: selecting
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -195,6 +195,8 @@ fn_enter_get(char **args)
 	type = 'l';
 	size = -1;
     }
+    else if (curdir->len == 0)
+	return;
     else {
 	name = curdir->line[curdir->cur].name;
 	type = curdir->line[curdir->cur].type;
@@ -229,6 +231,8 @@ fn_enter_view(char **args)
 	name = args[0];
 	type = 'l';
     }
+    else if (curdir->len == 0)
+	return;
     else {
 	name = curdir->line[curdir->cur].name;
 	type = curdir->line[curdir->cur].type;
@@ -258,6 +262,8 @@ void fn_enter(char **args) { char *name; int type;
 	name = args[0];
 	type = 'l';
     }
+    else if (curdir->len == 0)
+	return;
     else {
 	name = curdir->line[curdir->cur].name;
 	type = curdir->line[curdir->cur].type;
@@ -282,7 +288,10 @@ fn_reload(char **args)
     char *name;
     int sel;
 
-    name = strdup(curdir->line[curdir->cur].name);
+    if (curdir->len > 0)
+	name = strdup(curdir->line[curdir->cur].name);
+    else
+	name = NULL;
 
     d = ftp_cd(curdir->path, 1);
     if (d == NULL) {
@@ -293,7 +302,7 @@ fn_reload(char **args)
     curdir = NULL;
     change_curdir(d);
 
-    if ((sel=dir_find(curdir, name)) < 0)
+    if (name == NULL || (sel=dir_find(curdir, name)) < 0)
 	sel = 0;
     free(name);
     
@@ -314,6 +323,8 @@ fn_get(char **args)
 	type = 'l';
 	size = -1;
     }
+    else if (curdir->len == 0)
+	return;
     else {
 	name = curdir->line[curdir->cur].name;
 	type = curdir->line[curdir->cur].type;
@@ -342,6 +353,8 @@ fn_view(char **args)
 	name = args[0];
 	type = 'l';
     }
+    else if (curdir->len == 0)
+	return;
     else {
 	name = curdir->line[curdir->cur].name;
 	type = curdir->line[curdir->cur].type;
@@ -377,6 +390,9 @@ fn_pipe(char **args)
 	    args++;
 	}
 	if (strcmp(args[0], ":") == 0) {
+	    if (curdir->len == 0)
+		return;
+
 	    name = curdir->line[curdir->cur].name;
 	    type = curdir->line[curdir->cur].type;
 	    size = curdir->line[curdir->cur].size;

@@ -1,3 +1,10 @@
+2002-02-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* fn_select.c (fn_enter_get, fn_enter_view, fn_enter, fn_reload,
+	fn_get, fn_view, fn_pipe): if current directory is empty and no
+	file name is specified, do nothing (instead of using nonexistent
+	current entry.)
+
 2002-01-07  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* sftp.c (_sftp_log_packet): enlarge buf, use strcpy instead of
