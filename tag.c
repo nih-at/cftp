@@ -195,9 +195,12 @@ _tag_insert(int n, struct tagentry *t, char *file, long size, char type)
 	    return -1;
 
 	if (u != tags.line) {
+	    /* taglist cannot be empty since tags.line is full */ 
+	    taglist.next = u + (taglist.next - &tags.line[0]);
+	    taglist.prev = u + (taglist.prev - &tags.line[0]);
 	    for (i=0; i<tags.len; i++) {
-		u[i].prev = u + (tags.line[i].prev - tags.line[0]);
-		u[i].next = u + (tags.line[i].next - tags.line[0]);
+		u[i].prev = u + (tags.line[i].prev - &tags.line[0]);
+		u[i].next = u + (tags.line[i].next - &tags.line[0]);
 	    }
 	    tags.line = u;
 	}

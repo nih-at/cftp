@@ -91,6 +91,9 @@ int ftp_gethostaddr(int fd);
 void ftp_histf(char *fmt, ...);
 void ftp_hist(char *line);
 
+static void _ftp_update_transfer(char *fmt, long got, long *cur,
+				 int old_sec, int new_sec);
+
 
 
 void
@@ -823,21 +826,28 @@ ftp_cwd(char *path)
 int
 ftp_cat(FILE *fin, FILE *fout, long start, long size)
 {
-    time_t oldt, newt;
+    struct itimerval itv;
     char buf[4096], fmt[4096];
     int c, n, err;
-    long got;
+    long got, cur[4];
+    int old_alarm;
 
     got = start;
 
     if (size >= 0)
-	sprintf(fmt, "transferred %%ld/%ld", size);
+	sprintf(fmt, "transferred %%ld/%ld "
+		"(total: %%.2fkb/s, current: %%.2fkb/s)",
+		size);
     else
-	strcpy(fmt, "transferred %ld");
-	
-    oldt = 0;
+	strcpy(fmt, "transferred %ld (total: %%.2fkb/s, current: %%.2fkb/s)");
+
+    cur[0] = cur[1] = cur[2] = cur[3] = 0;
+    old_alarm = sig_alarm = sig_intr = 0;
 
     signal(SIGINT, sig_remember);
+    itv.it_value.tv_sec = itv.it_interval.tv_sec = 1;
+    itv.it_value.tv_usec = itv.it_interval.tv_usec = 0;
+    setitimer(ITIMER_REAL, &itv, NULL);
 
     if (ftp_curmode == 'i')
 	while ((n=fread(buf, 1, 4096, fin)) > 0) {
@@ -847,9 +857,9 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size)
 		break;
 	    }
 	    got += n;
-	    if ((newt=time(NULL)) != oldt) {
-		disp_status(fmt, got);
-		oldt = newt;
+	    if (old_alarm != sig_alarm) {
+		_ftp_update_transfer(fmt, got, cur, old_alarm, sig_alarm);
+		old_alarm = sig_alarm;
 	    }
 	}
     else
@@ -868,14 +878,16 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size)
 	    if (ferror(fout))
 		break;
 
-	    if (got%512 == 0 && (newt=time(NULL)) != oldt) {
-		disp_status(fmt, got);
-		oldt = newt;
+	    if (old_alarm != sig_alarm) {
+		_ftp_update_transfer(fmt, got, cur, old_alarm, sig_alarm);
+		old_alarm = sig_alarm;
 	    }
-
 	}
 
     signal(SIGINT, sig_end);
+    itv.it_value.tv_sec = itv.it_interval.tv_sec = 0;
+    itv.it_value.tv_usec = itv.it_interval.tv_usec = 0;
+    setitimer(ITIMER_REAL, &itv, NULL);
 
     if (ferror(fin) || sig_intr) {
 	errno = 0;
@@ -892,6 +904,46 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size)
     }
 
     return 0;
+}
+
+
+
+static void
+_ftp_update_transfer(char *fmt, long got, long *cur, int old_sec, int new_sec)
+{
+    float ckbs, tkbs;
+    long step;
+    int nsec;
+
+    nsec = new_sec-old_sec;
+
+    switch (nsec) {
+    case 0:
+	break;
+
+    case 1:
+	cur[0] = cur[1];
+	cur[1] = cur[2];
+	cur[2] = cur[3];
+	break;
+
+    case 2:
+	cur[0] = cur[2];
+	cur[1] = cur[3];
+	cur[2] = cur[1] + (got-cur[1])/2;
+	break;
+
+    default:
+	step = (got-cur[3]) / nsec;
+	cur[0] = cur[3]+step*(nsec-3);
+	cur[1] = cur[3]+step*(nsec-2);
+	cur[2] = cur[3]+step*(nsec-1);
+	break;
+    }
+    cur[3] = got;
+
+    disp_status(fmt, got, got/(float)(new_sec*1024),
+		(cur[3]-cur[0])/((float)3*1024));
 }
 
 

@@ -1,4 +1,11 @@
-2000-05-05  Dieter Baron  <dillo@danbala.ifoer.tuwien.ac.at>
+2000-05-09  Dieter Baron  <dillo@danbala.ifoer.tuwien.ac.at>
+
+	* ftp.c (ftp_cat, _ftp_update_transfer): display transfer rate.
+
+	* signals.c (sig_remember): add sig_alarm.
+	* signals.h: declare signal counters extern, add sig_alarm.
+
+2000-05-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* tag.c (_tag_insert): realloc tags.line on overflow, correcting
 	next/prev pointers.

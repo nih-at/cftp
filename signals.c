@@ -26,20 +26,21 @@
 #include "signals.h"
 #include "display.h"
 
-volatile int sig_intr, sig_pipe;
+volatile int sig_intr, sig_pipe, sig_alarm;
 
 
 
 int
 signals_init(void)
 {
+    sig_intr = sig_pipe = sig_alarm = 0;
+
     signal(SIGINT, sig_end);
     signal(SIGHUP, sig_end);
     signal(SIGTERM, sig_end);
     signal(SIGTSTP, sig_escape);
     signal(SIGCONT, sig_reenter);
-
-    sig_intr = sig_pipe = 0;
+    signal(SIGALRM, sig_remember);
 
     return 0;
 }
@@ -78,6 +79,8 @@ sig_remember(int i)
     case SIGINT:
 	sig_intr++;
 	break;
+    case SIGALRM:
+	sig_alarm++;
     }
 }
 	

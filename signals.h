@@ -25,7 +25,7 @@
 
 
 
-volatile int sig_intr, sig_pipe;
+extern volatile int sig_intr, sig_pipe, sig_alarm;
 
 int signals_init(void);
 void sig_end(int sno);
