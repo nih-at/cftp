@@ -121,8 +121,6 @@ get_dir(char *path, int force)
 	    cache_fill++;
 	}
 
-	free(dir->path);
-	dir->path = strdup(path);
 	d->dir = dir;
 	cache_insert(d);
     }

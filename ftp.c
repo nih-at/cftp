@@ -267,7 +267,7 @@ ftp_list(char *path)
 		close(fd);
 		dir = (directory *)malloc(sizeof(directory));
 		dir->line = (direntry *)malloc(sizeof(direntry));
-		dir->path = path;
+		dir->path = strdup(path);
 		dir->len = 0;
 		dir->cur = dir->top = 0;
 		dir->size = sizeof(struct direntry);
@@ -281,6 +281,8 @@ ftp_list(char *path)
 	    return NULL;
 	
 	dir = read_dir(f);
+	if (dir)
+	    dir->path = strdup(path);
 
 	fclose(f);
 

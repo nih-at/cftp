@@ -103,8 +103,10 @@ aux_scroll_page(int n)
 	return;
 
     if (n > 0) {
-	if (list->top >= list->len - win_lines)
+	if (list->cur == list->len-1)
 	    list->top = list->cur = 0;
+	if (list->top >= list->len - win_lines)
+	    list->cur = list->len-1;
 	else {
 	    top = list->top + n;
 	    if (top > list->len) {
@@ -123,8 +125,10 @@ aux_scroll_page(int n)
     else if (n < 0) {
 	if (list->cur > list->top)
 	    list->cur = list->top;
-	else if (list->top == 0)
-	    list->top = list->cur = list->len - win_lines;
+	else if (list->top == 0) {
+	    list->top = list->len - win_lines;
+	    list->cur = list->len-1;
+	}
 	else {
 	    top = list->top + n;
 	    if (top < 0)

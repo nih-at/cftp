@@ -93,7 +93,7 @@ extern char version[];
 int parse_url(char *url, char **user, char **pass,
 	      char **host, char **port, char **dir);
 char *deurl(char *u);
-void print_usage(int flag);
+void print_usage(FILE *f);
 char *get_anon_passwd(void);
 void read_netrc(char *host, char **user, char **pass, char **wdir);
 void sig_end(int i);
@@ -147,23 +147,23 @@ main(int argc, char **argv)
 	    exit(0);
 	case 'h':
 	    printf(help_head, version);
-	    print_usage(1);
+	    print_usage(stdout);
 	    printf("\n%s", help);
 	    exit(0);
 	case '?':
-	    print_usage(0);
+	    print_usage(stderr);
 	    exit(1);
 	}
     }
 
     if (optind == argc) {
-	print_usage(0);
+	print_usage(stderr);
 	exit(1);
     }
     
     if (strncmp(argv[optind], "ftp://", 6) == 0) {
 	if (argc > optind+1) {
-	    print_usage(0);
+	    print_usage(stderr);
 	    exit(1);
 	}
 	if (parse_url(argv[optind], &user, &pass, &host, &port, &wdir) < 0)
@@ -173,7 +173,7 @@ main(int argc, char **argv)
     }
     else {
 	if (argc > optind+2) {
-	    print_usage(0);
+	    print_usage(stderr);
 	    exit(1);
 	}
 	host = strdup(argv[optind]);
@@ -331,12 +331,10 @@ parse_url(char *url, char **user, char **pass,
 
 
 void
-print_usage(int flag)
+print_usage(FILE *f)
 {
     int i;
     FILE *f;
-
-    f = (flag ? stdout : stderr);
 
     for (i=0; usage[i]; i++)
 	fprintf(f, "%s %s %s\n", i ? "      " : "Usage:",

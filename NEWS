@@ -1,0 +1,8 @@
+New in 0.9:
+* support for servers with dos directory names
+* reload current directory
+
+New in 0.8:
+* put command
+* sorted directory listings (none/name/date)
+* help can display list of functions, key bindings, and options
