@@ -326,22 +326,27 @@ print_usage(int flag)
 char *
 get_annon_passwd(void)
 {
-    char b[1024];
-    int l;
-    uid_t uid;
+    char pass[8192], host[1024], domain[1024];
     struct passwd *pwd;
 
-    uid = getuid();
-    pwd = getpwuid(uid);
-	
-    strcpy(b, pwd->pw_name);
-    l = strlen(b);
-    b[l++] = '@';
-    gethostname(b+l, 1023-l);
-    l += strlen(b+l);
-    getdomainname(b+l, 1023-l);
+    pwd = getpwuid(getuid());
 
-    return strdup(b);
+    if (pwd)
+	sprintf(pass, "%s@", pwd->pw_name);
+    else
+	strcpy(pass, "unknown@");
+
+    gethostname(host, 1023);
+    getdomainname(domain, 1023);
+
+    if (strcmp(domain, "(none)") != 0) {
+	if (domain[0] != '.')
+	    sprintf(pass+strlen(pass), "%s.%s", host, domain);
+	else
+	    sprintf(pass+strlen(pass), "%s%s", host, domain);
+    }
+    
+    return strdup(pass);
 }
 
 

@@ -98,7 +98,7 @@ status_do(enum state when)
 		    if (l > (cols-24)/2)
 			l2 = (cols-24)/2;
 		
-		    strncpy(status_line+8+l2-3, "...", 3);
+		    strncpy(status_line+8+l2-3, "... ", 4);
 		    space = cols-24-l2;
 		}
 		l2 = 8+(cols-24)-space+1;

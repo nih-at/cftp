@@ -141,7 +141,8 @@ ftp_login(char *host, char *user, char *pass)
     if (resp != 230)
 	return -1;
 
-    free(status.remote.path);	
+    free(status.remote.path);
+    status.remote.path == NULL;
     status_do(bs_none);
 	
     return 0;
@@ -600,7 +601,7 @@ ftp_mode(char m)
 	if (m == ftp_curmode)
 		return 0;
 
-	ftp_put("type %c", m);
+	ftp_put("type %c", toupper(m));
 	if (ftp_resp() != 200)
 		return -1;
 
