@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.13 2001/12/17 21:27:05 dillo Exp $
+  $NiH: sftp.c,v 1.14 2001/12/20 05:44:14 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001 Dieter Baron
@@ -63,9 +63,6 @@ struct handle {
 enum sftp_file_state {
     SFTP_FS_EOF, SFTP_FS_ERROR, SFTP_FS_SEND, SFTP_FS_RECEIVE
 };
-
-#define SFTP_FFL_READ	0x1
-#define SFTP_FFL_WRITE	0x2
 
 struct sftp_file {
     int flags;
@@ -950,7 +947,7 @@ sftp_retr(char *file, int mode, long *startp, long *sizep)
 	return NULL;
 
     f->hnd = hnd;
-    f->flags = SFTP_FFL_READ;
+    f->flags = SSH_FXF_READ;
     if (startp)
 	f->off = *startp;
     else
@@ -977,7 +974,7 @@ sftp_stor(char *file, int mode)
     }
 
     f->hnd = hnd;
-    f->flags = SFTP_FFL_WRITE;
+    f->flags = SSH_FXF_WRITE;
     f->off = 0;
 
     return f;
@@ -1176,7 +1173,7 @@ sftp_xfer_start(void *file)
 
     f = file;
 
-    if (f->flags & SFTP_FFL_WRITE)
+    if (f->flags & SSH_FXF_WRITE)
 	_sftp_start_write(f, SFTP_DATA_LEN);
     else {
 	if (sftp_send_read(f, SFTP_DATA_LEN) < 0)
@@ -1208,7 +1205,7 @@ sftp_xfer_stop(void *file, int aborting)
 	    f->state == SFTP_FS_EOF;
     }
     
-    if ((f->flags & SFTP_FFL_WRITE
+    if ((f->flags & SSH_FXF_WRITE
 	 && f->state == SFTP_FS_SEND
 	 && f->doff < f->dend)) {
 	/* fix up incomplete write packet */

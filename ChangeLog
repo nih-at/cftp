@@ -1,3 +1,8 @@
+2001-12-20  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* sftp.c: supersede SSH_FFL_READ and SSH_FFL_WRITE with
+	SSH_FXF_READ and SSH_FXF_WRITE, respectively.
+
 2001-12-19  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* display.c (disp_status): add flags argument; adapt callers.
