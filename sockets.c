@@ -1,6 +1,6 @@
 /*
   sockets -- auxiliary socket functions
-  Copyright (C) 1996, 1997, 1998, 1999 Dieter Baron
+  Copyright (C) 1996, 1997, 1998, 1999, 2000 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -38,10 +38,6 @@
 #include "sockets.h"
 
 extern char *prg;
-
-#ifndef H_ERRNO_DECLARED
-extern int h_errno;
-#endif
 
 
 
