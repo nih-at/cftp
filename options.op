@@ -1,3 +1,27 @@
+dnl -*- text -*-
+
+dnl  options.op -- definition and documentation for user settable options
+dnl  Copyright (C) 1996 Dieter Baron
+dnl
+dnl  This file is part of cftp, a fullscreen ftp client
+dnl  The author can be contacted at <dillo@giga.or.at>
+dnl
+dnl  This program is free software; you can redistribute it and/or modify
+dnl  it under the terms of the GNU General Public License as published by
+dnl  the Free Software Foundation; either version 2 of the License, or
+dnl  (at your option) any later version.
+dnl
+dnl  This program is distributed in the hope that it will be useful,
+dnl  but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl  GNU General Public License for more details.
+dnl
+dnl  You should have received a copy of the GNU General Public License
+dnl  along with this program; if not, write to the Free Software
+dnl  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+
 dnl option(name, short, variable, function, type, default, help, doku)
 
 option(mode, mo, opt_mode, opts_mode, c, 'i',
@@ -12,8 +36,8 @@ in the first column.})
 
 option(hist-size, hs, ftp_hist_size, ftp_set_hist_size, i, 200,
  {size of ftp command/response history},
- {Specifies the number of lines exchanged with ftp server to remember,
-as displayed by response. @xref{response}})
+ {Specifies how many lines of ftp commands and responses exchanged
+with the ftp server to remember.  Remembered lines can be displayed
+with @code{response}.  @xref{response}})
 
 endall
-

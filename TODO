@@ -16,7 +16,6 @@ C functions.texi: fix bad next pointer in last section (to first command)
 F if url is file, download
 C display.cw: (disp_prompt_char) return after first key, not after newline
 F functions.texi: include default bindings
-C include copyright notices
 ---------------------------------------------------------------- till beta
 F abort transfer
 F fn_search
@@ -33,6 +32,8 @@ F cftp.texi: introduction, invoking, cftprc
 C fn_basic.cw: docu for bind
 F fn_basic.cw: (fn_help) help for `f'unktions, `k'eys, and `o'ptions
 B all output in first line outside screen
+C untangle fn_* files
+F (fn_isearch) search backwards
 ----------------------------------------------- done
 P hstrerror.c: AIX: Service unavailable (5); include h_errno in unknown msg
 
