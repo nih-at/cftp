@@ -1,5 +1,9 @@
 2001-12-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* mkfntab-c.m4, mkfntab-h.m4, mkfntexi.m4, fntable.fn,
+	mkoptab-c.m4, mkoptab-h.m4, mkoptexi.m4, options.op: include rcs
+	ids in included files.
+	
 	* status.c (opt_set_status): remove unused function.
 
 	* sftp.c (_sftp_read_dir): free strings if skipping entry.

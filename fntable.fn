@@ -1,6 +1,6 @@
 dnl -*- text -*-
 
-dnl  $NiH$
+dnl  $NiH: fntable.fn,v 1.20 2001/12/11 19:52:07 dillo Exp $
 dnl
 dnl  fntable.fn -- description of bindable functions
 dnl  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -22,6 +22,7 @@ dnl  You should have received a copy of the GNU General Public License
 dnl  along with this program; if not, write to the Free Software
 dnl  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+rcsid(<<$NiH$>>)
 
 section(fn_basic, Basic Functions)
 

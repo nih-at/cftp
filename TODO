@@ -2,7 +2,7 @@
 ! sftp: lost connection not reported
 ! sftp: ^c kills ssh subprocess (how to avoid?!)
 ! test ftp_cat error cases
-- avoid magic numbers in sftp xfer
+! allow reading response if initial connect/login failes
 - finish _sftp_log_packet
 - move ftp_gets to util.c and rename
 - move history from ftp.c
@@ -33,5 +33,4 @@
 * <local> mode
 * decent documentation
 * segfault while tagging on GNU/Linux
-* don't exit if initial connect/login fails (allow reading message log)
 * try again if connect/login failes

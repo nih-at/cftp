@@ -1,4 +1,4 @@
-dnl  $NiH$
+dnl  $NiH: mkfntexi.m4,v 1.4 2001/12/13 21:14:53 dillo Exp $
 dnl
 dnl  mkfntexi.m4 -- create functions.texi from fntable.fn
 dnl  Copyright (C) 1996, 1997, 2000, 2001 Dieter Baron
@@ -23,12 +23,19 @@ dnl
 divert(-1)
 
 diverts:
-	0  chapter menu
-	1  chapter menu, all functions
-	2  section menu + finished sections
-	3  subsection nodes
+	1  chapter menu
+	2  chapter menu, all functions
+	3  section menu + finished sections
+	4  subsection nodes
+	5  rcs ids
 
 changequote(<<,>>)
+
+define(rcsid, dnl id
+<<divert(5)@c   $1
+divert(-1)>>)
+
+rcsid(<<$NiH$>>)
 
 define(menuentry, dnl node, description
 <<* <<$1>>::dnl
@@ -37,11 +44,11 @@ ifelse(eval(len(<<$1>>)<12), 1, <<	>>)dnl
 	<<$2>>>>)
 
 define(function,dnl name, synopsis, function, flags, help-string, description
-<<divert(1)dnl
-menuentry(<<$1>>, <<$5>>)
-divert(2)dnl
+<<divert(2)dnl
 menuentry(<<$1>>, <<$5>>)
 divert(3)dnl
+menuentry(<<$1>>, <<$5>>)
+divert(4)dnl
 @c ---------------------------------------------------------------------
 @node <<$1>>
 @subsection <<$1>> -- <<$5>>
@@ -59,9 +66,9 @@ dnl Default Binding:
 divert(-1)>>)
 
 define(section,dnl file, name
-<<divert(0)dnl
+<<divert(1)dnl
 menuentry(<<$2>>,)
-divert(2)dnl
+divert(3)dnl
 
 @c =====================================================================
 @node <<$2>>
@@ -72,30 +79,32 @@ divert(2)dnl
 divert(-1)>>)
 
 define(endsec, dnl
-<<divert(2)dnl
+<<divert(3)dnl
 @end menu
 
-undivert(3)dnl
+undivert(4)dnl
 divert(-1)>>)
 
-divert(0)dnl
-@c This file is automatically created from ``fntable.fn''; don't change
+define(endall, dnl
+<<divert(0)dnl
+<<@c This file is automatically created from ``fntable.fn''; don't change
 @c this file, change ``fntable.fn'' instead.
+@c
+@c Created from:>>
+undivert(5)dnl
 
-@c *********************************************************************
+<<@c *********************************************************************
 @node	 Functions
 @chapter Functions
 
-@menu
-divert(1)dnl
-All Functions Alphabetically
-<-------
-divert(-1)
+@menu>>
+undivert(1)dnl
 
-define(endall,
-<<divert(1)dnl
-------->
-@end menu
+<<All Functions Alphabetically
+<------->>
+undivert(2)dnl
+<<------->
+@end menu>>
 
-divert(0)
-undivert>>)
+undivert(3)dnl
+divert(-1)>>)
