@@ -1,3 +1,8 @@
+1999-12-22  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* acconfig.h: define HAVE_SCRIPTING if any scripting language is
+	to be used.
+
 1999-05-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (ftp_reconnect): reset ftp_curmode to ' '.
