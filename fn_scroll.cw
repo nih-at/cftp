@@ -194,7 +194,7 @@ fn_isearch(char **args)
 	}
 
 	for (n = current;
-	     n < curdir->num && strstr(curdir->list[n].line, b+9) == NULL;
+	     n < curdir->num && strstr(curdir->list[n].name, b+9) == NULL;
 	     n++)
 	    ;
 
@@ -217,5 +217,3 @@ fn_isearch(char **args)
     
     return;
 }
-
-
