@@ -46,6 +46,7 @@ bind	b	page-up
 bind	pgdown	page-down
 bind	pgup	page-up
 bind	G	goto
+bind	^s	isearch
 
 bind	g	cd
 bind	v	view

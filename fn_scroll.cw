@@ -9,6 +9,7 @@ endsec()
 #include "directory.h"
 #include "functions.h"
 #include "display.h"
+#include "tty.h"
 
 @<local prototypes@>
 
@@ -155,5 +156,66 @@ fn_goto(char **args)
 	aux_scroll(n-(win_lines/2), n, 0);
 }
 
+
+@ incremental search
+
+@d<functions@>
+function(isearch, , fn_isearch, 0,
+	 {incremnetal search},
+ {Search directory listing incrementally.})
+
+
+@u
+void
+fn_isearch(char **args)
+{
+    char b[1024], *p;
+    int n, c, start, current;
+
+    strcpy(b, "isearch: ");
+    p = b+9;
+    n = 0;
+
+    start = current = cursel;
+
+    while ((c=read_char(b)) != '\n' && c != 7 /* ^G */) {
+	if (c == tty_verase) {
+	    *(--p) = '\0';
+	    current = start;
+	}
+	else if (c == tty_vkill) {
+	    p = b+9;
+	    *p = '\0';
+	    current = start;
+	}
+	else {
+	    *(p++) = c;
+	    *p = '\0';
+	}
+
+	for (n = current;
+	     n < curdir->num && strstr(curdir->list[n].line, b+9) == NULL;
+	     n++)
+	    ;
+
+	if (n < curdir->num) {
+	    current = n;
+	    if (current >= curtop && current < curtop+win_lines)
+		aux_scroll(curtop, current, 0);
+	    else
+		aux_scroll(current-(win_lines/2), current, 0);
+	}
+    }
+    if (c == 7 /* ^G */) {
+	    if (start >= curtop && start < curtop+win_lines)
+		aux_scroll(curtop, start, 0);
+	    else
+		aux_scroll(start-(win_lines/2), start, 0);
+    }
+
+    disp_status("");
+    
+    return;
+}
 
 

@@ -134,6 +134,7 @@ tty_init(void)
 	tty_tio.c_cc[VMIN] = 1;
 	tty_tio.c_cc[VTIME] = 0;
 	tty_tio.c_lflag &= ~(ECHO|ICANON|ECHONL);
+	tty_tio.c_iflag &= ~(IXON|IXOFF);
 	tty_tio.c_lflag |= ISIG;
 	
 	if (tcsetattr(0, TCSANOW, &tty_tio_ext) < 0) {
