@@ -36,10 +36,10 @@ C consistent error handling
 C list.c: more efficient handling of line deletion
 B status.c: percentage wrong (all) in <tag>
 B fn_tag.c: taggin in an empty directory shouldn't tag
-P ftp.c: no <sys/select.h> on linux
 B main.c: (get_annon_passwd) check for domainname (none), for . in hostname
 B display ftp response when login failes
 ----------------------------------------------- done
+P ftp.c: include <sys/select.h> only if it exists (aix vs. linux)
 B ftp.c: (ftp_reconnect) print message before reconnecting
 
 Jul 31 1997 (0.6c)
