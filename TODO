@@ -1,3 +1,5 @@
+! fix or disable transfer rate display
+! check on NextSTEP
 * feature recognition and handling
 * complete getaddrinfo replacement
 * rethink directory format auto detection logic
