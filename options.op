@@ -34,7 +34,7 @@ option(passive, pv, opt_pasv, NULL, b, 0, ,
  <<>>)
 
 option(stall-timeout, st, opt_stall, NULL, i, 900, ,
- <<timeout for stalled connections (in seconds)>>
+ <<timeout for stalled connections (in seconds)>>,
  <<If no data arrives on the data connection for this many seconds,
 consider the transfer stalled and abort.>>)
 

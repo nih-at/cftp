@@ -1,5 +1,7 @@
 2001-07-30  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* options.op (stall-timeout): new option.
+
 	* main.c (main): if initial url is file, download before listing
 	directory.
 
