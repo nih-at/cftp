@@ -111,6 +111,9 @@ kept in a log, with commands prefixed with @samp{->}.  You can change
 the number of lines to keep in the log with the option
 @ref{hist-size}.})
 
+function(mkdir, [directory], fn_mkdir, 0,
+         {create directory on server},
+ {Create directory @var{directory} on server.})
 
 function(prefix, , fn_prefix, FN_PRE,
 	 {prefix digit},

@@ -686,3 +686,29 @@ fn_leave_tag(char **args)
 
     enter_state(leave_tag);
 }
+
+
+
+void
+fn_mkdir(char **args)
+{
+    char *name;
+    
+    if (args == NULL) {
+	name = read_string("Directory: ", 1);
+	if (name == NULL || name[0] == '\0') {
+	    disp_status("");
+	    free(name);
+	    return;
+	}
+    }
+    else
+	name = args[0];
+
+    ftp_mkdir(name);
+
+    if (args == NULL)
+	free(name);
+
+    return;
+}

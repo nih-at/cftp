@@ -1,3 +1,9 @@
+1998-04-25  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* fn_basic.c (fn_mkdir): new function.
+
+	* ftp.c (ftp_mkdir): new funktion.
+
 1998-03-12  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (ftp_cwd, ftp_pwd): handle DOS servers with leading '\\'

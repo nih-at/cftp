@@ -403,6 +403,18 @@ ftp_fclose(FILE *f)
 
 
 int
+ftp_mkdir(char *path)
+{
+    ftp_put("mkd %s", path);
+    if (ftp_resp() != 257)
+	return -1;
+    
+    return 0;
+}
+
+
+
+int
 ftp_noop(void)
 {
     ftp_put("noop");
