@@ -308,41 +308,77 @@ int tty_readkey(void);
 int
 tty_readkey(void)
 {
-	int c;
-	char s[128];
-	int i, j;
+    static char s[128];
+    static l = 0;
+    int c, len;
+    int vmin = 0;
 
+    if (l == 0) {
 	while ((c=getchar())==EOF && errno == EINTR)
-	    ;
+	    errno = 0;
 	if (c == EOF)
 	    return -1;
+	s[l++] = c;
+    }
 
-	if (keyflag[c] == KEY_PREF) {
+    len = 0;
+    
+    if (keyflag[s[0]] == KEY_PREF) {
+	while ((c=tty_ispref(s, l)) == EOF) {
+ 	    if (!vmin) {
 		tty_vmin(0, 5);
-		s[0] = c;
-		i = 1;
-		while (1) {
-		    while ((c=getchar())==EOF && errno == EINTR)
-			;
-			if (c == EOF) {
-				tty_vmin(1, 0);
-				clearerr(stdin);
-				return s[0];
-			}
-			s[i++] = c;
-			s[i] = '\0';
-			for (j=0; j<max_fnkey; j++)
-				if (fnkey[j].seq &&
-				    strcmp(s, fnkey[j].seq) == 0) {
-					tty_vmin(1, 0);
-					return 256+j;
-				}
-		}
+		vmin = 1;
+	    }
+
+	    while ((c=getchar())==EOF && errno == EINTR)
+			errno = 0;
+	    if (c == EOF) {
+		clearerr(stdin);
+		c = s[0];
+		break;
+	    }
+	    s[l++] = c;
+	}
+	if (c == -2) {
+	    c = s[0];
 	}
 
-	return c;
+    }
+
+    else {
+	c = s[0];
+	l = 1;
+    }
+
+    if (c > 256)
+	len =(fnkey[c-256].seq ? strlen(fnkey[c-256].seq) : 1);
+    else
+	len = 1;
+    
+    if (vmin)
+	tty_vmin(1, 0);
+	
+    l -= len;
+    if (l)
+	memmove(s, s+len, l);
+    
+    return c;
 }
 			
+
+int tty_ispref(char *s, int l)
+{
+    int j;
+    
+    for (j=0; j<max_fnkey; j++)
+	if (fnkey[j].seq)
+	    if (!strncmp(s, fnkey[j].seq, l) && fnkey[j].seq[l] == '\0')
+		return 256+j;
+	    else if (!strncmp(fnkey[j].seq, s, l))
+		return EOF;
+
+    return -2;
+}
 
 @ setting VMIN and VTIME.
 

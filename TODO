@@ -18,6 +18,7 @@ F automatically deidle connection
 C functions.texi: fix bad next pointer in last section (to first command)
 F if url is file, download
 C display.cw: (disp_prompt_char) return after first key, not after newline
+F functions.texi: include default bindings
 ---------------------------------------------------------------- till beta
 F fn_search
 F tag files: tag regexp
@@ -26,13 +27,13 @@ F forced reload of directory listing
 B handle immensly long lines in ftp_gets (malloc failure)
 F .cftprc 
 P display.cw: check for missing capabilities
-B tty.cw: (tty_readkey) don't discard chars by failed multibyte code
 F display.cw: (disp_redir) don't clear screen, overwrite
 P configure.in: add -posix for NeXTStep
 B propagate errors (conn hung or eof?) up to fn_gettags
 F cftp.texi: introduction, invoking, cftprc
 F user options
 ----------------------------------------------- done
+B tty.cw: (tty_readkey) don't discard chars by failed multibyte code
 B display.cw: (disp_prompt_char) eat up chars till newline
 F fn_basic.cw: (fn_lcd) handle ~, ~user
 F main.cw: (main) if startup dir doesn't exist, don't close connection
