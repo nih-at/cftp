@@ -1,8 +1,10 @@
 @ bindable functions for selecting files and changing directories.
 
 @(fn_select.fn@)
-; fn_select
+section(fn_select, Selection Functions)
 @<functions@>
+endsec()
+
 
 @u
 #include <stdio.h>
@@ -89,7 +91,10 @@ aux_view(char *name){
 @ selecting an entry: entering (dir) or downloading (file).
 
 @d<functions@>
-  { fn_enter_get, "enter/get", 0, "enter directory or get file" }
+function(enter/get, [file], fn_enter_get, 0,
+	 {enter directory or get file},
+ {})
+
 
 @u
 void
@@ -130,7 +135,10 @@ fn_enter_get(char **args)
 @ selecting an entry: entering (dir) or viewing (file)
 
 @d<functions@>
-  { fn_enter_view, "enter/view", 0, "enter directory or view file" }
+function(enter/view, [file], fn_enter_view, 0,
+	 {enter directory or view file},
+ {})
+
 
 @u
 void
@@ -168,7 +176,10 @@ fn_enter_view(char **args)
 @ entering a directory.
 
 @d<functions@>
-  { fn_enter, "enter", 0, "enter directory" }
+function(enter, [file], fn_enter, 0,
+	 {enter directory},
+ {})
+
 
 @u
 void
@@ -200,7 +211,10 @@ fn_enter(char **args)
 @ downloading a file.
 
 @d<functions@>
-  { fn_get, "get", 0, "get file" }
+function(get, [file], fn_get, 0,
+	 {get file},
+ {})
+
 
 @u
 void
@@ -234,7 +248,10 @@ fn_get(char **args)
 @ viewing a file.
 
 @d<functions@>
-  { fn_view, "view", 0, "view file" }
+function(view, [file], fn_view, 0,
+	 {view file},
+ {})
+
 
 @u
 void
@@ -266,7 +283,10 @@ fn_view(char **args)
 @ leaving a directory.
 
 @d<functions@>
-  { fn_cdup, "leave", 0, "leave current directory" }
+function(leave, , fn_cdup, 0,
+	 {leave current directory},
+ {})
+
 
 @u
 void
@@ -300,7 +320,10 @@ fn_cdup(char **args)
 @ going to a directory.
 
 @d<functions@>
-  { fn_cd, "cd", 0, "change directory" }
+function(cd, [dir], fn_cd, 0,
+	 {change directory},
+ {})
+
 
 @u
 void

@@ -1,8 +1,9 @@
 @ bindable functions for scrolling directory listsings.
 
 @(fn_scroll.fn@)
-; fn_scroll
+section(fn_scroll, Scrolling Functions)
 @<functions@>
+endsec()
 
 @u
 #include "directory.h"
@@ -87,10 +88,22 @@ aux_scroll_page(int n)
 
 
 @d<functions@>
-  { fn_down, "down", 0, "move N lines down (default: 1)" }
-  { fn_up, "up", 0, "move N lines up (default: 1)" }
-  { fn_pg_down, "page-down", 0, "move N screenfulls down (default: 1)" }
-  { fn_pg_up, "page-up", 0, "move N screenfulls up (default: 1)" }
+function(down, [n], fn_down, 0,
+	 {move N lines down (default: 1)},
+ {})
+
+function(up, [n], fn_up, 0,
+	 {move N lines up (default: 1)},
+ {})
+
+function(page-down, [n], fn_pg_down, 0,
+	 {move N screenfulls down (default: 1)},
+ {})
+
+function(page-up, [n], fn_pg_up, 0,
+	 {move N screenfulls up (default: 1)},
+ {})
+
 
 @u
 void
@@ -121,7 +134,10 @@ fn_pg_up(char **args)
 @ goto line.
 
 @d<functions@>
-  { fn_goto, "goto", 0, "goto line N (default: last)" }
+function(goto, [line], fn_goto, 0,
+	 {goto line N (default: last)},
+ {})
+
 
 @u
 void

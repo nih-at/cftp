@@ -1,8 +1,10 @@
 @ miscanelous basic bindable functions.
 
 @(fn_basic.fn@)
-; fn_basic
+section(fn_basic, Basic Functions)
 @<functions@>
+endsec()
+
 
 @u
 #include <stdio.h>
@@ -21,13 +23,17 @@ extern function functions[];
 @ exitting.
 
 @d<functions@>
-  { 0, "exit", FN_EXIT, "exit cftp" }
-
+function(exit, [-f], 0, FN_EXIT,
+	 {exit cftp},
+{Close connection and exit @@sc{cftp}; if you have tagged files, @@sc{cftp}
+asks for confirmation (unless the -f option is given).})
 
 @ displaying version.
 
 @d<functions@>
-  { fn_version, "version", 0, "display version number" }
+function(version, , fn_version, 0,
+	 {display version number},
+ {})
 
 @u
 extern char version[];
@@ -41,19 +47,24 @@ void fn_version(char **args)
 @ redraw.
 
 @d<functions@>
-  { fn_redraw, "redraw", FN_PRE, "redraw screen" }
+function(redraw, , fn_redraw, FN_PRE,
+	 {redraw screen},
+ {})
 
 @u
 void fn_redraw(char **args)
 {
-	disp_redraw();
+    disp_redraw();
 }
 
 
 @ help.
 
 @d<functions@>
-  { fn_help, "help", 0, "display binding and help string for key" }
+function(help, [key], fn_help, 0,
+	 {display binding and help string for key},
+ {Describe function bound to @@code{key}; @@code{key} is prompted for if
+ommitted.})
 
 @u
 void fn_help(char **args)
@@ -78,7 +89,9 @@ void fn_help(char **args)
 @ change local directory.
 
 @d<functions@>
-  { fn_lcd, "lcd", 0, "change directory on local host" }
+function(lcd, [dir], fn_lcd, 0,
+	 {change directory on local host},
+ {})
 
 @u
 void fn_lcd(char **args)
@@ -101,7 +114,10 @@ void fn_lcd(char **args)
 @ shell escape.
 
 @d<functions@>
-  { fn_shell, "shell", 0, "shell escape" }
+function(shell, {[cmd arg @@dots{}]}, fn_shell, 0,
+	 {shell escape},
+ {Execute shell command; if no command is given, it is prompted for.
+Enter null string to get an interactive shell.}) 
 
 @u
 void fn_shell(char **args)
@@ -129,7 +145,9 @@ void fn_shell(char **args)
 @ execute cftp command
 
 @d<functions@>
-  { fn_colon, "colon", 0, "execute cftp command" }
+function(colon, {[args @@dots{}]}, fn_colon, 0,
+	 {execute cftp command},
+ {Execute an arbitrary @@sc{cftp} command.})
 
 @u
 void fn_colon(char **args)
@@ -182,7 +200,9 @@ void fn_colon(char **args)
 @ displaying last response.
 
 @d<functions@>
-  { fn_response, "response", 0, "display last multiline response" }
+function(response, , fn_response, 0,
+	 {display last multiline response},
+ {})
 
 @u
 void fn_response(char **args)
@@ -202,4 +222,35 @@ void fn_response(char **args)
 	fprintf(f, "%s\n", ftp_response[i]);
 
     disp_close(f);
+}
+
+
+@ functions for entering digits
+
+@d<functions@>
+function(prefix, , fn_prefix, FN_PRE,
+	 {prefix digit},
+ {})
+
+
+@u
+int
+fn_prefix(char **args)
+{
+    if (args == NULL) {
+	/* emacs C-u */
+	return;
+    }
+    else if (args[0][1] == '\0') {
+	if (isdigit(args[0][0]))
+	    add_prefix(args[0][0] - '0');
+	else if (args[0][0] == '-')
+	    negate_prefix();
+    }
+    else {
+	int p = atoi(args[0]);
+
+	if (p || args[0][0] == '0')
+	    set_prefix(p);
+    }
 }

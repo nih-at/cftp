@@ -1,8 +1,9 @@
 @ manipulating and viewing options.
 
 @(fn_options.fn@)
-; fn_options
+section(fn_options, User Options)
 @<functions@>
+endsec()
 
 @u
 #include "directory.h"
@@ -28,8 +29,14 @@ aux_show_mode(void)
 
 
 @d<functions@>
-  { fn_ascii, "ascii", 0, "use ascii mode for downloads" }
-  { fn_image, "image", 0, "use image (binary) mode for downloads" }
+function(ascii, , fn_ascii, 0,
+	 {use ascii mode for downloads},
+ {Set transfer mode to ascii.  This function will be superseded by
+set.})
+function(image, , fn_image, 0,
+	 {use image (binary) mode for downloads},
+ {Set transfer mode to image.  This function will be superseded by
+set.})
 
 @u
 void

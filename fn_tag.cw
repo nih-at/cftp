@@ -1,8 +1,10 @@
 @ tagging files;
 
 @(fn_tag.fn@)
-; fn_tag
+section(fn_tag, Tagging Functions)
 @<functions@>
+endsec()
+
 
 @u
 #include <stdlib.h>
@@ -18,7 +20,10 @@
 
 
 @d<functions@>
-  { fn_tag, "tag", 0, "tag/untag file for later download" }
+function(tag, [file], fn_tag, 0,
+	 {tag/untag file for later download},
+ {})
+
 
 @u
 void
@@ -73,7 +78,10 @@ fn_tag(char **args)
 @ listing tags.
 
 @d<functions@>
-  { fn_listtags, "list-tags", 0, "list tagged files" }
+function(list-tags, [file], fn_listtags, 0,
+	 {list tagged files},
+ {})
+
 
 @u
 void
@@ -114,7 +122,10 @@ fn_listtags(char **args)
 @ getting taged files
 
 @d<functions@>
-  { fn_gettags, "get-tags", 0, "get tagged files" }
+function(get-tags, {}, fn_gettags, 0,
+	 {get tagged files},
+ {})
+
 
 @u
 void
@@ -163,7 +174,10 @@ fn_gettags(char **args)
 @ read in tags list
 
 @d<functions@>
-  { fn_loadtag, "load-tags", 0, "load tags list from file" }
+function(load-tags, [file], fn_loadtag, 0,
+	 {load tags list from file},
+ {})
+
 
 @u
 void
