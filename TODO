@@ -1,3 +1,4 @@
+* on startup: don't list dir if downloading file
 * find bug when viewing or piping rfc-index.txt
 * host specific rc file sections
 * run time disabling of IPv6
@@ -11,14 +12,14 @@
 * feature recognition and handling
 * complete getaddrinfo replacement
 * check warnings on NextSTEP
+* fix unix directory parsing (ftp://ftp.deva.net/)
 * rethink directory format auto detection logic
 * improve check wheter lib{socket,nsl,resolv} are needed
 * ^[[O triggers bindings for left and O
-* detect stalled and hung data connection
 * ftp_retr: check 150 format on different servers
 * handle 8 bit keys
 * <local> mode
 * decent documentation
 * segfault while tagging on GNU/Linux
-* improve abort handling, especially when downloading tagged files
 * don't exit if initial connect/login fails (allow reading message log)
+* try again if connect/login failes

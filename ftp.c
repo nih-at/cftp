@@ -1028,13 +1028,13 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size, int upload)
 	    }
 	}
 	
-	if (sig_intr)
-	    break;
-	
 	if (old_alarm != sig_alarm) {
 	    _ftp_update_transfer(&trstat, got, sig_alarm);
 	    old_alarm = sig_alarm;
 	}
+
+	if (sig_intr)
+	    break;
     }
 
     signal(SIGINT, sig_end);
@@ -1173,7 +1173,15 @@ _ftp_update_transfer(struct _ftp_transfer_stats *tr, long got, int secs)
     rcur = ((tr->cur[tr->ccur] - tr->cur[(tr->ccur+1)%tr->ncur])
 	    / ((double)(secs < tr->ncur-1 ? secs : tr->ncur-1)*1024));
 
-    if (tr->size != -1)
+    if (secs-tr->stall_sec > opt_stall) {
+	disp_status("stalled for more than %d seconds, aborting.");
+	sig_intr = 1;
+    }
+    else if (secs-tr->stall_sec > tr->ncur) {
+	disp_status("transferred %ld/%ld (total: %.2fkb/s, stalled: %ds)",
+		    got, tr->size, rtot, secs-tr->stall_sec);
+    }
+    else if (tr->size != -1)
 	disp_status("transferred %ld/%ld (total: %.2fkb/s, current: %.2fkb/s)",
 		    got, tr->size, rtot, rcur);
     else

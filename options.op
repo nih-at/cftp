@@ -33,6 +33,11 @@ option(passive, pv, opt_pasv, NULL, b, 0, ,
  <<use passive mode to establish data connections>>,
  <<>>)
 
+option(stall-timeout, st, opt_stall, NULL, i, 900, ,
+ <<timeout for stalled connections (in seconds)>>
+ <<If no data arrives on the data connection for this many seconds,
+consider the transfer stalled and abort.>>)
+
 option(tag-char, tc, opt_tagchar, NULL, c, '>', ,
  <<char to mark tagged files with>>,
  <<Tagged files in the current directory are marked with this character
