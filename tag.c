@@ -108,13 +108,14 @@ tag_file(char *dir, char *file, long size, char type, enum tagopt what)
 
     cmp = 1;
 
-    for (t=tags_s.next; t != &tags_s && cmp > 0; t=t->next) {
+    for (t=tags_s.next; t != &tags_s; t = t->next) {
 	c = t->name[t->dirl];
 	t->name[t->dirl] = '\0';
 	cmp = strcmp(dir, t->name);
 	t->name[t->dirl] = c;
 	if (cmp == 0)
-	    cmp = strcmp(file, t->file);
+	    if ((cmp=strcmp(file, t->file)) <= 0)
+		break;
     }
 
     if (t != &tags_s && cmp == 0) {
@@ -165,9 +166,14 @@ _tag_delete(int n)
     t = tags.line+n;
 
     free(t->line);
-    free(t->file);
+    free(t->name);
 
-    for (i=n; i>tags.len; i++) {
+    t->next->prev = t->prev;
+    t->prev->next = t->next;
+
+    --tags.len;
+    
+    for (i=n; i<tags.len; i++) {
 	tags.line[i] = tags.line[i+1];
 	tags.line[i].prev->next--;
 	tags.line[i].next->prev--;
