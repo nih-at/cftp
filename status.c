@@ -1,5 +1,5 @@
 /*
-  $NiH: status.c,v 1.16 2001/12/11 14:37:41 dillo Exp $
+  $NiH: status.c,v 1.17 2001/12/20 05:44:15 dillo Exp $
 
   status.h -- status line
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -153,14 +153,6 @@ status_do(enum state when)
 	    fputc('\n', stdout);
 	}
     }
-}
-
-
-
-void
-opt_set_status(int optval, int *optvar)
-{
-    /* XXX */
 }
 
 
