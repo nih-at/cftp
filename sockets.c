@@ -44,57 +44,60 @@ extern int h_errno;
 int
 sopen(char *host, char *service)
 {
-        int s;
-        struct hostent *hp;
-        struct sockaddr_in sa;
-	u_short port;
-	struct servent *serv;
+    int s;
+    struct hostent *hp;
+    struct sockaddr_in sa;
+    u_short port;
+    struct servent *serv;
 
-	if ((serv = getservbyname(service, "tcp")) == NULL) {
-	    if ((port=atoi(service)) == 0 && service[0] != '0') {
-		if (disp_active)
-		    disp_status("unknown service: %s", service);
-		else
-		    fprintf(stderr, "%s: unknown service: %s\n",
-			    prg, service);
-		return(-1);
-	    }
+    if ((serv = getservbyname(service, "tcp")) == NULL) {
+	if ((port=atoi(service)) == 0 && service[0] != '0') {
+	    if (disp_active)
+		disp_status("unknown service: %s", service);
 	    else
-		port = htons(port);
+		fprintf(stderr, "%s: unknown service: %s\n",
+			prg, service);
+	    return(-1);
 	}
 	else
-	    port = (u_short)serv->s_port;
-
-        if ((hp = gethostbyname(host)) == NULL) {
+	    port = htons(port);
+    }
+    else
+	port = (u_short)serv->s_port;
+    
+    if (inet_aton(host, &sa.sin_addr) == 0) {
+	if ((hp = gethostbyname(host)) == NULL) {
 	    if (disp_active)
 		disp_status("can't get host %s: %s",
 			    host, hstrerror(h_errno));
 	    else
-                fprintf(stderr, "%s: can't get host %s: %s\n",
-                        prg, host, hstrerror(h_errno));
+		fprintf(stderr, "%s: can't get host %s: %s\n",
+			prg, host, hstrerror(h_errno));
 	    return(-1);
-        }
+	}
 	memcpy(&sa.sin_addr, hp->h_addr, hp->h_length);
-        sa.sin_family = hp->h_addrtype;
-        sa.sin_port = port;
-        if ((s = socket(hp->h_addrtype, SOCK_STREAM, 0)) < 0) {
-	    if (disp_active)
-		disp_status("can't allocate socket: %s\n",
-			    strerror(errno));
-	    else
-                fprintf(stderr, "%s: can't allocate socket: %s\n",
-                        prg, strerror(errno));
-	    return(-1);
-        }
-        if (connect(s, (struct sockaddr *)&sa, sizeof(sa)) < 0) {
-	    if (disp_active)
-		disp_status("can't connect: %s", strerror(errno));
-	    else
-                fprintf(stderr, "%s: can't connect: %s\n",
-                        prg, strerror(errno));
-	    return(-1);
-        }
-        return(s);
+    }
+    sa.sin_family = AF_INET;
+    sa.sin_port = port;
+    
+    if ((s = socket(sa.sin_family, SOCK_STREAM, 0)) < 0) {
+	if (disp_active)
+	    disp_status("can't allocate socket: %s\n",
+			strerror(errno));
+	else
+	    fprintf(stderr, "%s: can't allocate socket: %s\n",
+		    prg, strerror(errno));
+	return(-1);
+    }
+    if (connect(s, (struct sockaddr *)&sa, sizeof(sa)) < 0) {
+	if (disp_active)
+	    disp_status("can't connect: %s", strerror(errno));
+	else
+	    fprintf(stderr, "%s: can't connect: %s\n",
+		    prg, strerror(errno));
+	return(-1);
+    }
+    return(s);
 }
 
 
@@ -102,42 +105,42 @@ sopen(char *host, char *service)
 int
 spassive(unsigned long *host, int *port)
 {
-	int s, len;
-	struct sockaddr_in locaddr;
-	extern int getport();
-
-	if ((s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1) {
-		fprintf(stderr, "%s: can't allocate socket: %s\n",
-			prg, strerror(errno));
-		return(-1);
-	}
-
-	locaddr.sin_family = AF_INET;
-	locaddr.sin_addr.s_addr = INADDR_ANY;
-	memset(locaddr.sin_zero, 0, 8);
-	locaddr.sin_port = 0;
-
-	if (bind(s, (struct sockaddr *)&locaddr, sizeof(struct sockaddr_in))
-	    == -1) {
-		fprintf(stderr, "%s: can't bind socket: %s\n",
-			prg, strerror(errno));
-		return(-1);
-	}
-
-	len = sizeof(locaddr);
-	if (getsockname(s, (struct sockaddr *)&locaddr, &len) == -1) {
-		fprintf(stderr, "%s: can't get socket name: %s\n",
-			prg, strerror(errno));
-		return(-1);
-	}
-	*host = (unsigned long)locaddr.sin_addr.s_addr;
-	*port = ntohs(locaddr.sin_port);
-			  
-	if (listen(s, 1) == -1) {
-		fprintf(stderr, "%s: can't listen on socket: %s\n",
-			prg, strerror(errno));
-		return(-1);
-	}
-
-	return s;
+    int s, len;
+    struct sockaddr_in locaddr;
+    extern int getport();
+    
+    if ((s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1) {
+	fprintf(stderr, "%s: can't allocate socket: %s\n",
+		prg, strerror(errno));
+	return(-1);
+    }
+    
+    locaddr.sin_family = AF_INET;
+    locaddr.sin_addr.s_addr = INADDR_ANY;
+    memset(locaddr.sin_zero, 0, 8);
+    locaddr.sin_port = 0;
+    
+    if (bind(s, (struct sockaddr *)&locaddr, sizeof(struct sockaddr_in))
+	== -1) {
+	fprintf(stderr, "%s: can't bind socket: %s\n",
+		prg, strerror(errno));
+	return(-1);
+    }
+    
+    len = sizeof(locaddr);
+    if (getsockname(s, (struct sockaddr *)&locaddr, &len) == -1) {
+	fprintf(stderr, "%s: can't get socket name: %s\n",
+		prg, strerror(errno));
+	return(-1);
+    }
+    *host = (unsigned long)locaddr.sin_addr.s_addr;
+    *port = ntohs(locaddr.sin_port);
+    
+    if (listen(s, 1) == -1) {
+	fprintf(stderr, "%s: can't listen on socket: %s\n",
+		prg, strerror(errno));
+	return(-1);
+    }
+    
+    return s;
 }
