@@ -353,7 +353,8 @@ ftp_gets(FILE *f)
 			return NULL;
 		}
 		l += strlen(buf);
-		line = realloc(line, l+1);
+		if ((line=realloc(line, l+1)) == NULL)
+		    return NULL;
 		strcpy(line+l, buf);
 	}
 	if (line[l-2] == '\r')

@@ -21,7 +21,6 @@ F fn_search
 F tag files: globbing tag
 * handle closed connections due to timeout
 F forced reload of directory listing
-B handle immensly long lines in ftp_gets (malloc failure)
 P display.c: check for missing capabilities
 B propagate errors (conn hung or eof?) up to fn_gettags
 F cftp.texi: introduction, invoking, cftprc, binding states
@@ -40,7 +39,10 @@ C rename disp_stat to disp_mesg (status line is what used to be head)
 F status.c: add support for head status line (old style, but smarter)
 F <local> (uploads, local tagging)
 F save tag list as url list
+B ftp.c: (ftp_cat) don't use ftp_gets in ascii mode
+F display.c: (read_string) line editing, completion
 ----------------------------------------------- done
+B ftp.c: (ftp_gets) handle realloc failure
 C fn_tag.c: (fn_savetags) renamed fn_listtags, requires file name, rewriten
 F status.c: emacs like status line (smarter)
 F tag.c: completely rewritten; now remembers order of tagging
