@@ -29,11 +29,21 @@
 @ keeping state.
 
 @d<globals@>
+struct ftp_hist {
+    char *line;
+    struct ftp_hist *next;
+};
+
+extern struct ftp_hist *ftp_history;
+
 extern char ftp_anon;
 
 @d<local globals@>
 char *ftp_head, *ftp_lcwd, *ftp_pcwd = NULL;
 char ftp_curmode = ' ', ftp_anon = 0;
+
+struct ftp_hist *ftp_history = NULL, *ftp_hist_last;
+int ftp_hist_size = 200, ftp_hist_cursize;
 
 
 @ last response.
@@ -326,10 +336,14 @@ ftp_put(char *fmt, ...)
 	vsprintf(buf, fmt, argp);
 	va_end(argp);
 
-	if (strncmp(buf, "pass ", 5) == 0 && ftp_anon == 0)
+	if (strncmp(buf, "pass ", 5) == 0 && ftp_anon == 0) {
 		disp_status("-> pass ********");
-	else
+		ftp_hist(strdup("-> pass ********"));
+	}
+	else {
 		disp_status("-> %s", buf);
+		ftp_histf("-> %s", buf);
+	}
 	fprintf(conout, "%s\r\n", buf);
 	fflush(conout);
 }	
@@ -352,60 +366,15 @@ ftp_resp(void)
     resp = atoi(line);
     disp_status("%s", line);
 
-    if (ftp_response == NULL) {
-	if ((ftp_response=(char **)malloc(512*sizeof(char *))) != NULL) {
-	    	ftp_response_size = 512;
-	}
-	else
-	    ftp_response_size = -1;
-    }
-    
-    if (ftp_response)
-	i = 0;
-    else
-	i = -1;
-
     while (!(isdigit(line[0]) && isdigit(line[1]) &&
 	     isdigit(line[2]) && line[3] == ' ')) {
-
-	if (i > ftp_response_size-3) {
-	    ftp_response_size += 512;
-	    l = (char **)malloc(ftp_response_size*sizeof(char *));
-	    if (l)
-		ftp_response = l;
-	    else {
-		if (i > 0)
-		    ftp_response[i] = NULL;
-		i = -1;
-	    }
-	}
-	if (i == 0) {
-	    for (i=0; ftp_response[i]; i++)
-		free(ftp_response[i]);
-	    ftp_response[0] = NULL;
-	    i = 0;
-	}
-
-	if (i >= 0)
-	    ftp_response[i++] = line;
-	else
-	    free(line);
+	ftp_hist(line);
 	
-	if ((line=ftp_gets(conin)) == NULL) {
-	    if (i >= 0)
-		ftp_response[i] = NULL;
-	    
+	if ((line=ftp_gets(conin)) == NULL)
 	    return -1;
-	}
-
     }
 
-    if (i <= 0)
-	free(line);
-    else {
-	ftp_response[i++] = line;
-	ftp_response[i] = NULL;
-    }
+    ftp_hist(line);
     
     return resp;
 }
@@ -565,4 +534,64 @@ ftp_gethostaddr(int fd)
 		return -1;
 
 	memcpy(ftp_addr, (char *)&addr.sin_addr.s_addr, 4);
+}
+
+
+@ ftp exchange history
+
+@d<local prototypes@>
+void ftp_histf(char *fmt, ...);
+void ftp_hist(char *line);
+
+@u
+void
+ftp_histf(char *fmt, ...)
+{
+    char buf[1024];
+    
+    va_list argp;
+
+    va_start(argp, fmt);
+    vsprintf(buf, fmt, argp);
+    va_end(argp);
+
+    ftp_hist(strdup(buf));
+}
+
+
+void ftp_hist(char *line)
+{
+    struct ftp_hist *p;
+
+    if (ftp_history == NULL) {
+	if ((ftp_history=(struct ftp_hist *)
+	     malloc(sizeof(struct ftp_hist))) == NULL) {
+	    free(line);
+	    return;
+	}
+	ftp_hist_last = ftp_history;
+	ftp_history->next = NULL;
+	ftp_history->line = line;
+	ftp_hist_cursize = 1;
+
+	return;
+    }
+
+    if ((ftp_hist_last->next=(struct ftp_hist *)
+	 malloc(sizeof(struct ftp_hist))) == NULL) {
+	free(line);
+	return;
+    }
+    
+    ftp_hist_last = ftp_hist_last->next;
+    ftp_hist_last->next = NULL;
+    ftp_hist_last->line = line;
+
+    if (++ftp_hist_cursize > ftp_hist_size) {
+	--ftp_hist_cursize;
+	p = ftp_history;
+	ftp_history = ftp_history->next;
+	free(p->line);
+	free(p);
+    }
 }

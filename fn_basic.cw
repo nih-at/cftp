@@ -218,26 +218,25 @@ void fn_deidle(char **args)
 @d<functions@>
 function(response, , fn_response, 0,
 	 {display last multiline response},
- {Display last multiline response read from server.  This will be
-replaced by an ability to few the last N lines exchanged with the
-server.})
+ {Display last N lines exchanged with ftp server.})
 
 @u
 void fn_response(char **args)
 {
+    struct ftp_hist *h;
     FILE *f;
     long i;
 
-    if (ftp_response == NULL) {
-	disp_status("no response available");
+    if (ftp_history == NULL) {
+	disp_status("no exchange available");
 	return;
     }
     
     if ((f=disp_open(-1)) == NULL)
 	return;
 
-    for (i=0; ftp_response[i]; i++)
-	fprintf(f, "%s\n", ftp_response[i]);
+    for (h=ftp_history; h; h=h->next)
+	fprintf(f, "%s\n", h->line);
 
     disp_close(f);
 }

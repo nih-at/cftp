@@ -15,7 +15,7 @@ F fn_tag.cw: (fn_gettags) display tags list while downloading
 F use `size' to determine unkown size (of links and tags)
 F quiet if in background
 F automatically deidle connection
-B functions.texi: fix bad next pointer in last section (to first command)
+C functions.texi: fix bad next pointer in last section (to first command)
 ---------------------------------------------------------------- till beta
 F fn_search
 * handle closed connections due to timeout
@@ -33,9 +33,10 @@ B propagate errors (conn hung or eof?) up to fn_gettags
 B display.cw: (disp_prompt_char) only returns after RET is pressed (but only
 	reads first char)
 F cftp.texi: introduction, invoking, cftprc
-F function doku
-F exchange backlog instead of last multiline response
+F user options
 ----------------------------------------------- done
+F exchange backlog instead of last multiline response
+F function doku
 B Makefile.am: call makeinfo with --no-validate
 F fn_basic.cw: (fn_deidle) new function
 F ftp.cw: (ftp_noop) new function
