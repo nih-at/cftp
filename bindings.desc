@@ -1,0 +1,44 @@
+bind	^l	redraw
+bind	^j	enter/get
+bind	^m	enter/get
+bind	V	version
+bind	q	exit
+bind	H	help
+bind	c	local-cd
+bind	!	shell
+
+bind	a	ascii
+bind	i	image
+
+bind	0	prefix-0
+bind	1	prefix-1
+bind	2	prefix-2
+bind	3	prefix-3
+bind	4	prefix-4
+bind	5	prefix-5
+bind	6	prefix-6
+bind	7	prefix-7
+bind	8	prefix-8
+bind	9	prefix-9
+
+bind	^b	leave
+bind	^f	enter/get
+bind	^p	up
+bind	^n	down
+bind	h	leave
+bind	j	down
+bind	k	up
+bind	l	enter/get
+bind	left	leave
+bind	right	enter/get
+bind	up	up
+bind	down	down
+bind	spc 	page-down
+bind	b	page-up
+bind	pgdown	page-down
+bind	pgup	page-up
+bind	G	goto
+
+bind	g	cd
+bind	v	view
+bind	d	get

@@ -1,0 +1,3 @@
+/* Define if you have waddnstr.  */
+#undef HAVE_WADDNSTR
+

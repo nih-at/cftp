@@ -1,0 +1,156 @@
+
+TAR=	tar	# for making distribution only
+GZIP=	gzip	# for making distribution only
+CC=	@CC@
+INSTALL=@INSTALL@
+INSTALL_DATA=@INSTALL_DATA@
+INSTALL_PROGRAM=@INSTALL_PROGRAM@
+
+CFLAGS=	@CFLAGS@
+LIBS=	@LIBS@ -ltermcap
+LCURSES=@LCURSES@
+LIBOBJS=@LIBOBJS@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = $(exec_prefix)/bin
+
+OBJS=	directory.o display.o readdir.o loop.o functions.o\
+	ftp.o sockets.o main.o version.o options.o keys.o tty.o rc.o\
+	bindings.o fntable.o\
+	fn_basic.o fn_prefix.o fn_scroll.o fn_select.o fn_options.o
+CLEANFLS=fntable.c fntable.h bindings.c make-bind make-bind.o
+SRCS=	directory.c display.c readdir.c loop.c functions.c\
+	ftp.c sockets.c main.c options.c keys.c tty.c rc.c\
+	directory.h display.h readdir.h loop.h functions.h\
+	ftp.h sockets.h options.h keys.h tty.h rc.h\
+	fn_basic.c fn_prefix.c fn_scroll.c fn_select.c fn_options.c
+AUXSRCS=make-bind.c
+LIBSRCS=strdup.c getcwd.c getdomainname.c strerror.c fputchar.c
+FUNCS=	fn_basic.fn fn_prefix.fn fn_scroll.fn fn_select.fn fn_options.fn
+FILES=	Makefile.in TODO \
+	bindings.desc fntable.c.proto fntable.h.proto version.c \
+	config.h.in configure configure.in install-sh mkinstalldirs
+WEBS=	directory.cw display.cw functions.cw loop.cw main.cw \
+	readdir.cw sockets.cw options.cw ftp.cw \
+	fn_basic.cw fn_prefix.cw fn_scroll.cw fn_select.cw fn_options.cw \
+	make-bind.cw additional.cw tag.cw
+WEBFILES=nolines
+
+PRG=	cftp
+VERS=	0.4
+DISTRIB=$(PRG)-$(VERS)
+WEBDISTRIB=$(PRG)-$(VERS)-web
+
+all: $(PRG)
+
+$(PRG): $(OBJS) $(LIBOBJS)
+	$(CC) -o $(PRG) $(OBJS) $(LIBOBJS) $(LCURSES) $(LIBS)
+
+dist: $(SRCS) $(FUNCS) $(AUXSRCS) $(LIBSRCS) configure
+	rm -rf $(DISTRIB)
+	mkdir $(DISTRIB)
+	for n in $(SRCS) $(FUNCS) $(AUXSRCS) $(LIBSRCS) $(FILES); \
+	do \
+		ln $$n $(DISTRIB)/; \
+	done
+	(cd $(DISTRIB); ../nolines $(SRCS) $(LIBSRCS) $(FUNCS) $(AUXSRCS))
+	rm $(DISTRIB)/Makefile.in
+	sed -e '/-WEB ONLY-START-$$/,/-WEB ONLY-END-$$/ d' Makefile.in > \
+		$(DISTRIB)/Makefile.in
+	$(TAR) -cf - $(DISTRIB) | $(GZIP) > ../$(DISTRIB).tar.gz
+	rm -rf $(DISTRIB)
+
+web-dist: 
+	rm -rf $(WEBDISTRIB)
+	mkdir $(WEBDISTRIB)
+	for n in $(WEBS) $(FILES) $(WEBFILES); \
+	do \
+		ln $$n $(WEBDISTRIB)/; \
+	done
+	$(TAR) -cf - $(WEBDISTRIB) | $(GZIP) > ../$(WEBDISTRIB).tar.gz
+	rm -rf $(WEBDISTRIB)
+
+install: all installdirs
+	$(INSTALL_PROGRAM) $(PRG) $(bindir)/$(PRG)
+
+uninstall:
+	rm -f $(bindir)/$(PRG)
+
+# -WEB ONLY-START-
+web-clean-echo:
+	@echo "This command is intended for maintainers to use; it"
+	@echo "deletes files that may require special tools to rebuild."
+web-clean: web-clean-echo clean
+	rm -f $(SRCS) $(LIBSRCS) $(AUXSRCS) $(FUNCS)
+# -WEB ONLY-END-
+
+distclean: clean
+	rm -f config.h Makefile config.status config.cache config.log
+
+clean:
+	rm -f $(OBJS) $(LIBOBJS) $(PRG) $(CLEANFLS) core core.*
+
+version:
+	echo 'char version[] = "Curses FTP (version '$(VERS)')";' > version.c
+
+# Make sure all installation directories (e.g. $(bindir))
+# actually exist by making them if necessary.
+installdirs: mkinstalldirs
+	./mkinstalldirs $(bindir)
+
+fntable.c : $(FUNCS) fntable.c.proto
+	sed -e '/^----/,$$ d' fntable.c.proto > fntable.c
+	sed -n -e '1,$$ s/^[ \t]*\({.*\)/  \1,/' \
+		-e '1,$$ s-^; \(.*\)-/* \1 */-' \
+		-e '/^  {/ p' -e '/\/\*/ p' $(FUNCS) >> fntable.c
+	sed -e '1,/^----/ d' fntable.c.proto >> fntable.c
+
+fntable.h : $(FUNCS) fntable.h.proto
+	sed -e '/^----/,$$ d' fntable.h.proto > fntable.h
+	sed -n \
+	 -e '1,$$ s/^[ \t]*{[ \t]*\([a-zA-Z][a-zA-Z0-9_]*\).*/void \1(void);/' \
+	 -e '1,$$ s-^; \(.*\)-/* \1 */-' \
+	 -e '/^void / p' -e '/^\/\*/ p' $(FUNCS) >> fntable.h
+	sed -e '1,/^----/ d' fntable.h.proto >> fntable.h
+
+bindings.c : make-bind bindings.desc fntable.c
+	./make-bind
+
+make-bind: make-bind.o keys.o rc.o $(LIBOBJS)
+	$(CC) -o make-bind make-bind.o keys.o rc.o $(LIBOBJS)
+
+getdomainname.o: getdomainname.c
+	$(CC) $(CFLAGS) -DDOMAINNAME=\"@DOMAINNAME@\" -c getdomainname.c
+
+configure: configure.in
+	autoconf
+
+# -WEB ONLY-START-
+%.fn %.c %.h : %.cw 
+	ctangle $<
+
+$(LIBSRCS): additional.cw
+	ctangle $<
+# -WEB ONLY-END-
+
+# dependencies
+
+main.o: main.c directory.h display.h loop.h ftp.h functions.h
+directory.o: ftp.h
+display.o: display.c directory.h ftp.h config.h tty.h keys.h
+readdir.o: readdir.c directory.h ftp.h display.h
+loop.o: loop.c directory.h display.h functions.h tty.h
+functions.o: functions.c directory.h display.h
+ftp.o: ftp.c directory.h display.h readdir.h sockets.h
+fn_basic.o: fn_basic.c directory.h functions.h display.h
+fn_prefix.o: fn_prefix.c directory.h functions.h
+fn_scroll.o: fn_scroll.c directory.h functions.h display.h
+fn_select.o: fn_select.c directory.h functions.h display.h ftp.h options.h
+fn_options.o: fn_options.c directory.h functions.h display.h options.h
+fntable.o: fntable.c fntable.h
+keys.o: keys.c keys.h
+tty.o: tty.c tty.h keys.h
+rc.o: rc.c rc.h
+
+make-bind.o: make-bind.c keys.h rc.h

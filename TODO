@@ -1,0 +1,87 @@
+* fn_search
+* handle closed connections due to timeout
+* proper read line (editing)
+* abort transfer
+* deidle connection
+* forced reload of directory listing
+* handle cd ~user/.. in a better way
+* handle immensly long lines in ftp_gets (malloc failure)
+* improve fn_lcd, add fn_show_ld
+* if url is file, download
+* catch signals and restore term
+* save dir listing
+* handle ftp servers unable to cd ~user (NetBSD)
+* show multiline responses
+* get .tar[.gz] files
+* optionally no bytecount at download / don't flood tty on fast connections
+* tag files (later download, save/load tags, detached download)
+* support for stor, dele
+* use automake
+* .cftprc 
+* display.cw: (disp_dir) make max no of lines to scroll user setable
+* tty.cw (tty_readkey) make VTIME value user setable
+----------------------------------------------- done
+* support cursor keys
+* display.cw: (read_string) use ERASE, WERASE, KILL instead of '\b' etc.
+* wrote key name parser/printer
+* rewrote without curses (termcap)
+* clear screen before escaping curses (conditionally)
+
+??? (0.3b)
+* worked around realloc bug on SunOS [readdir.cw]
+* added strerror to LIBSRCS [Makfile.in, configure.in, additional.cw]
+* fixed bugs in read_netrc [main.cw]
+
+Dec 10 (0.3a)
+* standard targets (intstall, clean, etc.) [Makefile.in, configure.in]
+* parse .netrc [main.cw]
+* if start directry fails, retain error message from ftp_cd [main.cw]
+
+Dec 9 (0.3)
+* call fclose after ferror [make-bind.cw]
+* reformat source to comply to guidelines [*.cw]
+* added disp_prompt_char [display.cw]
+* set cbreak in reenter_disp [display.cw]
+* shell escape [fn_basic.cw, bindings.desc]
+* get user address (for anonymous password) [main.cw]
+* fixed dist and web-dist targets [Makefile.in]
+* added configure script [configure.in]
+
+Oct 10 (0.2c)
+* handle standard compliant multiline responses
+* handle nonexistent startup directory
+
+Sep 10 (0.2b)
+* show ``password'' when anonymous
+* strip trailing slash in dir names
+* include header line in .fn files
+* make transfer mode on download settable
+
+Sep 3 (0.2a)
+* handle ~user dir syntax
+* parse urls on command line
+* handle symlinks
+* display empty listing if dir unreadable
+
+Sep 1 (0.2)
+* include files needed for distribution (.fn, bindings.desc, make-bind)
+* help function
+* generate bindings
+* move fn type to table, not return value; add help string
+* aux_view, fn_enter_retr, fn_enter_view, fn_enter, fn_retr 
+
+Aug 31 (0.1a)
+* remove magic values from aux_scroll in fn_cdup
+* fn_cd
+* handle error response in ls
+* optimize cwd command usage
+* get linewise in ascii mode
+
+Aug 29 (0.1)
+* version string
+* parse unix dirlist
+* get local host address
+* fn_goto
+* print read bytes (ftp_cat)
+* curses exit
+* select parent in fn_cdup

@@ -1,0 +1,7 @@
+#include "directory.h"
+#include "functions.h"
+#include "fntable.h"
+
+function functions[] = {
+----
+};
