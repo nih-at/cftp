@@ -58,7 +58,7 @@ main(int argc, char **argv)
 	prg = argv[0];
 	
 	signal(SIGPIPE, SIG_IGN);
-	
+
 	opterr = 0;
 	while ((c = getopt(argc, argv, OPTIONS)) != EOF)
 		switch (c) {
@@ -105,7 +105,7 @@ main(int argc, char **argv)
 		if (argc > optind+1)
 			wdir = argv[optind+1];
 
-			check_alias = 0;
+		check_alias = 1;
 	}
 
 	/* XXX */ readrc(&user, &pass, &host, &port, &wdir, check_alias);
