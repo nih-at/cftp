@@ -31,10 +31,12 @@ B propagate errors (conn hung or eof?) up to fn_gettags
 F cftp.texi: introduction, invoking, cftprc
 C fn_basic.cw: docu for bind
 F fn_basic.cw: (fn_help) help for `f'unktions, `k'eys, and `o'ptions
-B all output in first line outside screen
 C untangle fn_* files
 F (fn_isearch) search backwards
+B (fn_isearch) repeaded search sets start to wrong match
+B segfaults if called `cftp -u user host relative-dir'
 ----------------------------------------------- done
+B tty.c: (tty_init) sanity checks on screen size detecion
 P hstrerror.c: AIX: Service unavailable (5); include h_errno in unknown msg
 
 Dec 19 1996 (0.5c)

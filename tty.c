@@ -1,6 +1,6 @@
 /*
   tty -- lowlevel tty handling
-  Copyright (C) 1996 Dieter Baron
+  Copyright (C) 1996, 1997 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -80,7 +80,7 @@ void (*tty_redraw)(void) = NULL;
 int
 tty_init(void)
 {
-	char *term, *pc;
+	char *term, *pc, *env;
 #ifdef SIGWINCH
 	struct winsize ws;
 #endif
@@ -134,11 +134,20 @@ tty_init(void)
 	tty_lines = tgetnum("li");
 #ifdef SIGWINCH
 	if (ioctl(0, TIOCGWINSZ, &ws) == 0) {
-	    tty_cols = ws.ws_col;
-	    tty_lines = ws.ws_row;
+	    if (ws.ws_col && ws.ws_row) {
+		tty_cols = ws.ws_col;
+		tty_lines = ws.ws_row;
+	    }
 	}
 	signal(SIGWINCH, tty_winch);
 #endif
+	if (env=getenv("LINES"))
+	    tty_lines = atoi(env);
+	if (env=getenv("COLUMNS"))
+	    tty_cols = atoi(env);
+
+	if (tty_lines == 0 && tty_cols == 0)
+	    return -1;
 
 	/* erase, werase, kill */
 	if ((tty_verase=tty_tio.c_cc[VERASE]) == _POSIX_VDISABLED)
