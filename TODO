@@ -10,3 +10,4 @@
 * decent documentation
 * write passwd and port in save-urls
 * segfault while tagging on GNU/Linux
+* improve abort handling, especially when downloading tagged files
