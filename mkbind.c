@@ -1,5 +1,5 @@
 /*
-  $NiH: mkbind.c,v 1.19 2001/12/20 05:44:14 dillo Exp $
+  $NiH: mkbind.c,v 1.20 2001/12/23 03:09:33 dillo Exp $
 
   mkbind -- make binding table
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -286,7 +286,7 @@ initnames(void)
 	exit(1);
     }
 
-    rc_lineno = 0;
+    rc_lineno = 1;
     while (fgets(line, 8192, f) && line[strlen(line)-2] != '{')
 	rc_lineno++;
 
