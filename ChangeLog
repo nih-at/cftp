@@ -1,3 +1,7 @@
+2002-09-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* mkbind.c: remove definition of global defined in functions.c.
+
 2002-09-15  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* basename.c (basename): remove unused static variable.

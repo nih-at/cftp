@@ -1,5 +1,5 @@
 /*
-  $NiH: mkbind.c,v 1.21 2002/09/15 13:09:19 dillo Exp $
+  $NiH: mkbind.c,v 1.22 2002/09/16 12:42:38 dillo Exp $
 
   mkbind.c -- make binding table
   Copyright (C) 1996-2002 Dieter Baron
@@ -67,7 +67,6 @@ int nstates = sizeof(states)/sizeof(states[0]);
 function functions[MAX_FN];
 int num;
 
-enum state binding_state;
 struct binding binding[MAX_FN];
 
 char *binding_argpool[1];
