@@ -61,8 +61,8 @@ getdomainname.o: getdomainname.c
 %.fn %.c %.h : %.cw 
 	ctangle $<
 
-$(LIBSRCS): additional.cw
-	ctangle $<
+#$(LIBSRCS): additional.cw
+#	ctangle $<
 
 
 # dependencies
