@@ -22,13 +22,18 @@
 
 
 
-#include "directory.h"
-#include "ftp.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
-int parse_unix(direntry *de, char *line);
+#include "directory.h"
+#include "ftp.h"
+#include "options.h"
+
+static int parse_unix(direntry *de, char *line);
+static time_t parse_time(char *date);
+
+static int dir_sort_date(const void *, const void *);
 
 
 
@@ -67,14 +72,12 @@ read_dir(FILE *f)
 	n = 1;
     }
     else {
+	if (opt_sort)
+	    qsort(list, n, sizeof(direntry), dir_sort_date);
+
 	dir->line = malloc(sizeof(direntry)*n);
-	for (i=0; i<n; i++) {
-	    /* dir->line[i].line = line[i].line;
-	    dir->line[i].type = line[i].type;
-	    dir->line[i].name = line[i].name;
-	    dir->line[i].link = line[i].link; */
+	for (i=0; i<n; i++)
 	    dir->line[i] = list[i];
-	}
     }
     dir->len = n;
     dir->size = sizeof(struct direntry);
@@ -85,7 +88,7 @@ read_dir(FILE *f)
 
 
 
-int
+static int
 parse_unix(direntry *de, char *line)
 {
     char *p, *q;
@@ -127,6 +130,10 @@ parse_unix(direntry *de, char *line)
 	free(line);
 	return 1;
     }
+
+    p[12] = '\0';
+    de->mtime = parse_time(p);
+
     p += 13;
     
     if (de->type == 'l') {
@@ -151,3 +158,72 @@ parse_unix(direntry *de, char *line)
 
     return 0;
 }
+
+
+
+static time_t
+parse_time(char *date)
+{
+    static char *mon[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+			   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+    struct tm tm, *now;
+    time_t t;
+    int i;
+
+    tm.tm_sec = tm.tm_wday = tm.tm_yday = tm.tm_isdst = tm.tm_gmtoff = 0;
+
+    for (i=0; i<12; i++)
+	if (strncasecmp(date, mon[i], 3) == 0) {
+	    tm.tm_mon = i;
+	    break;
+	}
+
+    if (i==12)
+	return 0;
+
+    tm.tm_mday = atoi(date+4);
+    if (tm.tm_mday == 0)
+	return 0;
+
+    if (date[9] == ':') {
+	tm.tm_hour = atoi(date+7);
+	tm.tm_min = atoi(date+10);
+
+	t = time(NULL);
+	now = gmtime(&t);
+
+	if (tm.tm_mon < now->tm_mon
+	    || (tm.tm_mon == now->tm_mon && tm.tm_mday <= now->tm_mday))
+	    tm.tm_year = now->tm_year;
+	else
+	    tm.tm_year = now->tm_year - 1;
+    }
+    else {
+	tm.tm_year = atoi(date+7);
+	if (tm.tm_year == 0)
+	    return 0;
+	tm.tm_year -= 1900;
+	tm.tm_hour = tm.tm_min = 0;
+    }
+
+    return mktime(&tm);
+}
+
+
+
+static int
+dir_sort_date(const void *k1, const void *k2)
+{
+    time_t c;
+    direntry *d1, *d2;
+
+    d1 = (direntry *)k1;
+    d2 = (direntry *)k2;
+
+    c = d2->mtime - d1->mtime;
+    if (c == 0)
+	return strcmp(d1->name, d2->name);
+    else
+	return c;
+}    
+

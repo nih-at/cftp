@@ -1,4 +1,18 @@
+1997-10-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* readrc.c (readrc): treat lines beginning with `#' as comments.
+
+	* readdir.c (dir_sort_date): new function.
+	(read_dir): sort dir if opt_sort.
+
+	* options.op: (sort) new option.
+
 1997-10-21  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* readdir.c (parse_unix): parse modification time.
+	(parse_time): new function.
+	
+	* directory.h: new member mtime in struct direntry.
 
 	* fn_select.c (aux_download): ftp_close(fout), fclose(fin) -- not
 	the other way around.

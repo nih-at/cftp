@@ -25,11 +25,14 @@
 
 
 
+#include <time.h>
+
 struct direntry {
-	char *line, *name;
-	char *link;
-	long size;
-	char type;
+    char *line, *name;
+    char *link;
+    long size;
+    time_t mtime;
+    char type;
 };
 
 typedef struct direntry direntry;

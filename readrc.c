@@ -55,7 +55,10 @@ readrc(char **userp, char **passp, char **hostp, char **portp, char **wdirp,
 
     while (fgets(b, 8192, f)) {
 	rc_lineno++;
-	
+
+	if (b[0] == '#')
+	    continue;
+
 	p = b;
 	if ((tok=rc_token(&p)) == NULL)
 	    continue;
@@ -119,7 +122,7 @@ readrc(char **userp, char **passp, char **hostp, char **portp, char **wdirp,
 		continue;
 	    }
 
-	    if (functions[func].type & FN_RC == 0) {
+	    if ((functions[func].type & FN_RC) == 0) {
 		rc_error("command %s not allowed in rc file", tok);
 		continue;
 	    }

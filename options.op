@@ -58,7 +58,12 @@ at top of screen, with blank lines surrounding the scrolling region.})
 
 option(pager, pg, opt_pager, NULL, s, "more",
  {pager used to view files},
- {Pager used to view files.  Deafults to the value of the environment
+ {Pager used to view files.  Defaults to the value of the environment
 variable $PAGER if set, to @code{more} otherwise.})
+
+option(sort, so, opt_sort, NULL, b, 0,
+ {sort directory listings chronologically},
+ {sort directory listings chronologically})
+dnl will be of type enum (none, name, date, name-reverse, date-reverse).
 
 endall
