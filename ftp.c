@@ -507,7 +507,10 @@ ftp_resp(void)
 
     clearerr(conin);
     if ((line=ftp_gets(conin)) == NULL) {
-	disp_status("read error from server: %s", strerror(errno));
+	if (ferror(conin))
+	    disp_status("read error from server: %s", strerror(errno));
+	else
+	    disp_status("connection to server lost");
 	return -1;
     }
 

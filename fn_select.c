@@ -326,6 +326,7 @@ fn_pipe(char **args)
 	if (freecmdp)
 	    free(cmd);
 	free(line);
+	disp_status("");
 	return;
     }
 
