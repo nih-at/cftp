@@ -1,6 +1,6 @@
 dnl -*- text -*-
 dnl
-dnl  $NiH: methods.mt,v 1.1 2001/12/13 21:14:52 dillo Exp $
+dnl  $NiH: methods.mt,v 1.2 2001/12/14 08:12:29 dillo Exp $
 dnl
 dnl  methods.mt -- definition and documentation for protocol methods
 dnl  Copyright (C) 2001 Dieter Baron
@@ -22,68 +22,70 @@ dnl  You should have received a copy of the GNU General Public License
 dnl  along with this program; if not, write to the Free Software
 dnl  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-rcsid(<<$NiH: methods.mt,v 1.1 2001/12/13 21:14:52 dillo Exp $>>)
+rcsid(<<$NiH: methods.mt,v 1.2 2001/12/14 08:12:29 dillo Exp $>>)
 
 method(int, close, void,
-  <<close connection to server.>>)
+  <<Close connection to server.>>)
 
 method(int, cwd, <<char *path>>,
-  <<change directory to PATH.>>)
+  <<Change directory to PATH.>>)
 
 method(int, deidle, void,
-  <<deidle connection to server.>>)
+  <<Deidle connection to server.>>)
 
 method(int, fclose, <<void *f>>,
-  <<close the file F previously opend with retr or stor.>>)
+  <<Close the file F previously opend with retr or stor.>>)
 
 method(<<directory *>>, list, <<char *dir>>,
-  <<return directory listing of DIR>>)
+  <<Return directory listing of DIR>>)
 
 method(int, open, <<char *host, char *port, char *user, char *pass>>,
-  <<open connection to server.  If HOST and PORT are NULL, reopen
+  <<Open connection to server.  If HOST and PORT are NULL, reopen
 connection to last server.  If separate actions for login are
 neccessary, don't do them now (just remember USER and PASS).>>)
 
 method(int, mkdir, <<char *dir>>,
-  <<make directory DIR on server>>)
+  <<Make directory DIR on server.>>)
 
 method(int, login, <<char *user, char *pass>>,
-  <login as USER (with password PASS).   If USER is NULL, use previous
+  <Login as USER (with password PASS).   If USER is NULL, use previous
 user.>>)
 
 method(<<char *>>, pwd, void,
-  <<return current directory>>)
+  <<Return current directory.>>)
 
 method(<<void *>>, retr, <<char *file, int mode, long *startp, long *sizep>>,
-  <<start retrieval of FILE in mode MODE, starting at offset *STARTP,
-if possible.  The real starting offset is returned in *STARTP.  The
+  <<Start retrieval of FILE in mode MODE, starting at offset *STARTP,
+if possible.  The real starting offset is returned in *STARTP, the
 file length, if known, is returned in *SIZEP.>>)
 
 method(int, rmdir, <<char *dir>>,
-  <<remove directory DIR on server>>)
+  <<Remove directory DIR on server.>>)
 
 method(int, site, <<char *cmd>>,
-  <<execute site specific command>>)
+  <<Execute site specific command.>>)
 
 method(<<void *>>, stor, <<char *file, int mode>>,
-  <<start storing FILE in mode MODE.>>)
+  <<Start storing FILE in mode MODE.>>)
 
 method(int, xfer_eof, <<void *file>>,
-  <<return true if end of file is reached on FILE.>>)
+  <<Return true if end of file is reached on FILE.>>)
 
 method(int, xfer_read, <<void *buf, size_t n, void *file>>,
-  <<read N bytes into BUF from FILE.  Returns the number of bytes
-read, or -1 on error or end of file.>>)
+  <<Read N bytes into BUF from FILE.  Returns the number of bytes
+read, or -1 on error or end of file.  This method must be
+interruptible by signals.>>)
 
-method(int, xfer_start, <<void *file, int writing>>,
-  <<start transfer on file, for writing if WRITING, for reading otherwise.>>)
+method(int, xfer_start, <<void *file>>,
+  <<Start transfer on file.>>)
 
 method(int, xfer_stop, <<void *file, int aborting>>,
-  <<stop transfer on file.  If ABORTING, transfer might not have been
+  <<Stop transfer on file.  If ABORTING, transfer might not have been
 completed.>>)
 
 method(int, xfer_write, <<void *buf, size_t n, void *file>>,
-  <<write N bytes from BUF to FILE.  Returns the number of bytes
-written, -1 if an error occured before writing the first byte.>>)
+  <<Write N bytes from BUF to FILE.  Return the number of bytes
+written, -1 if an error occured before writing the first byte.  This
+method must be interruptible by signals.>>)
 
 endall
