@@ -59,7 +59,7 @@ extern volatile int tty_cols, tty_lines;
 
 enum tty_am { TTY_AMNONE, TTY_AMXN, TTY_AM };
 
-enum tty_am tty_am;
+extern enum tty_am tty_am;
 
 extern int tty_metap, tty_noLP,
 	   tty_verase, tty_vwerase, tty_vkill;

@@ -1,5 +1,8 @@
 2001-08-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* tag.h: only declare tags in header, don't define it.
+	* tty.h: only declare tty_am in header, don't define it.
+
 	* sockets.c (sockaddr_ntop): choose implementation based on
 	availability of getnameinfo.
 	* configure.in: check for availability of getnameinfo.

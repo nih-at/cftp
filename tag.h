@@ -45,7 +45,7 @@ struct taglist {
 
 enum tagopt { TAG_ON, TAG_OFF, TAG_TOGGLE };
 
-struct taglist tags;
+extern struct taglist tags;
 
 
 

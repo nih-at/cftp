@@ -1,6 +1,5 @@
 ! check for sockaddr_t and typedef to int if missing
 ! O_NONBLOCK undefined on NextSTEP
-! check duplicate symbols found on IRIX (tty_am, tags)
 * declare replacement functions (to avoid warnings)
 * find bug when viewing or piping rfc-index.txt
 * host specific rc file sections
