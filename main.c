@@ -74,6 +74,7 @@ extern char version[];
 
 int parse_url(char *url, char **user, char **pass,
 	      char **host, char **port, char **dir);
+char *deurl(char *u);
 void print_usage(int flag);
 char *get_annon_passwd(void);
 void read_netrc(char *host, char **user, char **pass, char **wdir);
@@ -275,30 +276,31 @@ parse_url(char *url, char **user, char **pass,
     else
 	p = url+strlen(url);
     
-    if ((q=strchr(url, '@')) != NULL) {
+    if ((q=strrchr(url, '@')) != NULL) {
 	*q = '\0';
 	if ((r=strchr(url, ':')) != NULL) {
 	    *(r++) = '\0';
-	    *pass = strdup(r);
+	    *pass = deurl(r);
 	}
-	*user = strdup(url);
+	*user = deurl(url);
 	url = q+1;
 	userp = 1;
     }
 
     if ((q=strchr(url, ':')) != NULL) {
 	*q = '\0';
-	*port = strdup(q+1);
+	*port = deurl(q+1);
     }
 	
-    *host = strdup(url);
+    *host = deurl(url);
 
     if (p && *p != '\0') {
 	if ((*dir=(char *)malloc(strlen(p)+3)) == NULL) {
 	    fprintf(stderr, "%s: malloc failure\n", prg);
 	    return -1;
 	}
-	    sprintf(*dir, "%s%s", userp ? "" : "/", p);
+	/* sprintf(*dir, "%s%s", userp ? "" : "/", p); */
+	*dir = deurl(p);
     }
 
     return 0;
@@ -435,4 +437,42 @@ read_netrc(char *host, char **user, char **pass, char **wdir)
 	}
     }
     fclose(f);
+}
+
+
+
+int
+hexdigit(int c)
+{
+    if (c >= '0' && c <= '9')
+	return c-'0';
+    if (c >= 'a' && c <= 'f')
+	return c-'a';
+    if (c >= 'A' && c <= 'F')
+	return c-'F';
+    
+    return 0;
+}
+
+char *
+deurl(char *s)
+{
+    char *t, *p;
+    int c, hd;
+
+    if ((t=(char *)malloc(strlen(s)+1)) != NULL) {
+	for (p=t; *s; s++) {
+	    if (*s == '%') {
+		c = hexdigit(*(++s))*16+hexdigit(*(++s));
+
+		if (c != 0)
+		    *(p++) = c;
+	    }
+	    else
+		    *(p++) = *s;
+	}
+	*p = '\0';
+    }
+
+    return t;
 }

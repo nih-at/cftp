@@ -178,7 +178,7 @@ ftp_reconnect(void)
     }
 
     if (ftp_login(ftp_host, ftp_user, pass) == -1) {
-	disp_status("can't log in");
+	/* ftp response is error message */
 	return -1;
     }
 

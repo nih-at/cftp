@@ -70,8 +70,7 @@ readrc(char **userp, char **passp, char **hostp, char **portp, char **wdirp,
 
 	    if ((tok=rc_token(&p)) != NULL) {
 		if (strncmp(tok, "ftp://", 6) == 0) {
-		    parse_url(tok, &user, &host, &port, &wdir);
-		    pass = NULL;
+		    parse_url(tok, &user, &pass, &host, &port, &wdir);
 		}
 		else {
 		    user = pass = port = NULL;

@@ -23,7 +23,7 @@ P cc on HPUX: -Aa -D_POSIX_SOURCE, prototypes for LIBOBJS
 P tparm on HPUX doesn't work
 F fn_basic.c: (fn_help) display type and value for options
 C rename disp_stat to disp_mesg (status line is what used to be head)
-B fn_tag.c: (fn_tag) line[0] isn't updated if arg is given
+B fn_tag.c: (fn_tag) line[0] isn't updated if arg is given (also w/ load-tags)
 F main.c: scan .netrc for type commands
 C fn_basic.c: (fn_exit) implement as function, -f option.
 B bindable functions: abort on empty input
@@ -35,9 +35,11 @@ B fn_scroll.c: (fn_isearch) don't hardwire ^r/^s/^l (check binding)
 B ftp.c: (ftp_abort) abort on ascii connections hangs sometimes
 C fn_select.c: use :-syntax throughout
 B fn_basic.c: (fn_shell) command with args doesn't work when given via args
-F main.c: (parse_url) urldecode parts
 C consistent error handling
 ----------------------------------------------- done
+B readrc.c: (readrc) fixed missing argument to parse_url
+F main.c: (parse_url) if multiple @s in login part, rightmost separates host
+F main.c: (parse_url) urldecode parts
 B sockets.c: (sopen) if port is numerical, use atoi
 B ftp.c: (ftp_resp) report lost connection and read errros
 F main.c: (parse_url) support for user:passwd syntax
