@@ -500,12 +500,18 @@ tty_putp(char *cap, int lines, int arg0, int arg1, int arg2, int arg3)
     static char buf[40];
     char *s;
 
+#ifndef HAVE_TPARM
     s = (char *)tparam(cap, buf, sizeof(buf), arg0, arg1, arg2, arg3);
-
+#else
+    s = (char *)tparm(cap, arg0, arg1, arg2, arg3);
+#endif
+    
     tputs(s, lines, fputchar);
 
+#ifndef HAVE_TPARM
     if (s != buf)
 	free(s);
+#endif
 }
 
 
