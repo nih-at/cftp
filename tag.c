@@ -26,6 +26,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "config.h"
+
+#ifdef HAVE_BASENAME
+# ifdef HAVE_LIBGEN_H
+#  include <libgen.h>
+# endif
+#else
+char *basename(char *);
+#endif
+
 #include "tag.h"
 #include "directory.h"
 #include "options.h"

@@ -22,25 +22,34 @@
 
 
 
-#include "config.h"
-
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <fcntl.h>
-#include <signal.h>
-#include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
+#include <netinet/in.h>
+#include <ctype.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <signal.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "config.h"
+
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
-#include <unistd.h>
-#include <fcntl.h>
-#include <netinet/in.h>
+
+#ifdef HAVE_BASENAME
+# ifdef HAVE_LIBGEN_H
+#  include <libgen.h>
+# endif
+#else
+char *basename(char *);
+#endif
+
 #include "directory.h"
 #include "display.h"
 #include "sockets.h"

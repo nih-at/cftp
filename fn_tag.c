@@ -20,18 +20,28 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <config.h>
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
 #include <ctype.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "config.h"
+
 #ifdef HAVE_FNMATCH
 #include <fnmatch.h>
 #else
 #include <fnmatch_repl.h>
 #endif
+
+#ifdef HAVE_BASENAME
+# ifdef HAVE_LIBGEN_H
+#  include <libgen.h>
+# endif
+#else
+char *basename(char *);
+#endif
+
 #include "directory.h"
 #include "bindings.h"
 #include "functions.h"

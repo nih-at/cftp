@@ -1,5 +1,4 @@
-! compatibility checks
-* fix -Wall warnings (libgen.h for basename)
+* fix -Wall warnings
 * fix warnings in GNU source (tparam, getopt)
 * fix compile on HPUX (struct sockaddr)
 * feature recognition and handling

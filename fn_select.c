@@ -22,12 +22,23 @@
 
 
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+
+#include "config.h"
+
+#ifdef HAVE_BASENAME
+# ifdef HAVE_LIBGEN_H
+#  include <libgen.h>
+# endif
+#else
+char *basename(char *);
+#endif
+
 #include "directory.h"
 #include "bindings.h"
 #include "functions.h"
