@@ -2,7 +2,7 @@
 #define HAD_DISPLAY_H
 
 /*
-  $NiH$
+  $NiH: display.h,v 1.15 2001/12/11 14:37:30 dillo Exp $
 
   display.h -- display functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -42,20 +42,34 @@ extern int disp_active;
 
 
 
-int init_disp(void);
-void exit_disp();
-void escape_disp(int clearp);
-void reenter_disp(void);
+#define DISP_STATUS	0x01	/* display in status line */
+#define DISP_HIST	0x02	/* add to history */
+#define DISP_STDOUT	0x04	/* print to stdout if display not started */
+#define DISP_STDERR	0x08	/* print to stderr if display not started */
+
+#define DISP_INFO	DISP_STATUS|DISP_STDOUT
+				/* for (startup) info messages */
+#define DISP_ERROR	DISP_STATUS|DISP_HIST|DISP_STDERR
+				/* for error messages */
+#define DISP_PROTO	DISP_STATUS|DISP_HIST
+				/* for responses to / requests from server */
+
+
+
+void disp_beep(void);
+int disp_close(FILE *f, int quietp);
+void disp_head(char *fmt, ...);
+FILE *disp_open(char *cmd, int quietp);
+int disp_prompt_char(void);
 void disp_redraw(void);
 void disp_reline(int line);
-char *read_string(char *prompt, int echop);
-int read_char(char *prompt);
-int disp_prompt_char(void);
-void disp_status(char *fmt, ...);
-void disp_head(char *fmt, ...);
 void disp_restat(void);
-FILE *disp_open(char *cmd, int quietp);
-int disp_close(FILE *f, int quietp);
-void disp_beep(void);
+void disp_status(int flags, char *fmt, ...);
+void escape_disp(int clearp);
+void exit_disp();
+int init_disp(void);
+int read_char(char *prompt);
+char *read_string(char *prompt, int echop);
+void reenter_disp(void);
 
 #endif /* display.h */
