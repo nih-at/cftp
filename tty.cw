@@ -7,6 +7,7 @@
 #include <string.h>
 #include <errno.h>
 #include <termios.h>
+#include <sys/ioctl.h>
 #include "keys.h"
 #include "tty.h"
 
