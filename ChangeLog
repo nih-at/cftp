@@ -1,5 +1,8 @@
 2000-12-07  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* ftp.c (ftp_cat): disable transfer rate display (since it is
+	unreliable).
+
 	* util.c (parse_url): recognize literal IPv6 addresses (RFC 2732).
 	
 	* fntable.fn, mkfntab-c.m4, mkfntab-h.m4, mkfntexi.m4,
