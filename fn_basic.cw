@@ -199,8 +199,7 @@ void fn_colon(char **args)
 
 	if (line) {
 	    free(line);
-	    for (i=0; args[i]es
-		     ; i++)
+	    for (i=0; args[i]; i++)
 		free(args[i]);
 	    free(args);
 	}
