@@ -1,6 +1,3 @@
-@ low level tty handling stuff.
-
-@u
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,27 +19,16 @@
 
 extern char *prg;
 
-@<local prototypes@>
-@<local globals@>
+void tty_keypad_init(void);
+int fputchar();
 
-@(tty.h@)
-@<prototypes@>
-@<globals@>
+#ifdef SIGWINCH
+void tty_winch(int s);
+#endif
 
-
-@ terminal characteristics needed by other parts of the program.
-
-@d<globals@>
-extern int tty_cols, tty_lines, tty_metap, tty_noLP, tty_am,
-	   tty_verase, tty_vwerase, tty_vkill;
-
-@d<local globals@>
 int tty_cols, tty_lines, tty_metap, tty_noLP, tty_am,
     tty_verase, tty_vwerase, tty_vkill;
 
-@ initializing termcap.
-
-@d<local globals@>
 char termcap_entry[4196];
 char termcap_area[4196], *termcap_str;
 struct termios tty_tio, tty_tio_ext;
@@ -50,11 +36,23 @@ speed_t tty_baud;
 char PC, *BC, *UP;
 short ospeed;
 
+#define KEY_PREF	1
+#define KEY_SLPREF	2
+char keyflag[256];
 
-@d<prototypes@>
-int tty_init(void);
+struct cap {
+    char *name;
+    char *cap;
+};
 
-@u
+#define CAP_SIZE	253
+#define CAP_G		17
+struct cap cap[253];
+
+void (*tty_redraw)(void) = NULL;
+
+
+
 int
 tty_init(void)
 {
@@ -146,18 +144,8 @@ tty_init(void)
 	return 0;
 }
 
+
 
-@ handling function keys.
-
-@d<local globals@>
-#define KEY_PREF	1
-#define KEY_SLPREF	2
-char keyflag[256];
-
-@d<local prototypes@>
-void tty_keypad_init(void);
-
-@u
 void
 tty_keypad_init(void)
 {
@@ -175,14 +163,8 @@ tty_keypad_init(void)
 	}
 }
 
+
 
-@ setting up and restoring tty.
-
-@d<prototypes@>
-int tty_setup(void);
-int tty_restore(void);
-
-@u
 int
 tty_setup(void)
 {
@@ -191,6 +173,8 @@ tty_setup(void)
 
     return tcsetattr(0, TCSANOW, &tty_tio);
 }
+
+
 
 int
 tty_restore(void)
@@ -201,22 +185,15 @@ tty_restore(void)
     return tcsetattr(0, TCSANOW, &tty_tio_ext);
 }
 
+
 
-@ outputing stuff.
-
-@d<prototypes@>
-void tty_put(char *name, int lines);
-void tty_goto(int x, int y);
-
-@d<local prototypes@>
-int fputchar();
-
-@u
 void
 tty_put(char *name, int lines)
 {
     tputs(tty_getcap(name), lines, fputchar);
 }
+
+
 
 void
 tty_goto(int x, int y)
@@ -224,26 +201,8 @@ tty_goto(int x, int y)
     tputs(tgoto(tty_getcap("cm"), x, y), 1, fputchar);
 }
 
-@d<prototypes@>
-#define tty_clear()	(tty_put("cl", tty_lines))
-#define tty_home()	(tty_put("ho", 1))
-#define tty_clreos(l)	(tty_put("cd", (l)))
-#define tty_clreol()	(tty_put("ce", 1))
-#define tty_insline(l)	(tty_put("al", (l)))
-#define tty_delline(l)	(tty_put("dl", (l)))
-#define tty_standout()	(tty_put("so", 1))
-#define tty_standend()	(tty_put("se", 1))
-#define tty_hidecrsr()	(tty_put("vi", 1))
-#define tty_showcrsr()	(tty_put("ve", 1))
+
 
-
-@ turning echoing on and off
-
-@d<prototypes@>
-int tty_noecho(void);
-int tty_echo(void);
-
-@u
 int
 tty_echo(void)
 {
@@ -260,6 +219,8 @@ tty_echo(void)
 
 	return 0;
 }
+
+
 
 int
 tty_noecho(void)
@@ -278,13 +239,8 @@ tty_noecho(void)
 	return 0;
 }
 
+
 
-@ put tty in cbreak
-
-@d<prototypes@>
-int tty_cbreak(void);
-
-@u
 int tty_cbreak(void)
 {
 	tty_tio.c_lflag &= ~ECHO;
@@ -299,13 +255,8 @@ int tty_cbreak(void)
 	return 0;
 }
 
+
 
-@ read a key (handling multi byte keys ala cursor and function keys)
-
-@d<prototypes@>
-int tty_readkey(void);
-
-@u
 int
 tty_readkey(void)
 {
@@ -366,6 +317,7 @@ tty_readkey(void)
     return c;
 }
 			
+
 
 int tty_ispref(char *s, int l)
 {
@@ -381,12 +333,8 @@ int tty_ispref(char *s, int l)
     return -2;
 }
 
-@ setting VMIN and VTIME.
+
 
-@d<prototypes@>
-int tty_vmin(int min, int tim);
-
-@u
 int
 tty_vmin(int min, int tim)
 {
@@ -405,23 +353,8 @@ tty_vmin(int min, int tim)
 	return 0;
 }
 
+
 
-@ managing capability strings.
-
-@d<local globals@>
-struct cap {
-    char *name;
-    char *cap;
-};
-
-#define CAP_SIZE	253
-#define CAP_G		17
-struct cap cap[253];
-
-@d<prototypes@>
-char *tty_getcap(char *name);
-
-@u
 char *
 tty_getcap(char *name)
 {
@@ -443,32 +376,16 @@ tty_getcap(char *name)
     return cap[i].cap;
 }
 
+
 
-@d<prototypes@>
-int tty_iscap(char *name);
-
-@u
 int
 tty_iscap(char *name)
 {
     return (tgetflag(name) == 1);
 }
 
+
 
-@ handling screen size changes
-
-@d<local prototypes@>
-#ifdef SIGWINCH
-void tty_winch(int s);
-#endif
-
-@d<globals@>
-extern void (*tty_redraw)(void);
-
-@d<local globals@>
-void (*tty_redraw)(void) = NULL;
-
-@u
 #ifdef SIGWINCH
 void
 tty_winch(int s)

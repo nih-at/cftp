@@ -1,21 +1,10 @@
-@ unsorted auxiliary functions
-
-@(util.h@)
-@<prototypes@>
-
-@u
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <pwd.h>
 
+
 
-@ canonifying pathnames; if current is NULL, relative to ftp_lcwd.
-
-@d<prototypes@>
-char *canonical(char *path, char *current);
-
-@u
 char *
 canonical(char *path, char *current)
 {
@@ -62,13 +51,8 @@ canonical(char *path, char *current)
     return canon;
 }
 
+
 
-@ dirname
-
-@d<prototypes@>
-char *dirname(char *name);
-
-@u
 char *
 dirname(char *name)
 {
@@ -86,13 +70,8 @@ dirname(char *name)
     return dir;
 }
 
+
 
-@ expand ~ and ~user, locally
-
-@d<prototypes@>
-char *local_exp(char *path);
-
-@u
 char *
 local_exp(char *path)
 {
