@@ -65,7 +65,7 @@ fn_tag(char **args)
     int tagged, i;
 
     if (args) {
-	if (strcmp(args[0], "-t") == NULL || strcmp(args[0], "-u") == NULL) {
+	if (strcmp(args[0], "-t") == 0 || strcmp(args[0], "-u") == 0) {
 	    /* works in <remote> only */
 
 	    if (args[1] == NULL) {
