@@ -1,3 +1,12 @@
+2003-05-16  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* configure.in, INSTALL, install-sh, missing, mkinstalldirs:
+	update to autoconf 2.50 and automke 2.7.
+	* configure.in: check for vasprintf.
+	* snprintf.c: add vasprintf replacement.
+
+	* display.c (disp_status, disp_restat): avoid fixed-size buffer.
+
 2003-05-13  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (_ftp_update_transfer): add missing argument to
