@@ -1,4 +1,4 @@
-* (sockaddr_ntop) fix compile without member sa_len (GNU/Linux)
+* feature recognition and handling
 * complete getaddrinfo replacement
 * rethink directory format auto detection logic
 * don't require GNU m4
