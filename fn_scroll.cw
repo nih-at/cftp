@@ -170,13 +170,13 @@ void
 fn_isearch(char **args)
 {
     char b[1024], *p;
-    int n, c, start, current;
+    int n, c, start, current, origin;
 
     strcpy(b, "isearch: ");
     p = b+9;
     n = 0;
 
-    start = current = cursel;
+    origin = start = current = cursel;
 
     while ((c=read_char(b)) != '\n' && c != 7 /* ^G */) {
 	if (c == tty_verase) {
@@ -187,6 +187,10 @@ fn_isearch(char **args)
 	    p = b+9;
 	    *p = '\0';
 	    current = start;
+	}
+	else if (c == 's'&0x1f) {
+	    start = current;
+	    current++;
 	}
 	else {
 	    *(p++) = c;
