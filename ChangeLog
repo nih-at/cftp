@@ -1,3 +1,10 @@
+2000-12-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* mkbind.c (main): create output in temp file and rename when
+	done.
+
+	* Makefile.am: sort various sections alphabetically.
+
 2000-12-13  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* fn_tag.c (fn_saveurls): use mkhoststr to include user, password

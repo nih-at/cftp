@@ -82,6 +82,7 @@ main(int argc, char **argv)
 {
     FILE *fin, *fout;
     char line[4069], *p, *tok, **args;
+    char tmp[128];
     struct binding *b;
     int i, j, off, argoff, len;
     int maxkey;
@@ -138,11 +139,13 @@ main(int argc, char **argv)
     rc_filename = NULL;
 
 
-    /* writing ``bindings.c'' */
+    /* writing ``bindings.c'' in temp file */
 
-    if ((fout=fopen(FNAME ".c", "w")) == NULL) {
+    sprintf(tmp, FNAME ".c.%d", getpid());
+
+    if ((fout=fopen(tmp, "w")) == NULL) {
 	fprintf(stderr, "%s: can't open output file `%s': %s.\n",
-		prg, FNAME ".c", strerror(errno));
+		prg, tmp, strerror(errno));
 	exit(1);
     }
 
@@ -246,11 +249,20 @@ main(int argc, char **argv)
     if (ferror(fout)) {
 	fprintf(stderr, "%s: write error on `%s': %s.\n",
 		prg, FNAME ".c", strerror(errno));
-	exit(1);
 	fclose(fout);
+	exit(1);
     }
 
     fclose(fout);
+
+    /* rename tmp file to ``bindings.c'' */
+
+    if (rename(tmp, FNAME ".c") < 0) {
+	fprintf(stderr, "%s: cannot rename `%s' to `%s': %s\n",
+		tmp, FNAME ".c", strerror(errno));
+	exit(1);
+    }
+
     exit(0);
 }
 

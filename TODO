@@ -1,7 +1,7 @@
 * use mkhoststr in show-url
 * rewrite parse_url
 * fix REFERENCES and include in dist
-* Makfile.am, mkbind: fix rules that create files with > (use tmp file)
+* Makfile.am: fix rules that create files with > (use tmp file)
 * ftp_cat: convert *to* netascii if uploading
 * fix -Wall warnings (option and function array, termcap functions, getopt.c)
 * fix compile on HPUX (struct sockaddr)
