@@ -51,7 +51,7 @@ struct keyname keyname[] = {
 @ function keys
 
 @d<globals@>
-struct fnkey fnkey[];
+extern struct fnkey fnkey[];
 extern int max_fnkey;
 
 @u
