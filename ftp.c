@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.63 2001/12/13 21:14:50 dillo Exp $
+  $NiH: ftp.c,v 1.64 2001/12/14 08:09:43 dillo Exp $
 
   ftp -- ftp protocol functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -950,8 +950,6 @@ ftp_cat(void *fin, void *fout, long start, long size, int upload)
     struct itimerval itv;
     struct _ftp_transfer_stats trstat;
     int flags, ret, do_read;
-    fd_set fds;
-    int fdin, fdout;
     int (*fn_read)(void *, size_t, void *);
     int (*fn_write)(void *, size_t, void *);
     int (*fn_eof)(void *);
@@ -968,81 +966,65 @@ ftp_cat(void *fin, void *fout, long start, long size, int upload)
     /* XXX: error check */
     if (upload) {
 	/* fout is to server */
-	if ((fdout=ftp_xfer_start(fout, upload)) < 0)
+	if (ftp_xfer_start(fout) < 0)
 	    return -1;
-	fdin = fileno((FILE *)fin);
 
 	fn_read = rftp_xfer_read;
 	fn_eof = rftp_xfer_eof;
 	fn_write = ftp_xfer_write;
 
-	set_file_blocking(fdin, 0);
+	rftp_xfer_start(fin);
     }
     else {
 	/* fin is from server */
 
-	if ((fdin=ftp_xfer_start(fin, upload)) < 0)
+	if (ftp_xfer_start(fin) < 0)
 	    return -1;
-	fdout = fileno((FILE *)fout);
 	   
 	fn_read = ftp_xfer_read;
 	fn_eof = ftp_xfer_eof;
 	fn_write = rftp_xfer_write;
 
-	set_file_blocking(fdout, 0);
+	rftp_xfer_start(fout);
     }
 
     error_cause = ERR_NONE;
     trail_cr = 0;
     do_read = 1;
     for (;;) {
-	FD_ZERO(&fds);
-
 	if (do_read) {
-	    FD_SET(fdin, &fds);
-	    ret=select(fdin+1, &fds, NULL, NULL, NULL);
-	    
-	    if (ret != -1 && FD_ISSET(fdin, &fds)) {
-		if ((nread=fn_read(buf, 4096, fin)) > 0) {
-		    do_read = 0;
-		    nwritten = 0;
-		    if (ftp_curmode != 'a')
-			p = buf;
-		    else {
-			p = buf2;
-			if (upload)
-			    nread = _ftp_host2ascii(buf, buf2, nread,
-						    &trail_cr);
-			else
-			    nread = _ftp_ascii2host(buf, buf2, nread,
-						    &trail_cr);
-		    }
+	    if ((nread=fn_read(buf, 4096, fin)) > 0) {
+		do_read = 0;
+		nwritten = 0;
+		if (ftp_curmode != 'a')
+		    p = buf;
+		else {
+		    p = buf2;
+		    if (upload)
+			nread = _ftp_host2ascii(buf, buf2, nread, &trail_cr);
+		    else
+			nread = _ftp_ascii2host(buf, buf2, nread, &trail_cr);
 		}
-		else if (nread < 0) {
-		    if (!fn_eof(fin)) {
-			errno_copy = errno;
-			error_cause = ERR_FIN;
-		    }
-		    break;
+	    }
+	    else if (nread < 0) {
+		if (!fn_eof(fin)) {
+		    errno_copy = errno;
+		    error_cause = ERR_FIN;
 		}
+		break;
 	    }
 	}
 	else {
-	    FD_SET(fdout, &fds);
-	    ret=select(fdout+1, NULL, &fds, NULL, NULL);
-	    
-	    if (ret != -1 && FD_ISSET(fdout, &fds)) {
-		if ((err=fn_write(p+nwritten, nread-nwritten, fout)) < 0) {
-		    errno_copy = errno;
-		    error_cause = ERR_FOUT;
-		    break;
-		}
-		nwritten += err;
-		got += err;
-		
-		if (nwritten == nread)
-		    do_read = 1;
+	    if ((err=fn_write(p+nwritten, nread-nwritten, fout)) < 0) {
+		errno_copy = errno;
+		error_cause = ERR_FOUT;
+		break;
 	    }
+	    nwritten += err;
+	    got += err;
+	    
+	    if (nwritten == nread)
+		do_read = 1;
 	}
 	
 	if (old_alarm != sig_alarm) {
@@ -1064,6 +1046,8 @@ ftp_cat(void *fin, void *fout, long start, long size, int upload)
     if (error_cause || sig_intr) {
 	sig_intr = 0;
 	ftp_xfer_stop((upload ? fout : fin), 1);
+	/* this is a hack, we should really use local file methods */
+	rftp_xfer_stop((upload ? fin : fout), 0);
 	switch (error_cause) {
 	case ERR_FIN:
 	    disp_status("read error: %s", strerror(errno_copy));
@@ -1078,6 +1062,7 @@ ftp_cat(void *fin, void *fout, long start, long size, int upload)
     }
 
     ftp_xfer_stop((upload ? fout : fin), 0);
+    rftp_xfer_stop((upload ? fin : fout), 0);
     return 0;
 }
 
@@ -1424,36 +1409,47 @@ rftp_xfer_read(void *buf, size_t len, void *file)
 {
     int n;
     FILE *f;
+    fd_set fdset;
 
     f = (FILE *)file;
     
-    n = fread(buf, 1, len, f);
+    for (;;) {
+	n = fread(buf, 1, len, f);
 
-    if (n == 0) {
-	if (ferror(f) && (errno == EINTR || errno == EAGAIN))
-	    clearerr(f);
-	else
-	    return -1;
+	if (n == 0) {
+	    if (ferror(f) && (errno == EINTR || errno == EAGAIN)) {
+		clearerr(f);
+		if (errno == EAGAIN) {
+		    FD_ZERO(&fdset);
+		    FD_SET(fileno(f), &fdset);
+		    
+		    if (select(fileno(f)+1, NULL, &fdset, NULL, NULL) == -1
+			|| !FD_ISSET(fileno(f), &fdset))
+			return 0;
+		    continue;
+		}
+	    }
+	    else
+		return -1;
+	}
+
+	return n;
     }
-    return n;
 }
 
 
 
 int
-rftp_xfer_start(void *file, int writing)
+rftp_xfer_start(void *file)
 {
     FILE *f;
     int flags;
 
     f = (FILE *)file;
 
-    if ((flags=fcntl(fileno(f), F_GETFL, 0)) != -1) {
-	flags |= O_NONBLOCK;
-	fcntl(fileno(f), F_SETFL, flags);
-    }
+    set_file_blocking(fileno(f), 0);
 
-    return fileno(f);
+    return 0;
 }
 
 
@@ -1475,17 +1471,31 @@ rftp_xfer_write(void *buf, size_t len, void *file)
 {
     int n;
     FILE *f;
+    fd_set fdset;
 
     f = (FILE *)file;
-    n = fwrite(buf, 1, len, f);
 
-    if (n == 0) {
-	if (ferror(f) && (errno == EINTR || errno == EAGAIN))
-	    clearerr(f);
-	else
-	    return -1;
+    for (;;) {
+	n = fwrite(buf, 1, len, f);
+
+	if (n == 0) {
+	    if (ferror(f) && (errno == EINTR || errno == EAGAIN)) {
+		clearerr(f);
+		if (errno == EAGAIN) {
+		    FD_ZERO(&fdset);
+		    FD_SET(fileno(f), &fdset);
+		    
+		    if (select(fileno(f)+1, NULL, &fdset, NULL, NULL) == -1
+			|| !FD_ISSET(fileno(f), &fdset))
+			return 0;
+		    continue;
+		}
+	    }
+	    else
+		return -1;
+	}
+	return n;
     }
-    return n;
 }
 
 
