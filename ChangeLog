@@ -1,3 +1,8 @@
+2002-03-12  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* ftp.c (ftp_gets): copy new portion to correct position in line
+	(not past the end).
+
 2002-02-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* fn_select.c (fn_enter_get, fn_enter_view, fn_enter, fn_reload,

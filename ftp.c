@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.69 2001/12/23 02:15:18 dillo Exp $
+  $NiH: ftp.c,v 1.70 2001/12/23 02:54:19 dillo Exp $
 
   ftp -- ftp protocol functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -558,7 +558,7 @@ char *
 ftp_gets(FILE *f)
 {
     char buf[8192], *line;
-    int l;
+    int l, l2;
     
     if (fgets(buf, 8192, f) == NULL)
 	return NULL;
@@ -571,12 +571,13 @@ ftp_gets(FILE *f)
 	    free(line);
 	    return NULL;
 	}
-	l += strlen(buf);
-	if ((line=realloc(line, l+1)) == NULL) {
+	l2 = strlen(buf);
+	if ((line=realloc(line, l+l2+1)) == NULL) {
 	    disp_status(DISP_ERROR, "malloc failure");
 	    return NULL;
 	}
 	strcpy(line+l, buf);
+	l += l2;
     }
     if (line[l-2] == '\r')
 	line[l-2] = '\0';
