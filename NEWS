@@ -1,7 +1,7 @@
 New in 0.9.3:
 * mkdir: make directory on server (not really new, but I forgot to mention it)
 * site: send site specific commands
-* removed option emacs-status
+* removed option emacs-status (which has been ignored anyway)
 * fixed bug with status lines on small terminals (less than 25 columns)
 
 New in 0.9.2:
