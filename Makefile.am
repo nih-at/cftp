@@ -5,6 +5,7 @@ AUTOMAKE_OPTIONS=	no-dependencies foreign
 LDADD=	@LIBOBJS@
 
 bin_PROGRAMS=	cftp
+info_TEXINFOS=	cftp.texi
 noinst_PROGRAMS=mkbind
 cftp_SOURCES=	directory.c display.c readdir.c loop.c functions.c \
 		ftp.c sockets.c main.c options.c keys.c tty.c rc.c \
