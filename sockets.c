@@ -160,7 +160,7 @@ spassive(int family, struct sockaddr *addr, int *lenp)
 const char *
 sockaddr_ntop(struct sockaddr *sa)
 {
-#ifdef HAVE_GETADDRINFO
+#ifdef HAVE_GETNAMEINFO
 
     static char addrbuf[NI_MAXHOST];
     int len;
@@ -180,7 +180,7 @@ sockaddr_ntop(struct sockaddr *sa)
     else
         return NULL;
 
-#else /* !HAVE_GETADDRINFO */
+#else /* !HAVE_GETNAMEINFO */
 
     struct sockaddr_in *si;
     if (sa->sa_family != AF_INET)

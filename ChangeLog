@@ -1,5 +1,11 @@
 2001-08-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* sockets.c (sockaddr_ntop): choose implementation based on
+	availability of getnameinfo.
+	* configure.in: check for availability of getnameinfo.
+
+	* signals.c (sig_remember): reinstall signal handler.
+
 	* keys.c, keys.h: rename keyname to key_name to avoid conflict
 	with some termcap libraries.
 
