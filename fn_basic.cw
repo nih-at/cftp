@@ -198,6 +198,20 @@ void fn_colon(char **args)
 }
 
 
+@ deidling connection
+
+@d<functions@>
+function(deidle, , fn_deidle, 0,
+	 {deidle connection},
+ {Send a @@code{noop}, thus resetting idle time on server.})
+
+@u
+void fn_deidle(char **args)
+{
+    ftp_noop();
+}
+
+
 @ displaying last response.
 
 @d<functions@>
