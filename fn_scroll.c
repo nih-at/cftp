@@ -183,7 +183,7 @@ fn_isearch(char **args)
 	}
 
 	for (n = current;
-	     n < list->len && strstr(list->line[n].name, b+9) == NULL;
+	     n < list->len && strstr(LIST_LINE(list, n)->name, b+9) == NULL;
 	     n++)
 	    ;
 

@@ -37,6 +37,7 @@
 #include "ftp.h"
 #include "bindings.h"
 #include "functions.h"
+#include "list.h"
 
 
 
@@ -177,6 +178,7 @@ main(int argc, char **argv)
 
     if (init_disp() < 0)
 	exit(1);
+    list_init();
 	    
     signal(SIGINT, sig_end);
     signal(SIGHUP, sig_end);
@@ -227,6 +229,7 @@ main(int argc, char **argv)
 	ftp_pass = pass;
 
     curdir = dir;
+    list = curdir;
 
     loop();
 	

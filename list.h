@@ -32,8 +32,11 @@ struct listentry {
 struct list {
     int len, top, cur;
     int size;
-    struct listentry *line;
+    void *line;
 };
+
+#define LIST_LINE(list, i)	\
+	((struct listentry *)((list)->line+(list)->size*(i)))
 
 extern struct list *list;	/* currently displayed list */
 

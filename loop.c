@@ -41,7 +41,7 @@ loop()
 
     list_do(1);
 	
-    while ((c=tty_readkey()) != -1)
+    while ((c=tty_readkey()) != -1) {
 	binding = get_function(c, bs_none);
 	if (binding->fn != -1) {
 	    f = functions+binding->fn;
@@ -63,6 +63,7 @@ loop()
 	    disp_status("");
 	    void_prefix();
 	}
+    }
 }
 
 

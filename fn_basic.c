@@ -75,7 +75,7 @@ void fn_help(char **args)
 	c = read_char("Key: ");
 
 	b = get_function(c, bs_none);
-	if ((i=binding->fn) == -1)
+	if ((i=b->fn) == -1)
 	    disp_status("[%s%s] key is unbound",
 			(binding_state != bs_none ?
 			 binding_statename[binding_state] : ""),

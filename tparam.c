@@ -1,3 +1,5 @@
+/* changed by Dieter Baron for cftp: tgoto deleted */
+
 /* Merge parameters into a termcap entry string.
    Copyright (C) 1985, 87, 93, 95 Free Software Foundation, Inc.
 
@@ -101,23 +103,7 @@ tparam (string, outstring, len, arg0, arg1, arg2, arg3)
   return tparam1 (string, outstring, len, NULL, NULL, arg);
 }
 
-char *BC;
-char *UP;
-
-static char tgoto_buf[50];
-
-char *
-tgoto (cm, hpos, vpos)
-     char *cm;
-     int hpos, vpos;
-{
-  int args[2];
-  if (!cm)
-    return NULL;
-  args[0] = vpos;
-  args[1] = hpos;
-  return tparam1 (cm, tgoto_buf, 50, UP, BC, args);
-}
+/* Dieter Baron: tgoto deleted */
 
 static char *
 tparam1 (string, outstring, len, up, left, argp)
