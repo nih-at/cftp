@@ -37,6 +37,8 @@ F fn_basic.cw (fn_help) help for `f'unktions, `k'eys, and `o'ptions
 B all output in first line outside screen
 B report resolv error, not errno
 ----------------------------------------------- done
+Jul 30 (0.5b)
+B fn_basic.cw (fn_colon) don't free arguments if there are none
 C fn_tag.cw (fn_listtag) display `no tagged files'
 F user options
 
