@@ -11,6 +11,7 @@ bind		n	show-name
 bind		N	show-name -u
 bind		L	show-name -l
 bind		r	reconnect
+bind		S	site
 
 bind		a	set mode a
 bind		i	set mode i
@@ -44,6 +45,7 @@ bind	<remote> v	view
 bind	<remote> d	get
 bind	<remote> |	pipe :
 bind	<remote> p	put
+bind	<remote> M	mkdir
 
 bind	<tag>	h	leave-tag
 bind	<tag>	q	leave-tag

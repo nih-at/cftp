@@ -94,6 +94,11 @@ This prevents the server from logging you out due to timeouts.  Since
 you're actively using @sc{cftp}.})
 
 
+function(site, [cmd arg...], fn_site, 0,
+	 {send site specific command},
+ {Send a site specific command to ftp server.})
+
+
 function(reconnect, , fn_reconnect, 0,
 	 {reconnect to server},
  {Reopen connection to server.

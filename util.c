@@ -260,3 +260,29 @@ deurl(char *s)
 
     return t;
 }
+
+
+
+char *
+args_to_string(char **args)
+{
+    int len, i;
+    char *s;
+
+    len = 0;
+    for (i=0; args[i]; i++)
+	len += strlen(args[i])+1;
+
+    if ((s=(char *)malloc(len)) == NULL)
+	return NULL;
+
+    len = 0;
+    for (i=0; args[i]; i++) {
+	strcpy(s, args[i]);
+	len += strlen(args[i]);
+	s[len++] = ' ';
+    }
+    s[len-1] = '\0';
+
+    return s;
+}

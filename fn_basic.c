@@ -441,6 +441,28 @@ void fn_deidle(char **args)
 
 
 
+void fn_site(char **args)
+{
+    char *line;
+    
+    if (args == NULL) {
+	line = read_string("site ", 1);
+	if (line == NULL || line[0] == '\0') {
+	    free(line);
+	    disp_status("");
+	    return;
+	}
+    }
+    else
+	line = args_to_string(args);
+
+    ftp_site(line);
+
+    free(line);
+}
+
+
+
 void fn_reconnect(char **args)
 {
     ftp_reconnect();

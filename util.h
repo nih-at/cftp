@@ -31,5 +31,6 @@ char *local_exp(char *path);
 char *argstostr(char **args);
 int parse_url(char *url, char **user, char **pass,
 	      char **host, char **port, char **dir);
+char *args_to_str(char **args);
 
 #endif /* util.h */

@@ -1,4 +1,14 @@
-1998-10-07  Dillo Fenderson  <dillo@legba>
+1998-10-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* bindings.desc: added mkdir, site.
+
+	* util.h, util.c (args_to_string): new function.
+
+	* ftp.h, ftp.c (ftp_site): new function.
+
+	* fntable.fn, fn_basic.c (fn_site): new function.
+
+1998-10-07  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (ftp_stor): accept response 125.
 

@@ -52,6 +52,7 @@ FILE *ftp_retr(char *file, int mode, long *startp);
 FILE *ftp_stor(char *file, int mode);
 int ftp_fclose(FILE *f);
 int ftp_mkdir(char *path);
+int ftp_site(char *cmd);
 int ftp_noop(void);
 char *ftp_pwd(void);
 char *ftp_gets(FILE *f);

@@ -175,6 +175,15 @@ ftp_login(char *host, char *user, char *pass)
 
 
 int
+ftp_site(char *cmd)
+{
+    ftp_put("%s", cmd);
+    return ftp_resp();
+}
+
+
+
+int
 ftp_reconnect(void)
 {
     char *pass;
