@@ -1,3 +1,4 @@
+* fix detection of ospeed declaration in <termcap.h>
 * declare replacement functions (to avoid warnings)
 * find bug when viewing or piping rfc-index.txt
 * host specific rc file sections
