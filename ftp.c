@@ -29,6 +29,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <fcntl.h>
 #include <signal.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -753,10 +754,12 @@ ftp_accept(int fd, char *mode)
 	    return NULL;
 	
 	close(fd);
-	return fdopen(ns, mode);
+	fd = ns;
     }
-    else
-	return fdopen(fd, mode);
+	
+    fcntl(fd, F_SETFD, 1); /* XXX: error check */
+    
+    return fdopen(fd, mode);
 }
 
 

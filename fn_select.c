@@ -127,7 +127,7 @@ aux_pipe(char *name, long size, int mode, char *cmd, int quietp)
     err = ftp_cat(fin, fout, 0, size);
 
     err |= ftp_fclose(fin);
-    
+
     err |= disp_close(fout, quietp);
 
     return err;

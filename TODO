@@ -8,3 +8,5 @@
 	(file names short)
 * <local> mode
 * decent documentation
+* write passwd and port in save-urls
+* segfault while tagging on GNU/Linux
