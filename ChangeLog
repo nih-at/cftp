@@ -39,7 +39,7 @@
 2001-03-20  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (_ftp_ascii2host): new function
-	(ftp_cat): use _ft_ascii2host for ASCII mode transfers.  rewrite
+	(ftp_cat): use _ftp_ascii2host for ASCII mode transfers.  rewrite
 	transfer rate with non-blocking I/O and enable
 
 2000-12-15  Dieter Baron  <dillo@danbala.tuwien.ac.at>
