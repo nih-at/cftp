@@ -106,9 +106,9 @@ tag_file(char *dir, char *file, long size, char type, enum tagopt what)
 		(strcmp(dir, "/") == 0 ? "" : "/"), file);
     }
 
-    cmp = -1;
+    cmp = 1;
 
-    for (t=tags_s.next; t != &tags_s && cmp < 0; t=t->next) {
+    for (t=tags_s.next; t != &tags_s && cmp > 0; t=t->next) {
 	c = t->name[t->dirl];
 	t->name[t->dirl] = '\0';
 	cmp = strcmp(dir, t->name);
