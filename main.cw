@@ -56,7 +56,6 @@ main(int argc, char **argv)
 	signal(SIGINT, sig_end);
 	signal(SIGHUP, sig_end);
 	signal(SIGTERM, sig_end);
-	signal(SIGSTOP, sig_escape);
 	signal(SIGTSTP, sig_escape);
 	signal(SIGCONT, sig_reenter);
 
@@ -375,6 +374,7 @@ void
 sig_escape(int i)
 {
     escape_disp(0);
+    kill(0, SIGSTOP);
 }
 
 void
