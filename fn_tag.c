@@ -1,5 +1,5 @@
  /*
-  $NiH: fn_tag.c,v 1.30 2002/10/23 09:19:47 dillo Exp $
+  $NiH: fn_tag.c,v 1.31 2003/05/13 15:46:08 dillo Exp $
 
   fn_tag.c -- bindable functions: 
   Copyright (C) 1996-2002 Dieter Baron
@@ -159,7 +159,7 @@ fn_gettags(char **args)
 {
     enum state old_state;
     struct tagentry *t;
-    int i, c, j;
+    int i, j;
     int restart;
 
     if (!tag_anytags()) {
@@ -182,10 +182,8 @@ fn_gettags(char **args)
 	t = tags.line+i;
 
 	if (aux_download(t->name, t->size, restart) == 0) {
-	    c = t->name[t->dirl];
-	    t->name[t->dirl] = '\0';
-	    if (strcmp(t->name, curdir->path) == 0) {
-		t->name[t->dirl] = c;
+	    if (strlen(curdir->path) == t->dirl
+		&& strncmp(t->name, curdir->path, t->dirl) == 0) {
 		if ((j=dir_find(curdir, t->file)) >= 0)
 		    curdir->line[j].line[0] = ' ';
 	    }
