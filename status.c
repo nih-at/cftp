@@ -30,7 +30,8 @@
 #include "tag.h"
 #include "tty.h"
 
-char status_line[8192];
+#define MAX_STATUS  8192
+char status_line[MAX_STATUS];
 struct status status;
 
 
@@ -46,48 +47,22 @@ status_init(void)
 void
 status_do(enum state when)
 {
-    int cols, space, l;
-
-    cols = tty_cols;
-    space = cols - 25;
+    int cols, space, l, l2;
 
     if (when != bs_none && when != binding_state)
 	return;
 
+    cols = tty_cols;
+    if (cols >= MAX_STATUS)
+	cols = MAX_STATUS-1;
+
+    memset(status_line, ' ', cols);
+    status_line[cols] = '\0';
+	
 /*    if (opt_emacs_status) { */
     if (1) {
-	strcpy(status_line, "--cftp: ");
-	l = strlen(status.host);
-	if (l > space-30) {
-	    strncpy(status_line+8, status.host, space-33);
-	    strcpy(status_line+space-33+8, "...");
-	    space = 30;
-	}
-	else {
-	    strcpy(status_line+8, status.host);
-	    space -= l;
-	}
-	memset(status_line+cols-17-space, ' ', space+2);
-	switch (binding_state) {
-	case bs_remote:
-	    strcpy(status_line+cols-15, "<remote>--");
-	    if (status.remote.path) {
-		l = strlen(status.remote.path);
-		if (l > space) {
-		    strncpy(status_line+cols-space-16, "...", 3);
-		    strncpy(status_line+cols-space-13 ,
-			    status.remote.path+l-space+3,
-			    space-3);
-		}
-		else
-		    strncpy(status_line+cols-space-16, status.remote.path, l);
-	    }
-	    break;
-	    
-	case bs_tag:
-	    strcpy(status_line+cols-15, "<tag>-----");
-	    break;
-	}
+	strncpy(status_line, "--cftp: ", 8);
+
 	switch(status.percent) {
 	case -1:
 	    strcpy(status_line+cols-5, "All--");
@@ -100,6 +75,47 @@ status_do(enum state when)
 	    break;
 	default:
 	    sprintf(status_line+cols-5, "%2d%%--", status.percent);
+	}
+
+	space = cols-24;
+	l = strlen(status.host);
+	if (l > space) {
+	    strncpy(status_line+8, status.host, space-3);
+	    strncpy(status_line+space-3+8, "...", 3);
+	    space = 0;
+	}
+	else {
+	    strncpy(status_line+8, status.host, l);
+	    space -= l;
+	}
+	switch (binding_state) {
+	case bs_remote:
+	    strncpy(status_line+cols-15, "<remote>--", 10);
+	    if (status.remote.path) {
+		l = strlen(status.remote.path);
+		if (l+1 > space && space < (cols-24)/2) {
+		    l2 = cols-24-l+1;
+		    if (l > (cols-24)/2)
+			l2 = (cols-24)/2;
+		
+		    strncpy(status_line+8+l2-3, "...", 3);
+		    space = cols-24-l2;
+		}
+		l2 = 8+(cols-24)-space+1;
+		if (l+1 > space) {
+		    strncpy(status_line+l2, "...", 3);
+		    strncpy(status_line+l2+3,
+			    status.remote.path+l-space+3+1,
+			    space-4);
+		}
+		else
+		    strncpy(status_line+l2, status.remote.path, l);
+	    }
+	    break;
+	    
+	case bs_tag:
+	    strcpy(status_line+cols-15, "<tag>-----");
+	    break;
 	}
 	
 	if (!disp_quiet) {

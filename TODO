@@ -29,14 +29,13 @@ C fn_basic.c: (fn_exit) implement as function, -f option.
 B bindable functions: abort on empty input
 F forced reload of directory listing
 F status.c: add support for head status line (old style, but smarter)
-C status.c: rewrite status line code (better abstraction of common elements)
-B status.c: don't truncate hostname if there is enought space
 B fn_scroll.c: (fn_isearch) don't hardwire ^r/^s/^l (check binding)
 B ftp.c: (ftp_abort) abort on ascii connections hangs sometimes
 C fn_select.c: use :-syntax throughout
 B fn_basic.c: (fn_shell) command with args doesn't work when given via args
 C consistent error handling
 ----------------------------------------------- done
+C status.c: rewrote status line code (a little cleaner and smarter)
 B readrc.c: (readrc) fixed missing argument to parse_url
 F main.c: (parse_url) if multiple @s in login part, rightmost separates host
 F main.c: (parse_url) urldecode parts
