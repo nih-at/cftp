@@ -35,6 +35,7 @@
 #include "display.h"
 #include "rc.h"
 #include "options.h"
+#include "tty.h"
 
 extern char version[];
 
@@ -80,12 +81,38 @@ void fn_help(char **args)
 			(binding_state != bs_none ?
 			 binding_statename[binding_state] : ""),
 			print_key(c, 0));
-	else
-	    disp_status("[%s%s] %s: %s",
-			(binding_state != bs_none ?
-			 binding_statename[binding_state] : ""),
+	else {
+	    char *buf;
+	    int cols;
+
+	    cols = tty_cols;
+	    
+	    if ((buf=(char *)malloc(cols+5)) == NULL)
+		break;
+
+	    sprintf(buf, "[%s%s] %s",
+			(b->state != bs_none ?
+			 binding_statename[b->state] : ""),
 			print_key(c, 0),
-			functions[i].name, functions[i].help);
+			functions[i].name);
+	    if (b->args) {
+		int i, l;
+
+		l = strlen(buf);
+		for (i=0; b->args[i]; i++)
+		    if (strlen(b->args[i])+l+2 > cols) {
+			strcpy(buf+l, " ...");
+			break;
+		    }
+		    else {
+			sprintf(buf+l, " %s", b->args[i]);
+			l += strlen(b->args[i])+1;
+		    }
+	    }
+
+	    disp_status(buf);
+	    free(buf);
+	}
 	break;
 
     case 'o':
@@ -103,6 +130,9 @@ void fn_help(char **args)
 			option[i].help);
 	free(s);
 	break;
+	
+    default:
+	disp_status("");
     }
 }
 

@@ -62,7 +62,7 @@ list_do(int full)
 	last_list = list;
     }
 
-    if (full || abs(last_top-list->top >= win_lines-opt_scrlimit)) {
+    if (full || abs(last_top-list->top) >= win_lines-opt_scrlimit) {
 	list_full(list);
     }
     else if (last_top != list->top) {

@@ -9,19 +9,19 @@ bind		B	bind
 bind		m	response
 bind		r	reconnect
 
-bind	a	set mode a
-bind	i	set mode i
+bind		a	set mode a
+bind		i	set mode i
 
-bind	0	prefix 0
-bind	1	prefix 1
-bind	2	prefix 2
-bind	3	prefix 3
-bind	4	prefix 4
-bind	5	prefix 5
-bind	6	prefix 6
-bind	7	prefix 7
-bind	8	prefix 8
-bind	9	prefix 9
+bind		0	prefix 0
+bind		1	prefix 1
+bind		2	prefix 2
+bind		3	prefix 3
+bind		4	prefix 4
+bind		5	prefix 5
+bind		6	prefix 6
+bind		7	prefix 7
+bind		8	prefix 8
+bind		9	prefix 9
 
 bind	<remote> ^j	enter/get
 bind	<remote> ^m	enter/get
@@ -34,21 +34,21 @@ bind	<remote> right	enter/get
 bind	<remote> v	view
 bind	<remote> d	get
 
-bind	^b	leave
-bind	^p	up
-bind	^n	down
-bind	h	leave
-bind	j	down
-bind	k	up
-bind	left	leave
-bind	up	up
-bind	down	down
-bind	spc 	page-down
-bind	b	page-up
-bind	pgdown	page-down
-bind	pgup	page-up
-bind	G	goto
-bind	^s	isearch
-bind	^r	isearch r
+bind		^b	leave
+bind		^p	up
+bind		^n	down
+bind		h	leave
+bind		j	down
+bind		k	up
+bind		left	leave
+bind		up	up
+bind		down	down
+bind		spc 	page-down
+bind		b	page-up
+bind		pgdown	page-down
+bind		pgup	page-up
+bind		G	goto
+bind		^s	isearch
+bind		^r	isearch r
 
-bind	g	cd
+bind		g	cd

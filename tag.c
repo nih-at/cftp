@@ -28,201 +28,27 @@
 #include "directory.h"
 #include "options.h"
 #include "list.h"
+#include "util.h"
 
-#define tag_getdir(dir)	\
-	((dirtags *)tag_do((filetags *)&tags, (dir), 0, NULL))
-#define tag_insdir(dir)	\
-	((dirtags *)tag_do((filetags *)&tags, (dir), 1, tag_newdir))
+struct taglist tags;
+struct tagentry tags_s;
 
-#define tag_filep(t, file)	\
-	(tag_do((t), (file), 0, NULL) != NULL)
-#define tag_insfile(t, file)	\
-	(tag_do((t), (file), 1, tag_newfile))
-#define tag_delfile(t, file)	\
-	(tag_do((t), (file), -1, tag_freefile))
-
-dirtags tags;
-dirtags *curtags;
-
-
-
-filetags *tag_do(filetags *root, char *name, int flag, filetags *(*mem)());
-filetags *tag_newdir(filetags *dummy);
-filetags *tag_freedir(filetags *d);
-filetags *tag_newfile(filetags *dummy);
-filetags *tag_freefile(filetags *f);
-
-
-
-void
-tag_changecurrent(char *dir)
-{
-    curtags = tag_getdir(dir);
-}
+void _tag_delete(int n);
+int _tag_insert(int n, struct tagentry *t, char *file, long size, char type);
 
 
 
 int
-tag_file(char *dir, char *file, long size, char type, int flag)
+tag_init(void)
 {
-    extern char *ftp_lcwd;
-    
-    int filep;
-    filetags *tl, *n;
- 
-    if (dir == NULL) {
-	if (curtags == NULL) {
-	    curtags = tag_insdir(ftp_lcwd);
-	    if (curtags == NULL)
-		return -1;
-	}
-	tl = curtags->tags;
-    }
-    else {
-	dirtags *d;
-
-	if ((d=tag_insdir(dir)) == NULL)
-	    return -1;
-	tl = d->tags;
-    }
-
-    filep = tag_filep(tl, file);
-    
-    if (filep && flag <= 0) {
-	tag_delfile(tl, file);
-	return 0;
-    }
-    else if (!filep && flag >= 0) {
-	if (n=tag_insfile(tl, file)) {
-	    n->size = size;
-	    n->type = type;
-	    return 1;
-	}
-	else
-	    return 0;
-    }
-    else
-	return filep;
-}
-
-
-
-filetags *
-tag_do(filetags *root, char *name, int flag, filetags *(*mem)())
-{
-    filetags *n;
-    int c = 1;
-
-    while (root->next) {
-	if ((c=strcmp(name, root->next->name)) <= 0)
-	    break;
-	root = root->next;
-    }
-	
-    if (c == 0) {
-	if (flag >= 0)
-	    return root->next;
-	else {
-	    filetags *d = root->next;
-
-	    if (d != NULL) {
-		root->next = d->next;
-		mem(d);
-	    }
-	    return NULL;
-	}
-    }
-
-    if (flag <= 0)
-	return NULL;
-
-    n = mem(NULL);
-
-    if (n != NULL) {
-	n->name = strdup(name);
-	n->next = root->next;
-	root->next = n;
-    }
-    return n;
-}
-
-
-
-filetags *
-tag_newdir(filetags *dummy)
-{
-    dirtags *d = (dirtags *)malloc(sizeof(dirtags));
-
-    if (d) {
-	d->next = NULL;
-	d->tags = tag_newfile(NULL);
-	d->name = NULL;
-    }
-    
-    return (filetags *)d;
-}
-
-
-
-filetags *
-tag_freedir(filetags *f)
-{
-    dirtags *d = (dirtags *)f;
-    filetags *g;
-
-    f=d->tags;
-    while (f) {
-	g=f;
-	f=f->next;
-	free(g->name);
-	free(g);
-    }
-    free(d->name);
-    free(d);
-
-    return NULL;
-}
-
-
-
-filetags *
-tag_newfile(filetags *dummy)
-{
-    filetags *f = (filetags *)malloc(sizeof(filetags));
-
-    if (f) {
-	f->name = NULL;
-	f->next = NULL;
-    }
-
-    return f;
-}
-
-
-
-filetags *
-tag_freefile(filetags *f)
-{
-    if (f) {
-	free(f->name);
-	free(f);
-    }
-
-    return NULL;
-}
-
-
-
-int
-tag_anytags(void)
-{
-    dirtags *d;
-
-    for (d=tags.next; d; d=d->next)
-	if (d->tags && d->tags->next)
-	    return 1;
-
-    return 0;
+    tags_s.next = tags_s.prev = &tags_s;
+    tags.len = tags.cur = tags.top = 0;
+    tags.size = sizeof(struct tagentry);
+    tags.reallen = 1024;
+    if ((tags.line=(struct tagentry *)malloc(tags.reallen
+					     *sizeof(struct tagentry)))
+	== NULL)
+	return -1;
 }
 
 
@@ -232,22 +58,151 @@ change_curdir(directory *dir)
 {
     /* XXX: rewrite to new structures */
 
-    extern dirtags *curtags;
+    extern struct dirtags *curtags;
 
-    filetags *tags;
+    struct filetags *tags;
     int i;
 
     for (i=0; i<curdir->len; i++)
 	curdir->line[i].line[0] = ' ';
 
-    tag_changecurrent(dir->path);
+/*    curtags = tag_getdir(dir, 0);
 
     if (curtags) {
-	for (tags=curtags->tags->next; tags; tags=tags->next)
+	curtags = curtags->next;
+	for (tags=curtags->tags.next; tags; tags=tags->next)
 	    if ((i=dir_find(dir, tags->name)) >= 0)
 		dir->line[i].line[0] = opt_tagchar;
     }
-
+    */
     curdir = dir;
-    list = curdir;
+    list = (struct list *)curdir;
 }
+
+
+
+int
+tag_file(char *dir, char *file, long size, char type, enum tagopt what)
+{
+    char *canon;
+    struct tagentry *t;
+
+    canon = NULL;
+
+    if (dir == NULL) {
+	canon = canonical(file, NULL);
+    }
+    else {
+	if ((canon=(char *)malloc(strlen(dir)+strlen(file)+2)) == NULL)
+	    return 0;
+	sprintf(canon, "%s/%s", dir, file);
+    }
+
+    for (t=tags_s.next;
+	 t != &tags_s && strncmp(dir, t->name, t->dirl) < 0;
+	 t=t->next)
+	;
+
+    if (strncmp(dir, t->name, t->dirl) == 0) {
+	if (what == TAG_ON) {
+	    free(canon);
+	    return 0;
+	}
+
+	_tag_delete(t-tags.line);
+	return -1;
+    }
+    else {
+	if (what == TAG_OFF) {
+	    free(canon);
+	    return 0;
+	}
+
+	_tag_insert(tags.len, t->prev, canon, size, type);
+	return 1;
+    }
+}
+
+
+
+void
+tag_clear(void)
+{
+    int i;
+
+    tags_s.next = tags_s.prev = &tags_s;
+    
+    for (i=0; i<tags.len; i++) {
+	free(tags.line[i].line);
+	free(tags.line[i].name);
+    }
+
+    tags.len = 0;
+}
+
+
+
+void
+_tag_delete(int n)
+{
+    struct tagentry *t;
+
+    t = tags.line[n];
+
+    free(t->line);
+    free(t->file);
+
+    for (i=n; i>tags.len; i++) {
+	tags.line[i] = tags.line[i+1];
+	tags.line[i].prev->next--;
+	tags.line[i].next->prev--;
+    }
+}
+
+
+
+int
+_tag_insert(int n, struct tagentry *t, char *file, long size, char type)
+{
+    int i;
+    char *line;
+    struct tagentry *u;
+
+    if ((line=(char *)malloc(strlen(file)+14)) == NULL)
+	return -1;
+
+    /* XXX: tags.line overflow */
+    
+    for (i=tags.len; i>n; --i) {
+	tags.line[i].prev->next++;
+	tags.line[i].next->prev++;
+	tags.line[i+1] = tags.line[i];
+    }
+
+    sprintf(line, "%8ld  %c  %s", size, type, file);
+
+    u = tags.line[n];
+
+    u->line = line;
+    u->name = file;
+    u->file = basename(file);
+    u->dirl = tags.line[n].file - file;
+    u->size = size;
+    u->type = type;
+
+    u->next = t->next;
+    u->prev = t;
+    t->next = u;
+    u->next->prev = u;
+
+    return 0;
+}
+
+
+
+int
+tag_anytags(void)
+{
+    return (tags_s.next != &tags_s);
+}
+    

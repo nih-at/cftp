@@ -38,10 +38,14 @@ function(redraw, , fn_redraw, FN_PRE,
 your display.})
 
 
-function(help, [key], fn_help, 0,
-	 {display binding and help string for key},
- {Describe function bound to @code{key}; @code{key} is prompted for if
-ommitted.})
+function(help, , fn_help, 0,
+	 {display help},
+ {Display function help string, option help string and value, or key
+binding.
+
+For functions, their help string is displayed; for options, short
+name, type, value and help string; for bindings, the function plus
+arguments.})
 
 
 function(lcd, [dir], fn_lcd, FN_RC,
@@ -84,7 +88,9 @@ function(prefix, , fn_prefix, FN_PRE,
 
 function(bind, {[<state>] key [cmd [args @dots{}]]}, fn_bind, FN_RC,
 	 {bind key},
- {})
+ {Bind @var{key} to command.  If command (plus arguments) is ommited,
+remove key binding.  @var{<state>} specifies the binding state and
+defaults to @code{<global>}.})
 
 
 function(set, [option [value]], fn_set, FN_RC,

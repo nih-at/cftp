@@ -1,3 +1,24 @@
+/*
+  fn_tag -- bindable functions: 
+  Copyright (C) 1996, 1997 Dieter Baron
+
+  This file is part of cftp, a fullscreen ftp client
+  The author can be contacted at <dillo@giga.or.at>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -16,80 +37,60 @@
 void
 fn_tag(char **args)
 {
-    char *name, *dir, *file;
+    char *dir, *file;
     long size;
     char type;
     int tagged, i;
 
     if (args) {
-	name= canonical(args[0], NULL);
-	dir = dirname(name);
-	file = (char *)basename(name);
+	dir = NULL;
+	file = canonical(args[0], NULL);
 	size = -1;
 	type = 'l';
     }
     else {
-	name = NULL;
-	dir = NULL;
+	/* works in <remote> only */
+	
+	dir = curdir->path;
 	file = curdir->line[curdir->cur].name;
 	size = curdir->line[curdir->cur].size;
 	type = curdir->line[curdir->cur].type;
     }
 	
-    if ((tagged=tag_file(dir, file, size, type, 0)) < 0)
-	return;
-    
-    if (args) {
-	if (strcmp(dir, curdir->path) != 0)
-	    i = -1;
-	else
-	    i = dir_find(curdir, file);
-    }
-    else
-	i = curdir->cur;
+    tagged = tag_file(dir, file, size, type, TAG_TOGGLE);
 
-    if (i >= 0) {
-	if (tagged)
-	    curdir->line[i].line[0] = opt_tagchar;
-	else
-	    curdir->line[i].line[0] = ' ';
+    if (tagged < -1)
+	disp_status("%d files untagged", -tagged);
+    else if (tagged == -1)
+	disp_status("1 file untagged");
+    else if (tagged == 1)
+	disp_status("1 file tagged");
+    else if (tagged > 1)
+	disp_status("%d files tagged", tagged);
 
-	/* XXX: disp_reline(i); */
-    }
-
-    free(name);
-    free(dir);
+    if (args)
+	free(file);
 }
 
-
+
 
 void
 fn_cleartags(char **args)
 {
-    dirtags *p, *q;
+    struct dirtags *p, *q;
     int i;
 
-    p = tags.next;
-    while (p) {
-	q = p->next;
-	tag_freedir(p);
-	p = q;
-    }
+    tag_clear();
 
-    tags.next = NULL;
-    curtags = NULL;
-
-    for (i=0; i<curdir->len; i++)
-	if (curdir->line[i].line[0] != ' ') {
-	    curdir->line[i].line[0] = ' ';
-	    /* XXX: disp_reline(i); */
-	}
+    disp_status("all tags cleared");
 }
 
+
 
 void
 fn_listtags(char **args)
 {
+#if 0
     FILE *f = NULL;
     dirtags *d;
     filetags *t;
@@ -124,13 +125,15 @@ fn_listtags(char **args)
 	else
 	    disp_close(f);
     }
+#endif
 }
     
-
+
 
 void
 fn_gettags(char **args)
 {
+#if 0
     dirtags *d, *od;
     filetags *t, *o;
     char name[8192];
@@ -174,9 +177,10 @@ fn_gettags(char **args)
 	fputc('\a', stdout);
 	fflush(stdout);
     }
+#endif
 }
 
-
+
 
 void
 fn_loadtag(char **args)
@@ -235,24 +239,15 @@ fn_loadtag(char **args)
 		p[len-1] = '\0';
 
 	    name = canonical(p, NULL);
-	    file = (char *)basename(name);
-	    dir = dirname(name);
-	    tag_file(dir, file, size, type, 1);
-	    if (strcmp(curdir->path, dir) == 0
-		&& (len=dir_find(curdir, file)) >= 0
-		&& curdir->line[len].line[0] != opt_tagchar) {
-		curdir->line[len].line[0] = opt_tagchar;
-		/* XXX: disp_reline(len); */
-	    }
-
-	    count++;
+	    count += tag_file(NULL, name, size, type, TAG_ON);
+	    free(name);
 	}
     }
 
     if (ferror(f))
 	disp_status("read error: %s\n", strerror(errno));
     else
-	disp_status("%d files tagged", count);
+	disp_status("%d file%s tagged", count, (count == 1 ? "" : "s"));
 
     fclose(f);
 }

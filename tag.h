@@ -25,29 +25,29 @@
 
 
 
-struct dirtags {
-    char *name;
-    struct dirtags *next;
-    struct filetags *tags;
-};
-
-struct filetags {
-    char *name;
-    struct filetags *next;
+struct tagentry {
+    char *line, *name;
+    struct tagentry *next, *prev;
+    char *file;
+    int dirl;
     long size;
     char type;
 };
 
-typedef struct dirtags dirtags;
-typedef struct filetags filetags;
+struct taglist {
+    int len, top, cur;
+    int size;
+    struct tagentry *line;
+    long reallen;
+};
 
-extern dirtags tags;
-extern dirtags *curtags;
+enum tagopt { TAG_ON, TAG_OFF, TAG_TOGGLE };
 
 
 
-void tag_changecurrent(char *dir);
-int tag_file(char *dir, char *file, long size, char type, int flag);
+int tag_init(void);
+int tag_file(char *dir, char *file, long size, char type, enum tagopt what);
+void tag_clear(void);
 int tag_anytags(void);
 
 #endif /* tag.h */
