@@ -1,5 +1,5 @@
 /*
-  $NiH: util.c,v 1.21 2002/09/16 12:42:46 dillo Exp $
+  $NiH: util.c,v 1.22 2002/09/17 14:58:19 dillo Exp $
 
   util.c -- auxiliary functions
   Copyright (C) 1996-2002 Dieter Baron
@@ -267,6 +267,36 @@ mkhoststr(int passp, int urlp)
     *t = '\0';
 
     return hs;
+}
+
+
+
+char *
+noalloc_basename(char *name)
+{
+    char *p;
+    int len;
+
+    if (name == NULL || *name == '\0')
+	return ".";
+
+    len = strlen(name);
+
+    if (strspn(name, "/") == len)
+	return name + len-1;
+
+    while (name[len-1] == '/')
+	name[--len] = '\0';
+    
+    p = strrchr(name, '/');
+
+    if (p) {
+	if (*p == '\0')
+	    return p;
+	else
+	    return p+1;
+    }
+    return name;
 }
 
 

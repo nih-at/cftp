@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.77 2002/10/23 09:19:47 dillo Exp $
+  $NiH: ftp.c,v 1.78 2003/01/29 11:05:29 dillo Exp $
 
   ftp.c -- ftp protocol functions
   Copyright (C) 1996-2002 Dieter Baron
@@ -42,14 +42,6 @@
 
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
-#endif
-
-#ifdef HAVE_BASENAME
-# ifdef HAVE_LIBGEN_H
-#  include <libgen.h>
-# endif
-#else
-char *basename(char *);
 #endif
 
 #include "directory.h"
@@ -388,7 +380,7 @@ rftp_retr(char *file, int mode, long *startp, long *sizep)
     
     can = canonical(file, NULL);
     dir = xdirname(can);
-    name = basename(can);
+    name = noalloc_basename(can);
     
     if (ftp_mode(mode) == -1 || ftp_cwd(dir) == -1)
 	return NULL;
@@ -435,7 +427,7 @@ rftp_stor(char *file, int mode)
     
     can = canonical(file, NULL);
     dir = xdirname(can);
-    name = basename(can);
+    name = noalloc_basename(can);
     
     if (ftp_mode(mode) == -1 || ftp_cwd(dir) == -1)
 	return NULL;

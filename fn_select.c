@@ -1,5 +1,5 @@
 /*
-  $NiH: fn_select.c,v 1.27 2002/09/17 11:52:24 dillo Exp $
+  $NiH: fn_select.c,v 1.28 2002/10/23 09:19:47 dillo Exp $
 
   fn_select.c -- bindable functions: selecting
   Copyright (C) 1996-2002 Dieter Baron
@@ -32,14 +32,6 @@
 #include <string.h>
 
 #include "config.h"
-
-#ifdef HAVE_BASENAME
-# ifdef HAVE_LIBGEN_H
-#  include <libgen.h>
-# endif
-#else
-char *basename(char *);
-#endif
 
 #include "directory.h"
 #include "bindings.h"
@@ -87,7 +79,7 @@ aux_download(char *name, long size, int restart)
     start = 0;
     
     if (restart) {
-	if (stat(basename(name), &st) == 0)
+	if (stat(noalloc_basename(name), &st) == 0)
 	    start = st.st_size;
     }
 
@@ -98,10 +90,10 @@ aux_download(char *name, long size, int restart)
     else
 	mode = "w";
     
-    if ((fout=fopen(basename(name), mode)) == NULL) {
+    if ((fout=fopen(noalloc_basename(name), mode)) == NULL) {
 	disp_status(DISP_STATUS, "can't %s `%s': %s",
 		    (*mode == 'a' ? "append to" : "create"),
-		    basename(name), strerror(errno));
+		    noalloc_basename(name), strerror(errno));
 	return -2;
     }
 
@@ -114,7 +106,7 @@ aux_download(char *name, long size, int restart)
     
     if (fclose(fout)) {
 	disp_status(DISP_STATUS, "error closing `%s': %s",
-		    basename(name), strerror(errno));
+		    noalloc_basename(name), strerror(errno));
 	return -2;
     }
 
@@ -161,7 +153,7 @@ aux_upload(char *name)
 	return -2;
     }
 
-    if ((fout=ftp_stor(basename(name), opt_mode)) == NULL)
+    if ((fout=ftp_stor(noalloc_basename(name), opt_mode)) == NULL)
 	return -2;
 
     if (stat(name, &st) >= 0)

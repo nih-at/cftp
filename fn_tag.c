@@ -1,5 +1,5 @@
  /*
-  $NiH: fn_tag.c,v 1.29 2002/09/16 12:42:31 dillo Exp $
+  $NiH: fn_tag.c,v 1.30 2002/10/23 09:19:47 dillo Exp $
 
   fn_tag.c -- bindable functions: 
   Copyright (C) 1996-2002 Dieter Baron
@@ -34,14 +34,6 @@
 #include <fnmatch.h>
 #else
 #include <fnmatch_repl.h>
-#endif
-
-#ifdef HAVE_BASENAME
-# ifdef HAVE_LIBGEN_H
-#  include <libgen.h>
-# endif
-#else
-char *basename(char *);
 #endif
 
 #include "directory.h"
@@ -100,7 +92,7 @@ fn_tag(char **args)
 	    size = -1;
 	    type = 'l';
 
-	    base = basename(file);
+	    base = noalloc_basename(file);
 	    
 	    i = strlen(curdir->path);
 	    if ((base-file == 1 && i == 1)

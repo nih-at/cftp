@@ -1,3 +1,10 @@
+2003-05-13  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* util.c (noalloc_basename): move basename replacement function
+	here and rename; adapt callers.
+	* basename.c: remove.
+	* configure.in: remove test for basename(3).
+
 2003-04-16  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* mkbind.c (main): fix typo resulting in undersized buffer.

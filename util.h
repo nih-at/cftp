@@ -2,7 +2,7 @@
 #define HAD_UTIL_H
 
 /*
-  $NiH: util.h,v 1.16 2002/09/16 12:42:46 dillo Exp $
+  $NiH: util.h,v 1.17 2002/09/17 14:58:19 dillo Exp $
 
   util.h -- auxiliary functions
   Copyright (C) 1996-2002 Dieter Baron
@@ -33,6 +33,7 @@ char *xdirname(const char *name);
 char *get_anon_passwd(void);
 char *local_exp(char *path);
 char *mkhoststr(int passp, int urlp);
+char *noalloc_basename(char *);
 int set_file_blocking(int fd, int blocking);
 
 #endif /* util.h */

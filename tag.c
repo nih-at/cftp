@@ -1,5 +1,5 @@
 /*
-  $NiH: tag.c,v 1.35 2001/12/11 14:37:43 dillo Exp $
+  $NiH: tag.c,v 1.36 2002/09/16 12:42:44 dillo Exp $
 
   tag.c -- tagging
   Copyright (C) 1996-2002 Dieter Baron
@@ -29,14 +29,6 @@
 #include <string.h>
 
 #include "config.h"
-
-#ifdef HAVE_BASENAME
-# ifdef HAVE_LIBGEN_H
-#  include <libgen.h>
-# endif
-#else
-char *basename(char *);
-#endif
 
 #include "tag.h"
 #include "directory.h"
@@ -234,7 +226,7 @@ _tag_insert(int n, struct tagentry *t, char *file, long size, char type)
 
     u->line = line;
     u->name = file;
-    u->file = basename(file);
+    u->file = noalloc_basename(file);
     u->dirl = tags.line[n].file - file;
     if (u->dirl > 1)
 	--u->dirl;
