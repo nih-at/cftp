@@ -1,3 +1,7 @@
+2003-12-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* main.c (main): new option to download.
+
 2003-12-04  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* status.c (status_do): don't overwrite percentage in tag mode.

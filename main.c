@@ -1,8 +1,8 @@
 /*
-  $NiH: main.c,v 1.47 2002/09/16 12:42:37 dillo Exp $
+  $NiH: main.c,v 1.48 2002/10/10 08:50:56 dillo Exp $
 
   main.c -- main function
-  Copyright (C) 1996-2002 Dieter Baron
+  Copyright (C) 1996-2003 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -40,6 +40,7 @@
 #include "loop.h"
 #include "ftp.h"
 #include "bindings.h"
+#include "fntable.h"
 #include "functions.h"
 #include "list.h"
 #include "options.h"
@@ -58,12 +59,12 @@ int readrc(char **userp, char **passp, char **hostp, char **portp,
 
 char *usage[] = {
 	"{-h|-V}",
-	"[-p port] [-u user] "
+	"[-i tags] [-p port] [-u user] "
 #ifdef USE_SFTP
 	 "[-s] "
 #endif
 	 "{host|alias} [directory]",
-	"url",
+	"[-i tags] url",
 	NULL };
 
 char help_head[] = "%s by Dieter Baron <dillo@giga.or.at>\n\n";
@@ -71,35 +72,37 @@ char help_head[] = "%s by Dieter Baron <dillo@giga.or.at>\n\n";
 char help[] = "\
   -h, --help        display this help message\n\
   -V, --version     display version number\n\
-  -p, --port PORT   specify port\n\
-  -u, --user USER   specify user\n"
+  -i, --get-tags TAGS  load and get tags from file TAGS\n\
+  -p, --port PORT   specify port\n"
 #ifdef USE_SFTP
 "  -s, --sftp        use sftp\n"
 #endif
-"\n\
+"  -u, --user USER   specify user\n\
+\n\
 Report bugs to <dillo@giga.or.at>.\n";
 
 char version_tail[] = "\
-Copyright (C) 2002 Dieter Baron\n\
+Copyright (C) 2003 Dieter Baron\n\
 cftp comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
 You may redistribute copies of\n\
 cftp under the terms of the GNU General Public License.\n\
 For more information about these matters, see the files named COPYING.\n";
 
 #ifdef USE_SFTP
-#define OPTIONS	"hVp:u:s"
+#define OPTIONS	"hVi:p:u:s"
 #else
-#define OPTIONS	"hVp:u:"
+#define OPTIONS	"hVi:p:u:"
 #endif
 
 struct option options[] = {
     { "help",      0, 0, 'h' },
     { "version",   0, 0, 'V' },
+    { "get-tags",  1, 0, 'i' },
     { "port",      1, 0, 'p' },
-    { "user",      1, 0, 'u' },
 #ifdef USE_SFTP
     { "sftp",      1, 0, 's' },
 #endif
+    { "user",      1, 0, 'u' },
     { NULL,        0, 0, 0   }
 };
 
@@ -126,6 +129,7 @@ main(int argc, char **argv)
     directory *dir;
     char *host, *user = NULL, *port = NULL, *pass = NULL, *wdir = NULL;
     char *poss_fn, *poss_dir;
+    char *tag_file, *args[2];
     int c;
     char *b, *b2;
     int check_alias;
@@ -147,11 +151,15 @@ main(int argc, char **argv)
 	exit(1);
     status_init(); /* can't fail */
 
+    tag_file = NULL;
     ftp_proto = 0;
 
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
 	switch (c) {
+	case 'i':
+	    tag_file = optarg;
+	    break;
 	case 'p':
 	    port = strdup(optarg);
 	    break;
@@ -296,6 +304,21 @@ main(int argc, char **argv)
 
     curdir = dir;
     list = (struct list *)curdir;
+
+    if (tag_file) {
+	/* XXX: factor out */
+	list_do(1);
+	tty_lowleft();
+	fflush(stdout);
+
+	args[0] = tag_file;
+	args[1] = NULL;
+	fn_loadtag(args);
+	
+	/* XXX: don't hardcode, use separate option */
+	args[0] = "-c";
+	fn_gettags(args);
+    }
 
     loop();
 	
