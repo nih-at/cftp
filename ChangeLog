@@ -1,5 +1,11 @@
 2001-12-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* status.c (opt_set_status): remove unused function.
+
+	* sftp.c (_sftp_read_dir): free strings if skipping entry.
+
+	* mkbind.c (disp_status): honour DISP_STDERR.
+
 	* sftp.c (sftp_xfer_read, sftp_xfer_stop): fix typo.
 	
 	* sftp.c: remove unused variables.

@@ -1,5 +1,5 @@
 /*
-  $NiH: mkbind.c,v 1.18 2001/12/11 14:37:38 dillo Exp $
+  $NiH: mkbind.c,v 1.19 2001/12/20 05:44:14 dillo Exp $
 
   mkbind -- make binding table
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -26,16 +26,18 @@
 
 #include <sys/types.h>
 #include <errno.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
+#include "bindings.h"
+#include "display.h"
+#include "fntable.h"
+#include "functions.h"
 #include "keys.h"
 #include "rc.h"
-#include "bindings.h"
-#include "functions.h"
-#include "fntable.h"
 
 #define FNAME	"bindings"
 #define NAME	"binding"
@@ -414,7 +416,14 @@ vpath_open(char *name)
 void
 disp_status(int flags, char *fmt, ...)
 {
-    /* XXX: honour DISP_STDERR */
+    va_list argp;
+    
+    if (flags & DISP_STDERR) {
+	va_start(argp, fmt);
+	vfprintf(stderr, fmt, argp);
+	va_end(argp);
+    }
+    
     return;
 }
 
