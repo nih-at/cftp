@@ -8,7 +8,6 @@ F forced reload of directory listing
 B handle immensly long lines in ftp_gets (malloc failure)
 F improve fn_lcd, add fn_show_ld
 F if url is file, download
-B catch signals and restore term
 F save dir listing
 * handle ftp servers unable to cd ~user (NetBSD)
 F show multiline responses
@@ -22,6 +21,7 @@ F tty.cw: (tty_readkey) make VTIME value user setable
 P display.cw: check for missing capabilities
 B Makefile.am: check what gets distributed
 ----------------------------------------------- done
+B catch signals and restore term
 P tty.cw: (tty_init) VWERASE is VWERSE on AIX
 F use automake
 B display.cw: (win_line) problem with lines of length tty_lines-1 (e.g.
