@@ -95,7 +95,7 @@ main(int argc, char **argv)
 		    
 	binding[key] = ind;
 	if (i) {
-	    binding_pool[i++] = NULL;
+	    binding_pool[off+i++] = NULL;
 	    binding_off[key] = off;
 	    off += i;
 	}
