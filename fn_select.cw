@@ -93,7 +93,7 @@ aux_view(char *name){
 @d<functions@>
 function(enter/get, [file], fn_enter_get, 0,
 	 {enter directory or get file},
- {})
+ {Enter directory or get file; default is file under cursor.})
 
 
 @u
@@ -137,7 +137,7 @@ fn_enter_get(char **args)
 @d<functions@>
 function(enter/view, [file], fn_enter_view, 0,
 	 {enter directory or view file},
- {})
+ {Enter directory or view file; default is file under cursor.})
 
 
 @u
@@ -178,7 +178,7 @@ fn_enter_view(char **args)
 @d<functions@>
 function(enter, [file], fn_enter, 0,
 	 {enter directory},
- {})
+ {Enter directory; default is directory under cursor.})
 
 
 @u
@@ -213,7 +213,7 @@ fn_enter(char **args)
 @d<functions@>
 function(get, [file], fn_get, 0,
 	 {get file},
- {})
+ {Get file; default is file under cursor.})
 
 
 @u
@@ -250,7 +250,7 @@ fn_get(char **args)
 @d<functions@>
 function(view, [file], fn_view, 0,
 	 {view file},
- {})
+ {View file;  default is file under cursor.})
 
 
 @u
@@ -285,7 +285,7 @@ fn_view(char **args)
 @d<functions@>
 function(leave, , fn_cdup, 0,
 	 {leave current directory},
- {})
+ {Leave current directory, positioning cursor over it.})
 
 
 @u
@@ -322,7 +322,7 @@ fn_cdup(char **args)
 @d<functions@>
 function(cd, [dir], fn_cd, 0,
 	 {change directory},
- {})
+ {Change remote directory;  default is to directory under cursor.})
 
 
 @u

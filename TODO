@@ -33,6 +33,8 @@ B propagate errors (conn hung or eof?) up to fn_gettags
 B display.cw: (disp_prompt_char) only returns after RET is pressed (but only
 	reads first char)
 F cftp.texi: introduction, invoking, cftprc
+F function doku
+F exchange backlog instead of last multiline response
 ----------------------------------------------- done
 B Makefile.am: call makeinfo with --no-validate
 F fn_basic.cw: (fn_deidle) new function

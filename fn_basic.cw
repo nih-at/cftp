@@ -33,7 +33,7 @@ asks for confirmation (unless the -f option is given).})
 @d<functions@>
 function(version, , fn_version, 0,
 	 {display version number},
- {})
+ {Display @@sc{cftp} version string.})
 
 @u
 extern char version[];
@@ -49,7 +49,8 @@ void fn_version(char **args)
 @d<functions@>
 function(redraw, , fn_redraw, FN_PRE,
 	 {redraw screen},
- {})
+ {Clear and redraw screen.  Use this function if something messed up
+your display.})
 
 @u
 void fn_redraw(char **args)
@@ -91,7 +92,7 @@ void fn_help(char **args)
 @d<functions@>
 function(lcd, [dir], fn_lcd, 0,
 	 {change directory on local host},
- {})
+ {Change directory on localhost; dir is prompted for if ommited.  The new current directory is printed.})
 
 @u
 void fn_lcd(char **args)
@@ -117,7 +118,7 @@ void fn_lcd(char **args)
 function(shell, {[cmd arg @@dots{}]}, fn_shell, 0,
 	 {shell escape},
  {Execute shell command; if no command is given, it is prompted for.
-Enter null string to get an interactive shell.}) 
+Enter empty string to get an interactive shell.}) 
 
 @u
 void fn_shell(char **args)
@@ -203,7 +204,7 @@ void fn_colon(char **args)
 @d<functions@>
 function(deidle, , fn_deidle, 0,
 	 {deidle connection},
- {Send a @@code{noop}, thus resetting idle time on server.})
+ {Send a @@code{noop} to ftp server, thus resetting idle time on server.})
 
 @u
 void fn_deidle(char **args)
@@ -217,7 +218,9 @@ void fn_deidle(char **args)
 @d<functions@>
 function(response, , fn_response, 0,
 	 {display last multiline response},
- {})
+ {Display last multiline response read from server.  This will be
+replaced by an ability to few the last N lines exchanged with the
+server.})
 
 @u
 void fn_response(char **args)
@@ -245,7 +248,7 @@ void fn_response(char **args)
 @d<functions@>
 function(prefix, , fn_prefix, FN_PRE,
 	 {prefix digit},
- {})
+ {Enter digit of prefix argument to other commands.})
 
 
 @u

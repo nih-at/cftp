@@ -90,19 +90,22 @@ aux_scroll_page(int n)
 @d<functions@>
 function(down, [n], fn_down, 0,
 	 {move N lines down (default: 1)},
- {})
+ {Move cursor down N lines, wrapping around at bottom.  (N is the
+prefix argument.)})
 
 function(up, [n], fn_up, 0,
 	 {move N lines up (default: 1)},
- {})
+ {Move cursor up N lines, wrapping around at top.  (N is the prefix
+argument.)})
 
 function(page-down, [n], fn_pg_down, 0,
 	 {move N screenfulls down (default: 1)},
- {})
+ {Move cursor down N screenfulls, or to bottom.  (N is the prefix
+argument.)})
 
 function(page-up, [n], fn_pg_up, 0,
 	 {move N screenfulls up (default: 1)},
- {})
+ {Move cursor up N screenfulls, or to top.  (N is the prefix argument.)})
 
 
 @u
@@ -136,7 +139,7 @@ fn_pg_up(char **args)
 @d<functions@>
 function(goto, [line], fn_goto, 0,
 	 {goto line N (default: last)},
- {})
+ {Move cursor to line N.  (N is the prefix argument.)})
 
 
 @u
