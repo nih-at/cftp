@@ -70,10 +70,7 @@ change_curdir(directory *dir)
 	cmp = 1;
 
 	for (t=tags_s.next; t != &tags_s && cmp >= 0; t = t->next) {
-	    c = t->name[t->dirl];
-	    t->name[t->dirl] = '\0';
-	    cmp = strcmp(dir->path, t->name);
-	    t->name[t->dirl] = c;
+	    cmp = strncmp(dir->path, t->name, t->dirl);
 	    if (cmp == 0 && (i=dir_find(dir, t->file)) >= 0) {
 		dir->line[i].line[0] = opt_tagchar;
 	    }
@@ -93,19 +90,12 @@ tag_file(char *dir, char *file, long size, char type, enum tagopt what)
 {
     char *canon, c;
     struct tagentry *t;
-    int freedirp, cmp;
+    int cmp;
 
     canon = NULL;
 
-    if (dir == NULL) {
+    if (dir == NULL)
 	canon = canonical(file, NULL);
-	if ((dir=dirname(canon)) == NULL) {
-	    free(canon);
-	    return 0;
-	}
-	freedirp = 1;
-	file = (char *)basename(canon);
-    }
     else {
 	if ((canon=(char *)malloc(strlen(dir)+strlen(file)+2)) == NULL)
 	    return 0;
@@ -116,13 +106,8 @@ tag_file(char *dir, char *file, long size, char type, enum tagopt what)
     cmp = 1;
 
     for (t=tags_s.next; t != &tags_s; t = t->next) {
-	c = t->name[t->dirl];
-	t->name[t->dirl] = '\0';
-	cmp = strcmp(dir, t->name);
-	t->name[t->dirl] = c;
-	if (cmp == 0)
-	    if ((cmp=strcmp(file, t->file)) <= 0)
-		break;
+	if ((cmp=strcmp(canon, t->name)) <= 0)
+	    break;
     }
 
     if (t != &tags_s && cmp == 0) {

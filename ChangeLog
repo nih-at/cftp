@@ -1,3 +1,9 @@
+2000-05-02  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* tag.c (tag_file): don't initialize dir if not given, simplified
+	strcmp.
+	(change_curdir): simplified strncmp.
+
 1999-05-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (ftp_reconnect): reset ftp_curmode to ' '.
