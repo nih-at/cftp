@@ -49,6 +49,7 @@ struct taglist tags;
 
 int tag_init(void);
 int tag_file(char *dir, char *file, long size, char type, enum tagopt what);
+void tag_delete(int n);
 void tag_clear(void);
 int tag_anytags(void);
 

@@ -25,6 +25,9 @@
 #include "display.h"
 #include "bindings.h"
 #include "status.h"
+#include "list.h"
+#include "directory.h"
+#include "tag.h"
 #include "tty.h"
 
 char status_line[8192];
@@ -37,6 +40,8 @@ status_init(void)
 {
     status.host = status.remote.path = status.local.path = 0;
 }
+
+
 
 void
 status_do(enum state when)
@@ -87,6 +92,7 @@ status_do(enum state when)
 	    tty_standout();
 	    fputs(status_line, stdout);
 	    tty_standend();
+	    fputc('\n', stdout);
 	}
     }
 
@@ -96,7 +102,47 @@ status_do(enum state when)
 
 
 void
-opt_set_status(int *optval)
+opt_set_status(int optval, int *optvar)
 {
     /* XXX */
+}
+
+
+
+extern enum state leave_tag;
+
+void
+enter_state(enum state state)
+{
+    switch (state) {
+    case bs_remote:
+	binding_state = bs_remote;
+	list = curdir;
+	list_do(1);
+	status_do(bs_none);
+	break;
+
+    case bs_local:
+	disp_status("state <local> not implemented yet");
+
+    case bs_tag:
+	if (!tag_anytags()) {
+	    disp_status("no tags");
+	    break;
+	}
+	if (binding_state != bs_tag)
+	    leave_tag = binding_state;
+	binding_state = bs_tag;
+	list = &tags;
+	list_do(1);
+	status_do(bs_none);
+	break;
+
+    case bs_none:
+	disp_status("can't enter state <global>");
+	break;
+
+    default:
+	disp_status("no such state: %s", state);
+    }
 }

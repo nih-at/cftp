@@ -113,54 +113,51 @@ fn_cleartags(char **args)
     
 
 
+void aux_scroll(int top, int sel, int force);
+
 void
 fn_gettags(char **args)
 {
-#if 0
-    dirtags *d, *od;
-    filetags *t, *o;
-    char name[8192];
-    int i, beepp;
+    enum state old_state;
+    struct tagentry *t;
+    int i, c, j;
 
-    beepp = (tags.next != NULL);
+    if (!tag_anytags()) {
+	disp_status("no tags");
+	return;
+    }
 
-    for (d=&tags; d->next;) {
-	for (t=d->next->tags; t->next;) {
-	    sprintf(name, "%s%s%s",
-		    d->next->name,
-		    (strcmp(d->next->name, "/") == 0 ? "" : "/"),
-		    t->next->name);
-	    if (aux_download(name, t->next->size) == 0) {
-		if (strcmp(d->next->name, curdir->path) == 0
-		    && ((i=dir_find(curdir, t->next->name)) >= 0)) {
-		    curdir->line[i].line[0] = ' ';
-		    /* XXX: disp_reline(i); */
-		}
-		free(t->next->name);
-		o = t->next;
-		t->next = o->next;
-		free(o);
-	    }
-	    else
-		t = t->next;
-	}
-	if (d->next->tags->next == NULL) {
-	    od = d->next;
-	    free(od->tags);
-	    free(od->name);
-	    d->next = od->next;
-	    if (od == curtags)
-		curtags = NULL;
-	    free(od);
-	}
-	else
-	    d = d->next;
+    old_state = binding_state;
+    if (old_state != bs_tag) {
+	tags.cur = tags.top = 0;
+	enter_state(bs_tag);
     }
-    if (beepp && opt_beep) {
-	fputc('\a', stdout);
-	fflush(stdout);
+
+    for (i=0; i<tags.len;) {
+	t = tags.line+i;
+
+	if (aux_download(t->name, t->size) == 0) {
+	    /* c = t->name[t->dirl]; /* we'll delete it right away */
+	    /* t->name[t->dirl] = '\0'; */
+	    if (strcmp(t->name, curdir->path) == 0
+		&& ((j=dir_find(curdir, t->name)) >= 0))
+		    curdir->line[j].line[0] = ' ';
+	    /* t->name[t->dirl] = c; */
+
+	    tag_delete(i);
+	    list_do(1);
+	}
+	else {
+	    i++;
+	    aux_scroll(i-(win_lines/2), i, 0);
+	}
     }
-#endif
+
+    if (old_state != bs_tag)
+	enter_state(old_state);
+    
+    if (opt_beep)
+	disp_beep();
 }
 
 

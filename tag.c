@@ -33,7 +33,6 @@
 struct taglist tags;
 struct tagentry tags_s;
 
-void _tag_delete(int n);
 int _tag_insert(int n, struct tagentry *t, char *file, long size, char type);
 
 
@@ -124,7 +123,7 @@ tag_file(char *dir, char *file, long size, char type, enum tagopt what)
 	    return 0;
 	}
 
-	_tag_delete(t-tags.line);
+	tag_delete(t-tags.line);
 	return -1;
     }
     else {
@@ -158,7 +157,7 @@ tag_clear(void)
 
 
 void
-_tag_delete(int n)
+tag_delete(int n)
 {
     int i;
     struct tagentry *t;

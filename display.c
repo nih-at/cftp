@@ -301,3 +301,14 @@ disp_close(FILE *f)
 
     return err;
 }
+
+
+
+void
+disp_beep(void)
+{
+    if (!disp_quiet) {
+    	fputc('\a', stdout);
+	fflush(stdout);
+    }
+}

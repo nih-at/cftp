@@ -468,37 +468,7 @@ fn_state(char **args)
     if (st == binding_state)
 	return;
     
-    switch (st) {
-    case bs_remote:
-	binding_state = bs_remote;
-	list = curdir;
-	list_do(1);
-	status_do(bs_none);
-	break;
-
-    case bs_local:
-	disp_status("state <local> not implemented yet");
-
-    case bs_tag:
-	if (!tag_anytags()) {
-	    disp_status("no tags");
-	    break;
-	}
-	if (binding_state != bs_tag)
-	    leave_tag = binding_state;
-	binding_state = bs_tag;
-	list = &tags;
-	list_do(1);
-	status_do(bs_none);
-	break;
-
-    case bs_none:
-	disp_status("can't enter state <global>");
-	break;
-
-    default:
-	disp_status("no such state: %s", state);
-    }
+    enter_state(st);
 
     if (freestatep)
 	free(state);
@@ -517,7 +487,5 @@ fn_leave_tag(char **args)
 	return;
     }
 
-    arg[0] = binding_statename[leave_tag];
-    arg[1] = NULL;
-    fn_state(arg);
+    enter_state(leave_tag);
 }

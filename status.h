@@ -43,5 +43,6 @@ extern char status_line[];
 
 
 void status_do(enum state state);
+void enter_state(enum state state);
 
 #endif /* status.h */
