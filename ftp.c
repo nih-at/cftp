@@ -1,6 +1,6 @@
 /*
   ftp -- ftp protocol functions
-  Copyright (C) 1996 Dieter Baron
+  Copyright (C) 1996, 1997 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -207,12 +207,12 @@ ftp_list(char *path)
 	if (ftp_resp() != 150) {
 		close(fd);
 		dir = (directory *)malloc(sizeof(directory));
-		dir->list = (direntry *)malloc(sizeof(direntry));
+		dir->line = (direntry *)malloc(sizeof(direntry));
 		dir->path = path;
-		dir->num = 1;
-		dir->list->line = strdup("");
-		dir->list->type = 'x';
-		dir->list->name = dir->list->link = NULL;
+		dir->len = 1;
+		dir->line->line = strdup("");
+		dir->line->type = 'x';
+		dir->line->name = dir->line->link = NULL;
 		return dir;
 	}
 	if ((f=ftp_accept(fd, "r")) == NULL)
@@ -261,7 +261,7 @@ ftp_retr(char *file, FILE *fout, long size, int mode)
 
 	can = canonical(file, NULL);
 	dir = dirname(can);
-	name = basename(can);
+	name = (char *)basename(can);
 	
 	if (ftp_mode(mode) == -1 || ftp_cwd(dir) == -1)
 		return -1;

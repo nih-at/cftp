@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include "directory.h"
+#include "bindings.h"
 #include "functions.h"
 #include "display.h"
 #include "options.h"
@@ -23,16 +24,16 @@ fn_tag(char **args)
     if (args) {
 	name= canonical(args[0], NULL);
 	dir = dirname(name);
-	file = basename(name);
+	file = (char *)basename(name);
 	size = -1;
 	type = 'l';
     }
     else {
 	name = NULL;
 	dir = NULL;
-	file = curdir->list[cursel].name;
-	size = curdir->list[cursel].size;
-	type = curdir->list[cursel].type;
+	file = curdir->line[curdir->cur].name;
+	size = curdir->line[curdir->cur].size;
+	type = curdir->line[curdir->cur].type;
     }
 	
     if ((tagged=tag_file(dir, file, size, type, 0)) < 0)
@@ -45,15 +46,15 @@ fn_tag(char **args)
 	    i = dir_find(curdir, file);
     }
     else
-	i = cursel;
+	i = curdir->cur;
 
     if (i >= 0) {
 	if (tagged)
-	    curdir->list[i].line[0] = opt_tagchar;
+	    curdir->line[i].line[0] = opt_tagchar;
 	else
-	    curdir->list[i].line[0] = ' ';
+	    curdir->line[i].line[0] = ' ';
 
-	disp_reline(i);
+	/* XXX: disp_reline(i); */
     }
 
     free(name);
@@ -78,10 +79,10 @@ fn_cleartags(char **args)
     tags.next = NULL;
     curtags = NULL;
 
-    for (i=0; i<curdir->num; i++)
-	if (curdir->list[i].line[0] != ' ') {
-	    curdir->list[i].line[0] = ' ';
-	    disp_reline(i);
+    for (i=0; i<curdir->len; i++)
+	if (curdir->line[i].line[0] != ' ') {
+	    curdir->line[i].line[0] = ' ';
+	    /* XXX: disp_reline(i); */
 	}
 }
 
@@ -146,8 +147,8 @@ fn_gettags(char **args)
 	    if (aux_download(name, t->next->size) == 0) {
 		if (strcmp(d->next->name, curdir->path) == 0
 		    && ((i=dir_find(curdir, t->next->name)) >= 0)) {
-		    curdir->list[i].line[0] = ' ';
-		    disp_reline(i);
+		    curdir->line[i].line[0] = ' ';
+		    /* XXX: disp_reline(i); */
 		}
 		free(t->next->name);
 		o = t->next;
@@ -234,14 +235,14 @@ fn_loadtag(char **args)
 		p[len-1] = '\0';
 
 	    name = canonical(p, NULL);
-	    file = basename(name);
+	    file = (char *)basename(name);
 	    dir = dirname(name);
 	    tag_file(dir, file, size, type, 1);
 	    if (strcmp(curdir->path, dir) == 0
 		&& (len=dir_find(curdir, file)) >= 0
-		&& curdir->list[len].line[0] != opt_tagchar) {
-		curdir->list[len].line[0] = opt_tagchar;
-		disp_reline(len);
+		&& curdir->line[len].line[0] != opt_tagchar) {
+		curdir->line[len].line[0] = opt_tagchar;
+		/* XXX: disp_reline(len); */
 	    }
 
 	    count++;

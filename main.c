@@ -29,12 +29,14 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <pwd.h>
+#include <getopt.h>
+
 #include "directory.h"
 #include "display.h"
 #include "loop.h"
 #include "ftp.h"
+#include "bindings.h"
 #include "functions.h"
-#include <getopt.h>
 
 
 
@@ -159,7 +161,7 @@ main(int argc, char **argv)
 	if (pass == NULL) {
 	    b = (char *)malloc(strlen(user)+strlen(host)+16);
 	    sprintf(b, "Password (%s@%s): ", user, host);
-	    pass = getpass(b);
+	    pass = (char *)getpass(b);
 	    keep_pass = 0;
 	    free(b);
 	}
@@ -225,8 +227,6 @@ main(int argc, char **argv)
 	ftp_pass = pass;
 
     curdir = dir;
-    curtop = 0;
-    cursel = curtop;
 
     loop();
 	

@@ -1,7 +1,7 @@
 dnl -*- text -*-
 
 dnl  options.op -- definition and documentation for user settable options
-dnl  Copyright (C) 1996 Dieter Baron
+dnl  Copyright (C) 1996, 1997 Dieter Baron
 dnl
 dnl  This file is part of cftp, a fullscreen ftp client
 dnl  The author can be contacted at <dillo@giga.or.at>
@@ -44,5 +44,10 @@ option(beep, bp, opt_beep, NULL, b, 0,
  {beep after some commands},
  {Tells cftp to beep after completing some commands, e. g. downloading
 tagged files.})
+
+option(scroll-limit, sl, opt_scrlimit, NULL, i, 0,
+ {minimum overlap for scrolling lists},
+ {Don't scroll lists if overlap of old and new positions is less than
+@code{scroll-limit} lines; make a full redraw instead.})
 
 endall

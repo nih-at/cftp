@@ -30,14 +30,11 @@
 #include "util.h"
 #include "directory.h"
 #include "ftp.h"
+#include "bindings.h"
 #include "functions.h"
 #include "display.h"
 #include "rc.h"
 #include "options.h"
-
-extern int binding[];
-extern function functions[];
-
 
 extern char version[];
 
@@ -57,20 +54,56 @@ void fn_redraw(char **args)
 
 void fn_help(char **args)
 {
-	int c, i;
+    struct binding *b;
+    int what, c, i;
+    char *s;
 
-	if (args)
-	    c = parse_key(args[0]);
+    what = read_char("Help on <F>unction, <K>ey, or <O>ption? ");
+
+    switch (tolower(what)) {
+    case 'f':
+	s = read_string("Function: ", 1);
+	if ((i=find_function(s)) == -1)
+	    disp_status("no such function: %s", s);
 	else
-	    c = read_char("Key: ");
-	
-	if ((i=binding[c]) == -1) {
-		disp_status("[%s] key is unbound", print_key(c, 0));
-		return;
-	}
+	    disp_status("%s: %s", functions[i].name, functions[i].help);
 
-	disp_status("[%s] %s: %s", print_key(c, 0),
-		    functions[i].name, functions[i].help);
+	free(s);
+	break;
+
+    case 'k':
+	c = read_char("Key: ");
+
+	b = get_function(c, bs_none);
+	if ((i=binding->fn) == -1)
+	    disp_status("[%s%s] key is unbound",
+			(binding_state != bs_none ?
+			 binding_statename[binding_state] : ""),
+			print_key(c, 0));
+	else
+	    disp_status("[%s%s] %s: %s",
+			(binding_state != bs_none ?
+			 binding_statename[binding_state] : ""),
+			print_key(c, 0),
+			functions[i].name, functions[i].help);
+	break;
+
+    case 'o':
+	s = read_string("Option: ", 1);
+
+	for (i=0; option[i].name; i++)
+	    if (strcasecmp(option[i].name, s) == 0
+		|| strcasecmp(option[i].shrt, s) == 0)
+		break;
+	
+	if (option[i].name == NULL)
+	    disp_status("no such option: %s", s);
+	else
+	    disp_status("%s (%s): %s", option[i].name, option[i].shrt,
+			option[i].help);
+	free(s);
+	break;
+    }
 }
 
 

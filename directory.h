@@ -49,4 +49,8 @@ void dir_free(directory *d);
 directory *get_dir(char *path);
 int dir_find(directory *dir, char *entry);
 
+
+
+extern directory *curdir;
+
 #endif /* directory.h */

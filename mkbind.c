@@ -1,6 +1,6 @@
 /*
   mkbind -- make binding table
-  Copyright (C) 1996 Dieter Baron
+  Copyright (C) 1996, 1997 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -29,13 +29,13 @@
 
 #include "keys.h"
 #include "rc.h"
-#include "functions.h"
 #include "bindings.h"
+#include "functions.h"
 
 #define FNAME	"bindings"
 #define NAME	"binding"
 #define POOL	"pool"
-#define ARGS	"argspool"
+#define ARGS	"argpool"
 #define TABLE	"fntable.c"
 
 #define MAX_FN	8192
@@ -230,6 +230,9 @@ main(int argc, char **argv)
 		if (b->args)
 		    print_args(fout, b->args);
     fprintf(fout, "\n};\n\n");
+
+    fprintf(fout, "int " NAME "_n" ARGS " = sizeof(" NAME "_" ARGS ")"
+	    " / sizeof(" NAME "_" ARGS "[0]);\n");
 
     if (ferror(fout)) {
 	fprintf(stderr, "%s: write error (%s): %s.\n",

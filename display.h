@@ -3,7 +3,7 @@
 
 /*
   display.h -- display functions
-  Copyright (C) 1996 Dieter Baron
+  Copyright (C) 1996, 1997 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -26,10 +26,11 @@
 
 
 #include <stdio.h>
-#include "directory.h"
 
 extern int tty_lines;
 #define win_lines	(tty_lines-4)
+
+extern int disp_quiet;
 
 
 
@@ -38,7 +39,6 @@ void exit_disp();
 void escape_disp(int clearp);
 void reenter_disp(void);
 void disp_redraw(void);
-void disp_dir(directory *d, int top, int sel, int newdir);
 void disp_reline(int line);
 char *read_string(char *prompt, int echop);
 int read_char(char *prompt);

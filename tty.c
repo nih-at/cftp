@@ -29,6 +29,7 @@
 #include <errno.h>
 #include <termios.h>
 #include <sys/ioctl.h>
+
 #include "keys.h"
 #include "tty.h"
 
@@ -44,13 +45,14 @@
 extern char *prg;
 
 void tty_keypad_init(void);
-int fputchar();
+void _tty_capinit(void);
 
 #ifdef SIGWINCH
 void tty_winch(int s);
 #endif
 
-int tty_cols, tty_lines, tty_metap, tty_noLP, tty_am,
+enum tty_am tty_am;
+int tty_cols, tty_lines, tty_metap, tty_noLP,
     tty_verase, tty_vwerase, tty_vkill;
 
 char termcap_entry[4196];
@@ -126,7 +128,15 @@ tty_init(void)
 	UP = tty_getcap("up");
 
 	/* other capabilities we need (mostly in the output macros) */
-	tty_am = tgetflag("am");
+	if (tgetflag("am")) {
+	    if (tgetflag("xn"))
+		tty_am = TTY_AMXN;
+	    else
+		tty_am = TTY_AM;
+	}
+	else
+	    tty_am = TTY_AMNONE;
+
 	tty_noLP = !tgetflag("LP");
 
 	/* screen size */
@@ -173,6 +183,8 @@ tty_init(void)
 			prg, strerror(errno));
 		return -1;
 	}
+
+	_tty_capinit();
 
 	return 0;
 }
@@ -437,3 +449,54 @@ tty_winch(int s)
 	tty_redraw();
 }
 #endif
+
+
+
+void
+tty_parp(char *cap, char *pcap, int n, int pad)
+{
+    int i;
+    
+    if (*pcap)
+	tty_putp(pcap, pad, n, 0, 0, 0);
+    else
+	for (i=0; i<n; i++)
+	    tputs(cap, pad, fputchar);
+}
+
+
+
+char *_tty_capnames[] = {
+    "cl", "ho", "cd", "ce", "so", "se", "vi", "ve", "cs",
+    "sf", "sr", "SF", "SR", "al", "dl", "AL", "DL"
+};
+
+char *_tty_caps[sizeof(_tty_capnames)/sizeof(_tty_capnames[0])];
+
+void
+_tty_capinit()
+{
+    int i;
+
+    for (i=0; i<sizeof(_tty_capnames)/sizeof(_tty_capnames[0]); i++) {
+	_tty_caps[i] = tty_getcap(_tty_capnames[i]);
+	if (_tty_caps[i] == NULL)
+	    _tty_caps[i] = "";
+    }
+}
+
+
+
+void
+tty_putp(char *cap, int lines, int arg0, int arg1, int arg2, int arg3)
+{
+    static char buf[40];
+    char *s;
+
+    s = (char *)tparam(cap, buf, sizeof(buf), arg0, arg1, arg2, arg3);
+
+    tputs(s, lines, fputchar);
+
+    if (s != buf)
+	free(s);
+}

@@ -43,7 +43,7 @@ struct binding {
 extern enum state binding_state;
 extern struct binding binding[];
 
-extern char binding_statename[];
+extern char *binding_statename[];
 
 extern struct binding binding_pool[];
 extern char *binding_argpool[];

@@ -1,8 +1,8 @@
-#ifndef HAD_SOCKET_H
-#define HAD_SOCKET_H
+#ifndef HAD_LIST_Y
+#define HAD_LIST_Y
 
 /*
-  sockets.h -- auxiliary socket functions
+  list.h -- display lists
   Copyright (C) 1996, 1997 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
@@ -25,8 +25,22 @@
 
 
 
-int sopen(char *host, char *service);
-int spassive(unsigned long *host, int *port);
+struct listentry {
+	char *line, *name;
+};
 
-#endif /* socket.h */
+struct list {
+    int len, top, cur;
+    int size;
+    struct listentry *line;
+};
+
+extern struct list *list;	/* currently displayed list */
+
+
+
+void list_do(int full);
+
+#endif /* list.h */
+
 

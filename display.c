@@ -1,6 +1,6 @@
 /*
   display -- display functions
-  Copyright (C) 1996 Dieter Baron
+  Copyright (C) 1996, 1997 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -24,25 +24,20 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+
 #include "config.h"
-#include "directory.h"
 #include "display.h"
+#include "directory.h"
 #include "ftp.h"
 #include "tty.h"
 #include "keys.h"
+#include "list.h"
 
 int disp_quiet = 0;
 char head[8192], status[8192];
 
-int oldtop, oldsel;
-directory *olddir;
-
 
 
-void disp_redir(directory *d, int top, int sel);
-void disp_updir(directory *d, int oldtop, int oldsel, int top, int sel);
-void disp_dndir(directory *d, int oldtop, int oldsel, int top, int sel);
-void disp_sel(directory *d, int top, int sel, int selp);
 void disp_restat(void);
 void disp_rehead(void);
 void win_line(char *line, int sel);
@@ -121,142 +116,8 @@ disp_redraw(void)
 
 	tty_clear();
 	disp_rehead();
-
-	tty_goto(0, 2);
-	for (i=0; i<win_lines && i+oldtop < olddir->num; i++)
-		win_line(olddir->list[i+oldtop].line, (i+oldtop == oldsel));
-
+	list_do(1);
 	disp_restat();
-}
-
-
-
-void
-disp_dir(directory *d, int top, int sel, int newdir)
-{
-	if (newdir)
-		olddir = d;
-	
-	if (disp_quiet) {
-		if (newdir) {
-			oldtop = top;
-			oldsel = sel;
-		}
-		return;
-	}
-	
-	if (!newdir && oldtop==top && oldsel==sel)
-		return;
-
-	if (!newdir && top == oldtop) {
-		disp_sel(d, top, oldsel, 0);
-		disp_sel(d, top, sel, 1);
-	}
-	else if (newdir || tty_getcap("dl") == NULL ||
-		 abs(oldtop-top) > win_lines-2)
-		disp_redir(d, top, sel);
-	else if (top > oldtop)
-		disp_updir(d, oldtop, oldsel, top, sel);
-	else
-		disp_dndir(d, oldtop, oldsel, top, sel);
-
-	oldtop = top;
-	oldsel = sel;
-}
-
-
-
-void
-disp_reline(int line)
-{
-    int y = line - oldtop;
-
-    if (y < 0 || y >= oldtop+win_lines)
-	return;
-    
-    tty_goto(0, y+2);
-    win_line(olddir->list[line].line, (line == oldsel));
-}
-
-
-
-void
-disp_redir(directory *d, int top, int sel)
-{
-	int i;
-
-	tty_goto(0, 2);
-	tty_clreos(win_lines+2);
-
-	for (i=0; i<win_lines && i+top < d->num; i++)
-		win_line(d->list[i+top].line, (i+top == sel));
-
-	disp_restat();
-}
-
-
-
-void
-disp_updir(directory *d, int oldtop, int oldsel, int top, int sel)
-{
-	int i, n;
-
-	n = top-oldtop;
-
-	tty_goto(0, 2);
-	for (i=0; i<n; i++)
-		tty_delline(win_lines+2);
-	tty_goto(0, 2+win_lines-n);
-	tty_clreos(n+2);
-
-	for (i=win_lines-n; i<win_lines && i+top<d->num; i++)
-		win_line(d->list[i+top].line, (i+top == sel));
-
-	if (oldsel >= top && sel != oldsel) {
-		if (oldsel >= top)
-			disp_sel(d, top, oldsel, 0);
-		disp_sel(d, top, sel, 1);
-	}
-
-	disp_restat();
-}
-
-
-
-void
-disp_dndir(directory *d, int oldtop, int oldsel, int top, int sel)
-{
-	int i, n;
-
-	n = oldtop-top;
-
-	tty_goto(0, 2);
-	for (i=0; i<n; i++)
-		tty_insline(win_lines+2);
-
-	tty_goto(0, 2+win_lines);
-	tty_clreos(2);
-	tty_goto(0, 2);
-
-	for (i=0; i<n && i+top<d->num; i++)
-		win_line(d->list[i+top].line, (i+top == sel));
-
-	if (oldsel-top< win_lines && sel != oldsel) {
-		if (oldsel < top+win_lines)
-			disp_sel(d, top, oldsel, 0);
-		disp_sel(d, top, sel, 1);
-	}
-
-	disp_restat();
-}
-
-
-
-void
-disp_sel(directory *d, int top, int sel, int selp)
-{
-	tty_goto(0, 2+sel-top);
-	win_line(d->list[sel].line, selp);
 }
 
 

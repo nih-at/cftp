@@ -23,8 +23,8 @@
 
 
 #include "bindings.h"
-#include "display.h"
 #include "functions.h"
+#include "display.h"
 #include "keys.h"
 #include "rc.h"
 

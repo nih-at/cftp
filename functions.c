@@ -24,9 +24,9 @@
 
 #include <stdio.h>
 #include "display.h"
+#include "bindings.h"
 #include "functions.h"
 #include "options.h"
-#include "bindings.h"
 
 int prefix_arg, prefix_valid = 0;
 
@@ -113,6 +113,8 @@ find_function(char *f)
 
 
 
+enum state binding_state;
+
 struct binding *
 get_function(int nr, enum state state)
 {
@@ -125,12 +127,12 @@ get_function(int nr, enum state state)
 	if (b->state == state)
 	    return b;
 
-    return &binding[nr].next;
+    return &binding[nr];
 }
 
 
 
-char *state_names[] = {
+char *binding_statename[] = {
     "<global>", "<remote>", "<local>", "<tag>", NULL
 };
 
@@ -142,8 +144,8 @@ parse_state(char *name)
     if (name[0] != '<' || name[strlen(name)-1] != '>')
 	return bs_nostate;
 
-    for (i=0; state_names[i]; i++)
-	if (strcasecmp(name, state_names[i]) == 0)
+    for (i=0; binding_statename[i]; i++)
+	if (strcasecmp(name, binding_statename[i]) == 0)
 	    return i;
 
     return bs_unknown;

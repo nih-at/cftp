@@ -27,6 +27,7 @@
 #include <string.h>
 #include <errno.h>
 
+#include "bindings.h"
 #include "functions.h"
 #include "rc.h"
 

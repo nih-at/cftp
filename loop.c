@@ -23,12 +23,10 @@
 
 
 #include "directory.h"
+#include "bindings.h"
 #include "functions.h"
 #include "display.h"
 #include "tty.h"
-
-extern int binding[];
-extern char **binding_args[];
 
 int fnexit(void);
 
@@ -38,13 +36,15 @@ void
 loop()
 {
     int c, ret = 0;
+    struct binding *binding;
     function *f;
 
-    disp_dir(list, 0, 0, 1);
+    list_do(1);
 	
     while ((c=tty_readkey()) != -1)
-	if (binding[c] != -1) {
-	    f = functions+binding[c];
+	binding = get_function(c, bs_none);
+	if (binding->fn != -1) {
+	    f = functions+binding->fn;
 
 	    if (f->type == FN_EXIT
 		&& fnexit() == 0)
@@ -54,7 +54,7 @@ loop()
 		disp_status("");
 
 	    if (f->type != FN_EXIT)
-		f->fn(binding_args[c]);
+		f->fn(binding->args);
 
 	    if (f->type != FN_PRE)
 		void_prefix();

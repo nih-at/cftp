@@ -27,6 +27,8 @@
 #include "directory.h"
 #include "ftp.h"
 
+directory *curdir;
+
 typedef struct dircache {
 	directory *dir;
 

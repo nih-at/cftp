@@ -1,9 +1,10 @@
 /*
    This file is automatically created from ``fntable.fn''; don't change
    this file, change ``fntable.fn'' instead.
-/*
+*/
 
 #include "directory.h"
+#include "bindings.h"
 #include "functions.h"
 #include "fntable.h"
 

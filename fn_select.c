@@ -25,11 +25,13 @@
 #include <stdio.h>
 #include <string.h>
 #include "directory.h"
+#include "bindings.h"
 #include "functions.h"
 #include "display.h"
 #include "ftp.h"
 #include "options.h"
 #include "util.h"
+#include "list.h"
 
 int aux_enter(char *name);
 int aux_download(char *name, long size);
@@ -49,7 +51,7 @@ aux_enter(char *name)
 
     change_curdir(d);
 
-    disp_dir(0, 0, cursel, 1);
+    list_do(1);
 
     return 0;
 }
@@ -62,7 +64,7 @@ aux_download(char *name, long size)
     int err;
     FILE *f;
 
-    if ((f=fopen(basename(name), "w")) == NULL)
+    if ((f=fopen((char *)basename(name), "w")) == NULL)
 	return -2;
 	
     err = ftp_retr(name, f, size, opt_mode);
@@ -103,9 +105,9 @@ fn_enter_get(char **args)
 	size = -1;
     }
     else {
-	name = curdir->list[cursel].name;
-	type = curdir->list[cursel].type;
-	size = curdir->list[cursel].size;
+	name = curdir->line[curdir->cur].name;
+	type = curdir->line[curdir->cur].type;
+	size = curdir->line[curdir->cur].size;
     }
 
     switch (type) {
@@ -137,8 +139,8 @@ fn_enter_view(char **args)
 	type = 'l';
     }
     else {
-	name = curdir->list[cursel].name;
-	type = curdir->list[cursel].type;
+	name = curdir->line[curdir->cur].name;
+	type = curdir->line[curdir->cur].type;
     }
 
     switch (type) {
@@ -170,8 +172,8 @@ fn_enter(char **args)
 	type = 'l';
     }
     else {
-	name = curdir->list[cursel].name;
-	type = curdir->list[cursel].type;
+	name = curdir->line[curdir->cur].name;
+	type = curdir->line[curdir->cur].type;
     }
 
     switch (type) {
@@ -199,9 +201,9 @@ fn_get(char **args)
 	size = -1;
     }
     else {
-	name = curdir->list[cursel].name;
-	type = curdir->list[cursel].type;
-	size = curdir->list[cursel].size;
+	name = curdir->line[curdir->cur].name;
+	type = curdir->line[curdir->cur].type;
+	size = curdir->line[curdir->cur].size;
     }
 
     switch (type) {
@@ -227,8 +229,8 @@ fn_view(char **args)
 	type = 'l';
     }
     else {
-	name = curdir->list[cursel].name;
-	type = curdir->list[cursel].type;
+	name = curdir->line[curdir->cur].name;
+	type = curdir->line[curdir->cur].type;
     }
 
     switch (type) {
@@ -251,7 +253,7 @@ fn_cdup(char **args)
 	
     directory *d;
 
-    if (strcmp(list->path, "/") == 0)
+    if (strcmp(curdir->path, "/") == 0)
 	return;
 
     d = ftp_cd("..");
@@ -259,11 +261,11 @@ fn_cdup(char **args)
     if (d == NULL)
 	return;
 
-    par = strrchr(list->path, '/');
+    par = strrchr(curdir->path, '/');
     change_curdir(d);
 
     if (par && *(par++)!='\0')
-	if ((sel=dir_find(list, par)) < 0)
+	if ((sel=dir_find(curdir, par)) < 0)
 	    sel = 0;
 	    
     aux_scroll(sel-(win_lines/2), sel, 1);
@@ -297,6 +299,6 @@ fn_cd(char **args)
 
     change_curdir(d);
     
-    disp_dir(list, 0, 0, 1);
+    list_do(1);
 }
 

@@ -59,20 +59,25 @@ read_dir(FILE *f)
     }
 
     if (n == 0) {
-	dir->list = (direntry *)malloc(sizeof(direntry));
-	dir->list->line = strdup("");
-	dir->list->type = 'x';
-	dir->list->name = dir->list->link = NULL;
+	dir->line = (direntry *)malloc(sizeof(direntry));
+	dir->line->line = strdup("");
+	dir->line->type = 'x';
+	dir->line->name = dir->line->link = NULL;
 	n = 1;
     }
     else {
-	dir->list = malloc(sizeof(direntry)*n);
-	for (i=0; i<n; i++)
-	    dir->list[i] = list[i];
+	dir->line = malloc(sizeof(direntry)*n);
+	for (i=0; i<n; i++) {
+	    /* dir->line[i].line = line[i].line;
+	    dir->line[i].type = line[i].type;
+	    dir->line[i].name = line[i].name;
+	    dir->line[i].link = line[i].link; */
+	    dir->line[i] = list[i];
+	}
     }
     dir->len = n;
     dir->size = sizeof(struct direntry);
-    dir->top = dir->sel = 0;
+    dir->top = dir->cur = 0;
 
     return dir;
 }

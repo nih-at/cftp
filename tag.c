@@ -1,6 +1,6 @@
 /*
   tag -- tagging
-  Copyright (C) 1996 Dieter Baron
+  Copyright (C) 1996, 1997 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -25,6 +25,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "tag.h"
+#include "directory.h"
+#include "options.h"
 
 #define tag_getdir(dir)	\
 	((dirtags *)tag_do((filetags *)&tags, (dir), 0, NULL))
@@ -220,4 +222,30 @@ tag_anytags(void)
 	    return 1;
 
     return 0;
+}
+
+
+
+void
+change_curdir(directory *dir)
+{
+    /* XXX: rewrite to new structures */
+
+    extern dirtags *curtags;
+
+    filetags *tags;
+    int i;
+
+    for (i=0; i<curdir->len; i++)
+	curdir->line[i].line[0] = ' ';
+
+    tag_changecurrent(dir->path);
+
+    if (curtags) {
+	for (tags=curtags->tags->next; tags; tags=tags->next)
+	    if ((i=dir_find(dir, tags->name)) >= 0)
+		dir->line[i].line[0] = opt_tagchar;
+    }
+
+    curdir = dir;
 }

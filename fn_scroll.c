@@ -23,9 +23,11 @@
 
 
 #include "directory.h"
+#include "bindings.h"
 #include "functions.h"
 #include "display.h"
 #include "tty.h"
+#include "list.h"
 
 void aux_scroll(int top, int sel, int force);
 void aux_scroll_line(int n);
@@ -51,7 +53,10 @@ aux_scroll(int top, int sel, int force)
     if (top < 0)
 	top = 0;
 
-    disp_dir(list, top, sel, force);
+    list->top = top;
+    list->cur = sel;
+
+    list_do(force);
 }
 
 
@@ -65,14 +70,14 @@ aux_scroll_line(int n)
 	return;
 
     if (n > 0) {
-	sel = (list->sel+n) % list->len;
+	sel = (list->cur+n) % list->len;
 	if (list->top > sel || list->top <= sel-win_lines)
 	    top = sel-win_lines+1;
 	else
 	    top = list->top;
     }
     else {
-	sel = list->sel-((-n) % list->len);
+	sel = list->cur-((-n) % list->len);
 	if (sel < 0)
 	    sel += list->len;
 	if (list->top > sel || list->top <= sel-win_lines)
@@ -88,14 +93,18 @@ aux_scroll_line(int n)
 void
 aux_scroll_page(int n)
 {
+    int top;
+    
     top = list->top + n;
 
     if (top < 0)
 	top = 0;
     if (top > list->len-win_lines)
 	top = list->len-win_lines;
-    
-    disp_dir(list, top, top, 0);
+
+    list->top = list->cur = top;
+
+    list_do(0);
 }
 
 
@@ -133,9 +142,9 @@ fn_goto(char **args)
 {
     int n;
 
-    n = get_prefix_args(args, curdir->num)-1;
+    n = get_prefix_args(args, list->len)-1;
     if (n == -1)
-	n = curdir->num-1;
+	n = list->len-1;
 	
     aux_scroll(n-(win_lines/2), n, 0);
 }
@@ -152,7 +161,7 @@ fn_isearch(char **args)
     p = b+9;
     n = 0;
 
-    origin = start = current = cursel;
+    origin = start = current = list->cur;
 
     while ((c=read_char(b)) != '\n' && c != 7 /* ^G */) {
 	if (c == tty_verase) {
@@ -174,21 +183,21 @@ fn_isearch(char **args)
 	}
 
 	for (n = current;
-	     n < curdir->num && strstr(curdir->list[n].name, b+9) == NULL;
+	     n < list->len && strstr(list->line[n].name, b+9) == NULL;
 	     n++)
 	    ;
 
-	if (n < curdir->num) {
+	if (n < list->len) {
 	    current = n;
-	    if (current >= curtop && current < curtop+win_lines)
-		aux_scroll(curtop, current, 0);
+	    if (current >= list->top && current < list->top+win_lines)
+		aux_scroll(list->top, current, 0);
 	    else
 		aux_scroll(current-(win_lines/2), current, 0);
 	}
     }
     if (c == 7 /* ^G */) {
-	if (start >= curtop && start < curtop+win_lines)
-	    aux_scroll(curtop, start, 0);
+	if (start >= list->top && start < list->top+win_lines)
+	    aux_scroll(list->top, start, 0);
 	else
 	    aux_scroll(start-(win_lines/2), start, 0);
     }
