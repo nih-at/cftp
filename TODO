@@ -1,4 +1,3 @@
-F abort transfer
 * handle cd ~user/.. in a better way
 F improve fn_lcd, add fn_show_ld
 F save dir listing
@@ -20,6 +19,7 @@ F if url is file, download
 C display.cw: (disp_prompt_char) return after first key, not after newline
 F functions.texi: include default bindings
 ---------------------------------------------------------------- till beta
+F abort transfer
 F fn_search
 F tag files: tag regexp
 * handle closed connections due to timeout
