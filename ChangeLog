@@ -1,3 +1,8 @@
+2000-12-04  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* configure.in: check for presence of getaddrinfo.
+	* getaddrinfo.c: new replacement function.
+
 2000-11-26  Dieter Baron  <dillo@danbala.ifoer.tuwien.ac.at>
 
 	* readdir.c (read_dir): don't call pfunc[npfunc], as it doesn't
