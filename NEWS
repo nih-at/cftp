@@ -1,5 +1,7 @@
 New in 0.9.2:
 * if directory given on command line is file, download it
+* handle symlinks on servers which report size as 0 (e.g. Windows)
+* show-name: new option -l: show symlink target
 
 New in 0.9.1:
 * passive mode

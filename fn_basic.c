@@ -65,6 +65,8 @@ void fn_redraw(char **args)
 void
 fn_showname(char **args)
 {
+    char *tmp;
+    
     if (args && strcmp(args[0], "-u") == 0) {
 	switch (binding_state) {
 	case bs_remote:
@@ -81,7 +83,17 @@ fn_showname(char **args)
 	    disp_status("");
 	}
     }
-    else
+    else if (args && strcmp(args[0], "-l") == 0) {
+	switch (binding_state) {
+	case bs_remote:
+	    tmp = ((direntry *)LIST_LINE(list, list->cur))->link;
+	    disp_status("%s", tmp ? tmp : "");
+	    break;
+	default:
+	    disp_status("");
+	}
+    }
+    else 
 	disp_status("%s", LIST_LINE(list, list->cur)->name);
 }
 

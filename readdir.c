@@ -138,11 +138,25 @@ parse_unix(direntry *de, char *line)
     p += 13;
     
     if (de->type == 'l') {
-	q = p + strlen(p) - de->size;
-	q[-4] = '\0';
-	de->name = strdup(p);
-	de->link = strdup(q);
 	de->size = -1;
+	q = p + strlen(p) - de->size;
+	if (strncmp(q-4, " -> ", 4) == 0) {
+	    q[-4] = '\0';
+	    de->name = strdup(p);
+	    de->link = strdup(q);
+	}
+	else {
+	    if ((q=strstr(p, " -> ")) == NULL) {
+		/* unknown link format */
+		de->name = strdup(p);
+		de->link = NULL;
+	    }
+	    else {
+		*q = '\0';
+		de->name = strdup(p);
+		de->link = strdup(q+4);
+	    }
+	}
     }
     else {
 	de->name = strdup(p);

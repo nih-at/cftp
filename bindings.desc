@@ -9,6 +9,7 @@ bind		B	bind
 bind		m	response
 bind		n	show-name
 bind		N	show-name -u
+bind		L	show-name -l
 bind		r	reconnect
 
 bind		a	set mode a

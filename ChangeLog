@@ -1,5 +1,10 @@
 1998-10-07  Wiz  <wiz@danbala.tuwien.ac.at>
 
+	* bindings.desc, fn_basic.c (fn_showname): new option -l: show
+	link target.
+
+	* readdir.c (parse_unix): better parsing of symbolic links (Windows).
+
 	* display.c: removed include for termcap.h
 
 	* main.c (main): if startdir is file, download.
