@@ -1,3 +1,8 @@
+1998-01-24  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* fn_scroll.c (aux_scroll_page): fixed page scrolling when listing
+	is shorter than screen.
+
 1998-01-21  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* main.c (parse_url): ignore trailing colon in host part.

@@ -106,10 +106,10 @@ void
 aux_scroll_page(int n)
 {
     int top;
-    
-    if (list->len <= win_lines || n == 0)
-	return;
 
+    if (n == 0)
+	return;
+    
     if (n > 0) {
 	if (list->cur == list->len-1) {
 	    if (opt_wrap)
@@ -146,6 +146,8 @@ aux_scroll_page(int n)
 	else if (list->top == 0) {
 	    if (opt_wrap) {
 		list->top = list->len - win_lines;
+		if (list->top < 0)
+		    list->top = 0;
 		list->cur = list->len-1;
 	    }
 	    else
