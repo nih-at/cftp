@@ -10,7 +10,7 @@
 #include "tty.h"
 
 extern int binding[];
-
+extern char **binding_args[];
 
 @ the loop itself.
 
@@ -36,7 +36,7 @@ loop()
 			if (f->type != FN_PRE)
 				disp_status("");
 
-			f->fn();
+			f->fn(binding_args[c]);
 
 			if (f->type != FN_PRE)
 				void_prefix();

@@ -64,26 +64,42 @@ int prefix_arg, prefix_valid = 0;
 void void_prefix(void);
 
 @u
-void void_prefix(void)
+void
+void_prefix(void)
 {
 	prefix_valid = 0;
 }
 
 @d<prototypes@>
 int get_prefix(int deflt);
+int get_prefix_args(char **args, int deflt);
 
 @u
-int get_prefix(int deflt)
+int
+get_prefix(int deflt)
 {
 	return (prefix_valid ? prefix_arg : deflt);
 }
 
+int
+get_prefix_args(char **args, int deflt)
+{
+    if (args)
+	return atoi(args[0]);
+    else
+	return (prefix_valid ? prefix_arg : deflt);
+}
+
+
 @d<prototypes@>
 void add_prefix(int n);
+void set_prefix(int p);
+void negate_prefix(void);
 void show_prefix(void);
 
 @u
-void add_prefix(int n)
+void
+add_prefix(int n)
 {
 	if (prefix_valid)
 		prefix_arg = prefix_arg*10 + n;
@@ -94,7 +110,22 @@ void add_prefix(int n)
 	show_prefix();
 }
 
-void show_prefix(void)
+void
+set_prefix(int p)
+{
+    prefix_valid = 1;
+    prefix_arg = p;
+    show_prefix();
+}
+
+void
+negate_prefix(void)
+{
+    return;
+}
+
+void
+show_prefix(void)
 {
 
 	disp_status(": %d", prefix_arg);

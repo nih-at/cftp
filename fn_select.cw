@@ -97,7 +97,7 @@ aux_view(void){
 
 @u
 void
-fn_enter_get()
+fn_enter_get(char **args)
 {
 	switch (curdir->list[cursel].type) {
 	case 'd':
@@ -123,7 +123,7 @@ fn_enter_get()
 
 @u
 void
-fn_enter_view()
+fn_enter_view(char **args)
 {
 	switch (curdir->list[cursel].type) {
 	case 'd':
@@ -149,7 +149,7 @@ fn_enter_view()
 
 @u
 void
-fn_enter()
+fn_enter(char **args)
 {
 	switch (curdir->list[cursel].type) {
 	case 'd':
@@ -169,7 +169,7 @@ fn_enter()
 
 @u
 void
-fn_get()
+fn_get(char **args)
 {
 	switch (curdir->list[cursel].type) {
 	case 'f':
@@ -188,7 +188,7 @@ fn_get()
 
 @u
 void
-fn_view()
+fn_view(char **args)
 {
 	switch (curdir->list[cursel].type) {
 	case 'f':
@@ -208,7 +208,7 @@ fn_view()
 
 @u
 void
-fn_cdup()
+fn_cdup(char **args)
 {
 	char *par;
 	int sel;
@@ -245,7 +245,7 @@ fn_cdup()
 
 @u
 void
-fn_cd()
+fn_cd(char **args)
 {
 	char *path;
 	directory *d;

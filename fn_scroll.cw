@@ -94,27 +94,27 @@ aux_scroll_page(int n)
 
 @u
 void
-fn_down()
+fn_down(char **args)
 {
-	aux_scroll_line(get_prefix(1));
+	aux_scroll_line(get_prefix_args(args, 1));
 }
 
 void
-fn_up()
+fn_up(char **args)
 {
-	aux_scroll_line(-get_prefix(1));
+	aux_scroll_line(-get_prefix_args(args, 1));
 }
 
 void
-fn_pg_down()
+fn_pg_down(char **args)
 {
-	aux_scroll_page(get_prefix(1)*win_lines);
+	aux_scroll_page(get_prefix_args(args, 1)*win_lines);
 }
 
 void
-fn_pg_up()
+fn_pg_up(char **args)
 {
-	aux_scroll_page(-get_prefix(1)*win_lines);
+	aux_scroll_page(-get_prefix_args(args, 1)*win_lines);
 }
 
 
@@ -125,11 +125,11 @@ fn_pg_up()
 
 @u
 void
-fn_goto()
+fn_goto(char **args)
 {
 	int n;
 
-	n = get_prefix(curdir->num)-1;
+	n = get_prefix_args(args, curdir->num)-1;
 	if (n == -1)
 		n = curdir->num-1;
 	

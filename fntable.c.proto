@@ -4,4 +4,6 @@
 
 function functions[] = {
 ----
+/* end marker */
+  { 0, 0, 0, 0 }
 };

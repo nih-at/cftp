@@ -12,7 +12,6 @@ F save dir listing
 * handle ftp servers unable to cd ~user (NetBSD)
 F show multiline responses
 F get .tar[.gz] files
-F optionally no bytecount at download 
 F tag files (later download, save/load tags, detached download)
 F support for stor, dele
 F .cftprc 
@@ -22,7 +21,13 @@ P display.cw: check for missing capabilities
 B tty.cw: (tty_readkey) don't discard chars by failed multibyte code
 F display.cw: (disp_redir) don't clear screen, overwrite
 P configure.in: add -posix for NeXTStep
+F queit if in background
+F option: ring bell when finished (download)
+F fn_colon
+- fn_select.cw: handle args
+B rc.cw: (rc_token) doesn't work with fn_colon
 ----------------------------------------------- done
+F arguments for bindable functions
 B tty.cw: (tty_readkey): fixed bug in multi-char read
 F ftp.cw: (ftp_cat): update status at most once a second
 B main.cw, display.cw, ftp.cw: init_disp after opening connection
