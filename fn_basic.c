@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: fn_basic.c,v 1.24 2001/12/11 14:37:30 dillo Exp $
 
   fn_basic -- bindable functions: basics
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -742,6 +742,33 @@ fn_mkdir(char **args)
 	name = args[0];
 
     ftp_mkdir(name);
+
+    if (args == NULL)
+	free(name);
+
+    return;
+}
+
+
+
+
+void
+fn_rmdir(char **args)
+{
+    char *name;
+    
+    if (args == NULL) {
+	name = read_string("Directory: ", 1);
+	if (name == NULL || name[0] == '\0') {
+	    disp_status("");
+	    free(name);
+	    return;
+	}
+    }
+    else
+	name = args[0];
+
+    ftp_rmdir(name);
 
     if (args == NULL)
 	free(name);

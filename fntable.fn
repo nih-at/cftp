@@ -1,5 +1,7 @@
 dnl -*- text -*-
 
+dnl  $NiH$
+dnl
 dnl  fntable.fn -- description of bindable functions
 dnl  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
 dnl
@@ -119,6 +121,10 @@ the number of lines to keep in the log with the option
 function(mkdir, [directory], fn_mkdir, 0,
          <<create directory on server>>,
  <<Create directory @var{directory} on server.>>)
+
+function(rmdir, [directory], fn_rmdir, 0,
+         <<remove directory on server>>,
+ <<Remove directory @var{directory} on server.>>)
 
 function(prefix, , fn_prefix, FN_PRE,
 	 <<prefix digit>>,

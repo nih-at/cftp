@@ -1,5 +1,6 @@
 New in 0.11.2:
 
+* new command: rmdir
 * don't default to sending user name as anonymous password
 * fix error detection in up/downloads
 

@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.2 2001/12/11 14:33:29 dillo Exp $
+  $NiH: sftp.c,v 1.4 2001/12/11 16:05:04 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001 Dieter Baron
@@ -108,14 +108,29 @@ static const char _sftp_errlist[] = {
 
 static const int _sftp_nerr = sizeof(_sftp_errlist) / sizeof(_sftp_errlist[0]);
 
+static int _sftp_nextid;
+
 
 
 int
 sftp_mkdir(char *path)
 {
-    
+    sftp_put_str(SSH_FXP_MKDIR, _sftp_make_absolute(path));
+    if (sftp_status() != SSH_FX_OK)
+	return -1;
+    return 0;
 }
 
+
+
+int
+sftp_rmdir(char *path)
+{
+    sftp_put_str(SSH_FXP_RMDIR, _sftp_make_absolute(path));
+    if (sftp_status() != SSH_FX_OK)
+	return -1;
+    return 0;
+}
 
 
 

@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: ftp.c,v 1.59 2001/12/11 13:45:09 dillo Exp $
 
   ftp -- ftp protocol functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -500,6 +500,18 @@ ftp_mkdir(char *path)
 {
     ftp_put("mkd %s", path);
     if (ftp_resp() != 257)
+	return -1;
+    
+    return 0;
+}
+
+
+
+int
+ftp_rmdir(char *path)
+{
+    ftp_put("rmd %s", path);
+    if (ftp_resp() != 250)
 	return -1;
     
     return 0;

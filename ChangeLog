@@ -1,5 +1,12 @@
 2001-12-11  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* Makefile.am: reorder BUILT_SOURCES to avoid bootstrapping
+	problem.
+
+	* ftp.c (ftp_rmdir): new function.
+	* fn_basic.c (fn_rmdir): new function.
+	* fntable.fn (rmdir): new function.
+
 	* main.c: move version here from version.c
 	version.c: remove file
 
