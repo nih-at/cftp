@@ -197,14 +197,15 @@ function(clear-tags, , fn_cleartags, 0,
  {Clear all tags.})
 
 
-function(list-tags, [file], fn_listtags, 0,
-	 {list tagged files},
- {List tags or save tag list to file.})
-
-
 function(get-tags, {download tagged files}, fn_gettags, 0,
 	 {get tagged files},
  {Download tagged files.})
+
+
+function(save-tags, [file], fn_savetags, 0,
+	 {list tagged files},
+ {Save tag list to file.  The format of the file is the same as the
+listing in @code{<tag>} state.})
 
 
 function(load-tags, [file], fn_loadtag, 0,

@@ -1,5 +1,4 @@
 * handle cd ~user/.. in a better way
-F improve fn_lcd, add fn_show_ld
 F save dir listing
 F get .tar[.gz] files
 F support for stor, dele
@@ -16,18 +15,16 @@ C functions.texi: fix bad next pointer in last section (to first command)
 F if url is file, download
 C display.c: (disp_prompt_char) return after first key, not after newline
 F functions.texi: include default bindings
-B util.c: (canonical) check current for non-NULL before accessing
 ---------------------------------------------------------------- till beta
 F abort transfer
 F fn_search
-F tag files: tag regexp
+F tag files: globbing tag
 * handle closed connections due to timeout
 F forced reload of directory listing
 B handle immensly long lines in ftp_gets (malloc failure)
 P display.c: check for missing capabilities
-F display.c: (disp_redir) don't clear screen, overwrite
 B propagate errors (conn hung or eof?) up to fn_gettags
-F cftp.texi: introduction, invoking, cftprc
+F cftp.texi: introduction, invoking, cftprc, binding states
 F readrc: host
 P configure.in: add -posix for NeXTStep
 P cc on HPUX: -Aa -D_POSIX_SOURCE, prototypes for LIBOBJS
@@ -38,13 +35,20 @@ F (fn_isearch) search backwards
 B (fn_isearch) repeaded search sets start to wrong match
 F (fn_isearch) show status (failed, wrapped)
 P tty.c: handle terminfo parameterized capabilities
-B tag.c: rewrite completely
-B tag.c: (tag_file) check for file name while searching
+B fn_tag.c: (fn_gettags) rewrite to new tagging code; use <tag>
+C rename disp_stat to disp_mesg (status line is what used to be head)
+F status.c: add support for head status line (old style, but smarter)
+F <local> (uploads, local tagging)
+F save tag list as url list
 ----------------------------------------------- done
+C fn_tag.c: (fn_savetags) renamed fn_listtags, requires file name, rewriten
+F status.c: emacs like status line (smarter)
+F tag.c: completely rewritten; now remembers order of tagging
 F fn_basic.c: (fn_help) display arguments for key bindings
 C fntable.fn: doku for bind, update doku for help
 B list.c: (list_region) fixed scrolling region code
 F fn_basic.cw: (fn_help) help for `f'unktions, `k'eys, and `o'ptions
+F list.c: list code completely rewritten; (scrolling region, multiple lists)
 C check and update copyright notices
 
 Jan 28 1997 (0.5d)

@@ -53,7 +53,7 @@ fn_tag(char **args)
 	i = strlen(curdir->path);
 	if ((base-file == 1 && i == 1)
 	    || i == base-file-1 && strncmp(curdir->path, file, i) == 0) {
-	    i = dir_find(curdir->path, base);
+	    i = dir_find(curdir, base);
 	}
 	else
 	    i = -1;
@@ -109,49 +109,6 @@ fn_cleartags(char **args)
 	}
 
     disp_status("all tags cleared");
-}
-
-
-
-void
-fn_listtags(char **args)
-{
-#if 0
-    FILE *f = NULL;
-    dirtags *d;
-    filetags *t;
-
-    if (!tag_anytags()) {
-	disp_status("no tags.");
-	return;
-    }
-
-    if (args)
-	if ((f=fopen(args[0], "w")) == NULL) {
-	    disp_status("can't open `%s': %s", args[0], strerror(errno));
-	    return;
-	}
-	
-    for (d=tags.next; d; d=d->next)
-	for (t=d->tags->next; t; t=t->next) {
-	    if (f == NULL)
-		if ((f=disp_open(-1)) == NULL)
-		    return;
-	    fprintf(f, "%8ld  %c  %s%s%s\n",
-		    t->size,
-		    t->type,
-		    d->name,
-		    (strcmp(d->name, "/") == 0 ? "" : "/"),
-		    t->name);
-	}
-
-    if (f) {
-	if (args)
-	    fclose(f);
-	else
-	    disp_close(f);
-    }
-#endif
 }
     
 
@@ -209,6 +166,52 @@ fn_gettags(char **args)
 
 
 void
+fn_savetags(char **args)
+{
+    FILE *f;
+    char *name;
+    int i;
+
+    if (!tag_anytags()) {
+	disp_status("no tags");
+	return;
+    }
+
+    if (args)
+	name =  args[0];
+    else {
+	name = read_string("File: ", 1);
+	if (name == NULL || name[0] == '\0') {
+	    disp_status("");
+	    return;
+	}
+    }
+	    
+    if ((f=fopen(name, "w")) == NULL) {
+	disp_status("can't open `%s': %s", name, strerror(errno));
+	return;
+    }
+
+    for (i=0; i<tags.len && !ferror(f); i++)
+	fprintf(f, "%8ld  %c  %s\n",
+		tags.line[i].size,
+		tags.line[i].type,
+		tags.line[i].name);
+
+    if (ferror(f))
+	disp_status("write error on `%s': %s", name, strerror(errno));
+    else
+	disp_status("%d tag%s saved", tags.len, (tags.len == 1 ? "" : "s"));
+
+    fclose(f);
+
+    if (!args)
+	free(name);
+}
+
+
+
+void
 fn_loadtag(char **args)
 {
     char *fname, *line, *p, *e;
@@ -220,8 +223,13 @@ fn_loadtag(char **args)
     
     if (args)
 	fname = args[0];
-    else
+    else {
 	fname = read_string("File: ", 1);
+	if (fname == NULL || fname[0] == '\0') {
+	    disp_status("");
+	    return;
+	}
+    }
 
     if ((f=fopen(fname, "r")) == NULL) {
 	disp_status("can't open `%s': %s", fname, strerror(errno));
