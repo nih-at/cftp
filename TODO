@@ -26,7 +26,13 @@ F tag files: edit/clear tags, detached download
 F tag: if tagged is directory, try .tar.gz, .tar.Z, .tar
 F remember home dir, use in disp_header
 F tag files: tag regexp
+F on quit: warn if tags remain
+B ftp.cw: (ftp_retr) cd to dirname(file) and retr basename(file)
+F display filename instead of `transferred' during tag download
 ----------------------------------------------- done
+P configure.in: check for libresolv
+B fn_select.cw: (fn_cd) don't move cursor if empty line entered
+
 May 6 (0.5)
 F tag files: save/load tags
 F show multiline responses

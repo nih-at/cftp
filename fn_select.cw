@@ -314,6 +314,11 @@ fn_cd(char **args)
     else
 	path = read_string("directory: ");
 	
+    if (path[0] == '\0') {
+	disp_status("");
+	return;
+    }
+
     d = ftp_cd(path);
 
     if (!args)
