@@ -22,6 +22,8 @@
 
 
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
@@ -31,7 +33,9 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
+#ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
+#endif
 #include <unistd.h>
 #include <fcntl.h>
 #include <netinet/in.h>
@@ -173,8 +177,10 @@ ftp_reconnect(void)
 	free(b);
     }
 
+    disp_status("connecting. . .");
+
     if (ftp_open(ftp_host, ftp_prt) == -1) {
-	disp_status("can't connect to host");
+	disp_status("can't connect to host"); /* XXX: include hstrerror */
 	return -1;
     }
 

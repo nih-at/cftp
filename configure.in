@@ -44,6 +44,7 @@ AC_CHECK_LIB(resolv, main)
 
 dnl header files
 
+AC_CHECK_HEADERS(sys/select.h)
 
 AC_CACHE_CHECK([whether h_errno is declared in netdb.h],
 	dlo_cv_decl_h_errno,

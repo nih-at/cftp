@@ -63,6 +63,9 @@ fn_tag(char **args)
     }
     else {
 	/* works in <remote> only */
+
+	if (curdir->len == 0)
+	    return;
 	
 	dir = curdir->path;
 	file = curdir->line[curdir->cur].name;
