@@ -136,7 +136,8 @@ main(int argc, char **argv)
 			print_usage(0);
 			exit(1);
 		}
-		parse_url(argv[optind], &user, &host, &port, &wdir);
+		if (parse_url(argv[optind], &user, &host, &port, &wdir) < 0)
+		    exit(1);
 	}
 	else {
 		if (argc > optind+2) {
@@ -181,37 +182,40 @@ int parse_url(char *url, char **user, char **host, char **port, char **dir);
 int
 parse_url(char *url, char **user, char **host, char **port, char **dir)
 {
-	char *p, *q;
-	int userp = 0;
+    char *p, *q;
+    int userp = 0;
 
-	if (strncmp(url, "ftp://", 6) != 0)
-		return -1;
-	url+=6;
+    if (strncmp(url, "ftp://", 6) != 0)
+	return -1;
+    url+=6;
 
-	if ((p=strchr(url, '/')) == NULL)
-		return -1;
+    if ((p=strchr(url, '/')) != NULL) {
 	*(p++) = '\0';
 
 	if ((q=strchr(url, '@@')) != NULL) {
-		*q = '\0';
-		*user = url;
-		url = q+1;
-		userp = 1;
+	    *q = '\0';
+	    *user = url;
+	    url = q+1;
+	    userp = 1;
 	}
 
 	if ((q=strchr(url, ':')) != NULL) {
-		*q = '\0';
-		*port = q+1;
+	    *q = '\0';
+	    *port = q+1;
 	}
+    }
+	
+    *host = url;
 
-	*host = url;
-
-	if (*p != '\0') {
-		*dir = (char *)malloc(strlen(p)+3);
-		sprintf(*dir, "%s%s", userp ? "~/" : "/", p);
+    if (p && *p != '\0') {
+	if ((*dir=(char *)malloc(strlen(p)+3)) == NULL) {
+	    fprintf(stderr, "%s: malloc failure\n", prg);
+	    return -1;
 	}
+	    sprintf(*dir, "%s%s", userp ? "~/" : "/", p);
+    }
 
-	return 0;
+    return 0;
 }
 
 
