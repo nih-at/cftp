@@ -283,7 +283,7 @@ list_init(void)
 void
 list_reline(int n)
 {
-    if (n < last_top && n > last_top+win_lines)
+    if (n < last_top || n > last_top+win_lines)
 	return;
 
     tty_goto(0, win_top+n-last_top);

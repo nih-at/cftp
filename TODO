@@ -33,13 +33,14 @@ F fn_basic.c: (fn_help) display type and value for options
 F (fn_isearch) search backwards
 B (fn_isearch) repeaded search sets start to wrong match
 F (fn_isearch) show status (failed, wrapped)
-P tty.c: handle terminfo parameterized capabilities
 C rename disp_stat to disp_mesg (status line is what used to be head)
 F status.c: add support for head status line (old style, but smarter)
 F <local> (uploads, local tagging)
 F save tag list as url list
 B ftp.c: (ftp_cat) don't use ftp_gets in ascii mode
 F display.c: (read_string) line editing, completion
+P tty.c: handle terminfo parameterized capabilities (tparm)
+B fn_tag.c: (fn_tag) line[0] isn't updated if arg is given
 ----------------------------------------------- done
 F fn_tag.c: (fn_gettags) rewritten to new tagging code; uses <tag> state
 B ftp.c: (ftp_gets) handle realloc failure

@@ -203,17 +203,18 @@ function(get-tags, {download tagged files}, fn_gettags, 0,
 
 
 function(save-tags, [file], fn_savetags, 0,
-	 {list tagged files},
- {Save tag list to file.  The format of the file is the same as the
-listing in @code{<tag>} state.})
+	 {save tag list to file},
+ {Save tag list to file, in the same format as the listing in
+@code{<tag>} state.})
 
 
 function(load-tags, [file], fn_loadtag, 0,
-	 {load tags list from file},
+	 {load tag list from file},
  {Load tags from file and merge them with current tags.  A tags file
 contains one tag per line, each consisting of up to three whitespace
-separated fields: size (optional), type (`d'irectory, palin `f'ile,
-`l'ink, or `x' for unknown; optional), and name (mandatory).})
+separated fields: size (integer, -1 for unknown; optional), type
+(`d'irectory, palin `f'ile, `l'ink, or `x' for unknown; optional), and
+name (mandatory).})
 
 endsec()
 

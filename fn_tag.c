@@ -137,12 +137,13 @@ fn_gettags(char **args)
 	t = tags.line+i;
 
 	if (aux_download(t->name, t->size) == 0) {
-	    /* c = t->name[t->dirl]; /* we'll delete it right away */
-	    /* t->name[t->dirl] = '\0'; */
-	    if (strcmp(t->name, curdir->path) == 0
-		&& ((j=dir_find(curdir, t->name)) >= 0))
+	    c = t->name[t->dirl];
+	    t->name[t->dirl] = '\0';
+	    if (strcmp(t->name, curdir->path) == 0) {
+		t->name[t->dirl] = c;
+		if ((j=dir_find(curdir, t->file)) >= 0)
 		    curdir->line[j].line[0] = ' ';
-	    /* t->name[t->dirl] = c; */
+	    }
 
 	    tag_delete(i);
 	    list_do(1);
@@ -152,6 +153,9 @@ fn_gettags(char **args)
 	    aux_scroll(i-(win_lines/2), i, 0);
 	}
     }
+
+    if (tags.cur >= tags.len)
+	tags.cur = tags.len-1;
 
     if (old_state != bs_tag)
 	enter_state(old_state);
