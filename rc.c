@@ -118,7 +118,9 @@ char *rc_filename;
 
 extern char *prg;
 
-void rc_error(char *fmt, ...) {
+void
+rc_error(char *fmt, ...)
+{
     va_list argp;
 
     fprintf(stderr, "%s:%s:%d: ", prg, rc_filename, rc_lineno);
