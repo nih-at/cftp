@@ -12,6 +12,9 @@
 #ifndef VWERASE
 #define VWERASE	VWERSE
 #endif
+#ifndef _POSIX_VDISABLED
+#define _POSIX_VDISABLED -1
+#endif
 
 extern char *prg;
 
@@ -102,9 +105,12 @@ tty_init(void)
 	tty_lines = tgetnum("li");
 
 	/* erase, werase, kill */
-	tty_verase = tty_tio.c_cc[VERASE];
-	tty_vwerase = tty_tio.c_cc[VWERASE];
-	tty_vkill = tty_tio.c_cc[VKILL];
+	if ((tty_verase=tty_tio.c_cc[VERASE]) == _POSIX_VDISABLED)
+	    tty_verase = -1;
+	if ((tty_vwerase=tty_tio.c_cc[VWERASE]) == _POSIX_VDISABLED)
+	    tty_vwerase = -1;
+	if ((tty_vkill=tty_tio.c_cc[VKILL]) == _POSIX_VDISABLED)
+	    tty_vkill = -1;
 	
 	/* input mode (cbreak, noecho) */
 	tty_tio.c_cc[VMIN] = 1;

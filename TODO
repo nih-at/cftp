@@ -19,9 +19,9 @@ F .cftprc
 F display.cw: (disp_dir) make max no of lines to scroll user setable
 F tty.cw: (tty_readkey) make VTIME value user setable
 P display.cw: check for missing capabilities
-B tty.cw: (tty_init) check for _POSIX_DISABLED in V...
 B tty.cw: (tty_readkey) don't discard chars by failed multibyte code
 ----------------------------------------------- done
+B tty.cw: (tty_init) check for _POSIX_DISABLED in V...
 B Makefile.am: check what gets distributed
 B catch signals and restore term
 P tty.cw: (tty_init) VWERASE is VWERSE on AIX
