@@ -8,6 +8,8 @@ char    *h_errlist[] = {
 						   NO_RECOVERY */
 	"No address associated with name",      /* 4
 						   NO_ADDRESS */
+	"Service unavailable",			/* 5
+						   AIX: SERVICE_UNAVAILABLE */
 };
 
 int     h_nerr = sizeof(h_errlist)/sizeof(h_errlist[0]);
@@ -15,5 +17,12 @@ int     h_nerr = sizeof(h_errlist)/sizeof(h_errlist[0]);
 char *
 hstrerror(int err)
 {
-	return (int)err < h_nerr ? h_errlist[err] : "Unknown resolver error";
+    static char b[40];
+
+    if (err < 0 || err > h_nerr) {
+	sprintf(b, "Unknown resolver error %d", err);
+	return b;
+    }
+
+    return h_errlist[err];
 }
