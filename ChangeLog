@@ -1,4 +1,4 @@
-2000-00-11  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+2000-01-11  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* main.c (real_main): call swig init function.
 	
