@@ -3,4 +3,9 @@ This is Comfortable FTP, a full screen ftp client.
 For generic installation instructions, see file `INSTALL'; for
 documentation read the info file `cftp.info'.
 
+If you make a binary distribution, please include a pointer to the
+distribution site:
+	ftp.giga.or.at /pub/nih/cftp
+	http://ftp.giga.or.at/pub/nih/cftp
+
 Mail suggestions and bug reports to <dillo@giga.or.at>.

@@ -37,6 +37,7 @@ extern int opt_emacs_status;
 #define win_lines	(tty_lines-(opt_emacs_status ? 2 : 4))
 
 extern int disp_quiet;
+extern int disp_active;
 
 
 

@@ -1,3 +1,13 @@
+1997-10-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* ftp.c (ftp_close): return if not connected
+	(ftp_resp): return -1 if not connected
+
+	* sockets.c (sopen): write error in message area when display is
+	active.
+
+	* display.c: new variable `disp_active
+
 1997-10-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* directory.c (get_dir): reuse cache entry only if ftp_list

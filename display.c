@@ -36,6 +36,7 @@
 #include "status.h"
 
 int disp_quiet = 0;
+int disp_active = 0;
 char d_status[8192];
 
 
@@ -51,6 +52,7 @@ init_disp(void)
     int err;
 
     disp_quiet = 0;
+    disp_active = 1;
 
     if (err=tty_setup())
 	return err;
@@ -69,6 +71,7 @@ exit_disp()
     tty_goto(0, tty_lines-1);
     tty_showcrsr();
     tty_restore();
+    disp_active = 0;
     printf("\n");
 }
 

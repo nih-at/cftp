@@ -28,6 +28,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <signal.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -49,6 +50,8 @@
 #include "bindings.h"
 #include "status.h"
 #include "signals.h"
+
+extern char *prg;
 
 
 
@@ -142,7 +145,7 @@ ftp_login(char *host, char *user, char *pass)
 	return -1;
 
     free(status.remote.path);
-    status.remote.path == NULL;
+    status.remote.path = NULL;
     status_do(bs_none);
 	
     return 0;
@@ -153,7 +156,7 @@ ftp_login(char *host, char *user, char *pass)
 int
 ftp_reconnect(void)
 {
-    char *path, *pass;
+    char *pass;
 
     pass = ftp_pass;
 
@@ -181,7 +184,7 @@ ftp_reconnect(void)
     disp_status("connecting. . .");
 
     if (ftp_open(ftp_host, ftp_prt) == -1) {
-	disp_status("can't connect to host"); /* XXX: include hstrerror */
+	/* Error printed in ftp_open or sopen. */
 	return -1;
     }
 
@@ -203,7 +206,10 @@ int
 ftp_close(void)
 {
 	int err = 0;
-	
+
+	if (conin == NULL)
+	    return 0;
+
 	ftp_put("quit");
 	if (ftp_resp() != 221)
 		err = 1;
@@ -267,7 +273,7 @@ directory *
 ftp_cd(char *wd)
 {
 	directory *dir;
-	char *nwd, *d, *w, *p;
+	char *nwd;
 	
 	nwd = canonical(wd, NULL);
 
@@ -291,7 +297,7 @@ ftp_cd(char *wd)
 FILE *
 ftp_retr(char *file, int mode)
 {
-	int fd, err;
+	int fd;
 	char *dir, *name, *can;
 	FILE *fin;
 
@@ -444,7 +450,7 @@ ftp_put(char *fmt, ...)
 int
 ftp_abort(FILE *fin)
 {
-    int resp, flags;
+    int resp;
     char buf[4096];
     fd_set ready;
     struct timeval poll;
@@ -455,7 +461,7 @@ ftp_abort(FILE *fin)
     FD_SET(fileno(conin), &ready);
     /* XXX: error ignored */
     if (select(fileno(conin)+1, &ready, NULL, NULL, &poll) == 1)
-	return;
+	return 0;
     
     /* do abort */
     disp_status("-> <attention>");
@@ -508,14 +514,18 @@ ftp_abort(FILE *fin)
 int
 ftp_resp(void)
 {
-    char *line, **l;
+    char *line;
     int resp;
-    long i;
     
     if (_ftp_keptresp != -1) {
 	resp = _ftp_keptresp;
 	_ftp_keptresp = -1;
 	return resp;
+    }
+
+    if (conin == NULL) {
+	disp_status("not connectecd");
+	return -1;
     }
 
     clearerr(conin);
@@ -633,7 +643,7 @@ int
 ftp_cat(FILE *fin, FILE *fout, long size)
 {
     time_t oldt, newt;
-    char buf[4096], fmt[4096], *l;
+    char buf[4096], fmt[4096];
     int c, n, err;
     long got = 0;
 
@@ -710,10 +720,20 @@ ftp_gethostaddr(int fd)
 	int len;
 	
 	len = sizeof(addr);
-	if (getsockname(fd, (struct sockaddr* )&addr, &len) == -1)
-		return -1;
+	if (getsockname(fd, (struct sockaddr* )&addr, &len) == -1) {
+	    if (disp_active)
+		disp_status("can't get host address: %s",
+			    strerror(errno));
+	    else
+		fprintf(stderr, "%s: can't get host addres: %s\n",
+			prg, strerror(errno));
+	    
+	    return -1;
+	}
 
 	memcpy(ftp_addr, (char *)&addr.sin_addr.s_addr, 4);
+
+	return 0;
 }
 
 

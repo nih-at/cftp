@@ -31,6 +31,7 @@
 #include <errno.h>
 
 extern char *prg;
+extern int disp_active; /* init_disp was called; use disp_status for errors */
 
 #ifndef H_ERRNO_DECLARED
 extern int h_errno;
@@ -49,31 +50,47 @@ sopen(char *host, char *service)
 
 	if ((serv = getservbyname(service, "tcp")) == NULL) {
 	    if ((port=atoi(service)) == 0 && service[0] != '0') {
-		fprintf(stderr, "%s: can't get service `%s'\n",
-			prg, service);
+		if (disp_active)
+		    disp_status("unknown service: %s", service);
+		else
+		    fprintf(stderr, "%s: unknown service: %s\n",
+			    prg, service);
 		return(-1);
 	    }
+	    else
+		port = htons(port);
 	}
 	else
 	    port = (u_short)serv->s_port;
 
         if ((hp = gethostbyname(host)) == NULL) {
+	    if (disp_active)
+		disp_status("can't get host %s: %s",
+			    host, hstrerror(h_errno));
+	    else
                 fprintf(stderr, "%s: can't get host %s: %s\n",
                         prg, host, hstrerror(h_errno));
-                return(-1);
+	    return(-1);
         }
 	memcpy(&sa.sin_addr, hp->h_addr, hp->h_length);
         sa.sin_family = hp->h_addrtype;
         sa.sin_port = port;
         if ((s = socket(hp->h_addrtype, SOCK_STREAM, 0)) < 0) {
+	    if (disp_active)
+		disp_status("can't allocate socket: %s\n",
+			    strerror(errno));
+	    else
                 fprintf(stderr, "%s: can't allocate socket: %s\n",
                         prg, strerror(errno));
-                return(-1);
+	    return(-1);
         }
         if (connect(s, (struct sockaddr *)&sa, sizeof(sa)) < 0) {
+	    if (disp_active)
+		disp_status("can't connect: %s", strerror(errno));
+	    else
                 fprintf(stderr, "%s: can't connect: %s\n",
                         prg, strerror(errno));
-                return(-1);
+	    return(-1);
         }
         return(s);
 }
