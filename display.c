@@ -219,13 +219,13 @@ disp_prompt_char(void)
 void
 disp_status(char *fmt, ...)
 {
-	va_list argp;
+    va_list argp;
 
-	va_start(argp, fmt);
-	vsprintf(d_status, fmt, argp);
-	va_end(argp);
+    va_start(argp, fmt);
+    vsprintf(d_status, fmt, argp);
+    va_end(argp);
 	
-	disp_restat();
+    disp_restat();
 }	
 
 

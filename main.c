@@ -311,7 +311,8 @@ parse_url(char *url, char **user, char **pass,
 
     if ((q=strchr(url, ':')) != NULL) {
 	*q = '\0';
-	*port = deurl(q+1);
+	if (*(q+1) != '\0')
+	    *port = deurl(q+1);
     }
 	
     *host = deurl(url);
@@ -489,11 +490,15 @@ deurl(char *s)
     if ((t=(char *)malloc(strlen(s)+1)) != NULL) {
 	for (p=t; *s; s++) {
 	    if (*s == '%') {
-		c = hexdigit(*(++s))*16;
-		c += hexdigit(*(++s));
+		if (s[1] == '\0' || s[2] == '\0')
+		    *(p++) = '%';
+		else {
+		    c = hexdigit(*(++s))*16;
+		    c += hexdigit(*(++s));
 
 		if (c != 0)
 		    *(p++) = c;
+		}
 	    }
 	    else
 		    *(p++) = *s;

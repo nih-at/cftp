@@ -48,8 +48,6 @@ fntable.h : fntable.fn fntable.h.proto mkfntab-h.m4
 	m4 $(srcdir)/mkfntab-h.m4 $(srcdir)/fntable.fn >> fntable.h
 	sed -e '1,/^----/ d' $(srcdir)/fntable.h.proto >> fntable.h
 
-%fntable.o: fntable.c fntable.h
-
 bindings.c : mkbind bindings.desc fntable.c
 	./mkbind $(srcdir)
 
