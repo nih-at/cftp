@@ -1,6 +1,18 @@
-@ main
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <pwd.h>
+#include "directory.h"
+#include "display.h"
+#include "loop.h"
+#include "ftp.h"
+#include "functions.h"
 
-@d<usage strings@>
+
+
 char *usage[] = {
 	"{-h|-V}",
 	"[-p port] [-u user] host [directory]",
@@ -15,99 +27,38 @@ char help[] = "\
   -u: specify user\n\
   -V: display version number\n";
 
-@u
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <pwd.h>
-#include "directory.h"
-#include "display.h"
-#include "loop.h"
-#include "ftp.h"
-#include "functions.h"
-
-@<usage strings@>
-
 char *prg;
 extern char version[];
 
-@<prototypes@>
+
 
+int parse_url(char *url, char **user, char **host, char **port, char **dir);
+void print_usage(int flag);
+char *get_annon_passwd(void);
+void read_netrc(char *host, char **user, char **pass, char **wdir);
+void sig_end(int i);
+void sig_escape(int i);
+void sig_reenter(int i);
 
-@ main
+
 
-@u
 int
 main(int argc, char **argv)
 {
+	extern int opterr, optind;
+	extern char *optarg;
+
 	directory *dir;
 	char *host, *user = NULL, *port = "ftp", *pass = NULL, *wdir = NULL;
+	int keep_pass = 1;
+	int c, err = 0;
+	char *b;
 
 	prg = argv[0];
 	
 	signal(SIGPIPE, SIG_IGN);
 	
-	@<process command line arguments@>
-	
-	if (tty_init() < 0)
-	    exit(1);
-
-	if (ftp_open(host, port) == -1)
-		exit(1);
-
-	if (init_disp() < 0)
-	    exit(1);
-	    
-	signal(SIGINT, sig_end);
-	signal(SIGHUP, sig_end);
-	signal(SIGTERM, sig_end);
-	signal(SIGTSTP, sig_escape);
-	signal(SIGCONT, sig_reenter);
-
-	if (ftp_login(host, user, pass) == -1) {
-		exit_disp();
-		exit(1);
-	}
-	
-	if ((dir=ftp_cd(wdir)) == NULL) {
-	    if ((wdir=ftp_pwd()) == NULL)
-		wdir="/";
-	    if ((dir=ftp_cd(wdir)) == NULL) {
-		escape_disp(0);
-		ftp_close();
-		exit_disp();
-		exit(1);
-	    }
-	}
-	
-	curdir = dir;
-	curtop = 0;
-	cursel = curtop;
-
-	loop();
-	
-	ftp_close();
-	exit_disp();
-
-	exit(0);
-}
-
-
-@ command line arguments
-
-@d<process command line arguments@>
-{
-	extern int opterr, optind;
-	extern char *optarg;
-
-	int c, err = 0;
-	char *b;
-	
 	opterr = 0;
-
 	while ((c = getopt(argc, argv, OPTIONS)) != EOF)
 		switch (c) {
 		case 'p':
@@ -160,28 +111,73 @@ main(int argc, char **argv)
 	    (strcmp(user, "ftp") == 0 || strcmp(user, "anonymous") == 0)) {
 		if (user == NULL)
 			user = "ftp";
-		if (wdir == NULL)
-			wdir = "/";
 		if (pass == NULL)
 			pass = get_annon_passwd();
 	}
 	else {
-		if (wdir == NULL)
-			wdir = "~";
-		if (pass == NULL) {
-			b = (char *)malloc(strlen(user)+strlen(host)+16);
-			sprintf(b, "Password (%s@@%s): ", user, host);
-			pass = getpass(b);
-			free(b);
-		}
+	    if (pass == NULL) {
+		b = (char *)malloc(strlen(user)+strlen(host)+16);
+		sprintf(b, "Password (%s@%s): ", user, host);
+		pass = getpass(b);
+		keep_pass = 0;
+		free(b);
+	    }
 	}
+	
+	if (tty_init() < 0)
+	    exit(1);
+
+	if (ftp_open(host, port) == -1)
+		exit(1);
+
+	if (init_disp() < 0)
+	    exit(1);
+	    
+	signal(SIGINT, sig_end);
+	signal(SIGHUP, sig_end);
+	signal(SIGTERM, sig_end);
+	signal(SIGTSTP, sig_escape);
+	signal(SIGCONT, sig_reenter);
+
+	if (ftp_login(host, user, pass) == -1) {
+		exit_disp();
+		exit(1);
+	}
+	
+	if (wdir == NULL)
+	    wdir = ftp_pwd();
+	
+	if ((dir=ftp_cd(wdir)) == NULL) {
+	    if ((wdir=ftp_pwd()) == NULL)
+		wdir="/";
+	    if ((dir=ftp_cd(wdir)) == NULL) {
+		escape_disp(0);
+		ftp_close();
+		exit_disp();
+		exit(1);
+	    }
+	}
+
+	ftp_host = host;
+	ftp_prt = port;
+	ftp_user = user;
+	if (keep_pass)
+	    ftp_pass = pass;
+
+	curdir = dir;
+	curtop = 0;
+	cursel = curtop;
+
+	loop();
+	
+	ftp_close();
+	exit_disp();
+
+	exit(0);
 }
 
+
 
-@d<prototypes@>
-int parse_url(char *url, char **user, char **host, char **port, char **dir);
-
-@u
 int
 parse_url(char *url, char **user, char **host, char **port, char **dir)
 {
@@ -197,7 +193,7 @@ parse_url(char *url, char **user, char **host, char **port, char **dir)
     else
 	p = url+strlen(url);
     
-    if ((q=strchr(url, '@@')) != NULL) {
+    if ((q=strchr(url, '@')) != NULL) {
 	*q = '\0';
 	*user = url;
 	url = q+1;
@@ -222,13 +218,8 @@ parse_url(char *url, char **user, char **host, char **port, char **dir)
     return 0;
 }
 
+
 
-@ printing multiline usage message.
-
-@d<prototypes@>
-void print_usage(int flag);
-
-@u
 void
 print_usage(int flag)
 {
@@ -242,13 +233,8 @@ print_usage(int flag)
 			prg, usage[i]);
 }
 
+
 
-@ getting anonymous password (ident).
-
-@d<prototypes@>
-char *get_annon_passwd(void);
-
-@u
 char *
 get_annon_passwd(void)
 {
@@ -262,7 +248,7 @@ get_annon_passwd(void)
 	
 	strcpy(b, pwd->pw_name);
 	l = strlen(b);
-	b[l++] = '@@';
+	b[l++] = '@';
 	gethostname(b+l, 1023-l);
 	l += strlen(b+l);
 	getdomainname(b+l, 1023-l);
@@ -270,13 +256,8 @@ get_annon_passwd(void)
 	return strdup(b);
 }
 
+
 
-@ read in .netrc file.
-
-@d<prototypes@>
-void read_netrc(char *host, char **user, char **pass, char **wdir);
-
-@u
 void
 read_netrc(char *host, char **user, char **pass, char **wdir)
 {
@@ -370,15 +351,8 @@ read_netrc(char *host, char **user, char **pass, char **wdir)
 	fclose(f);
 }
 
+
 
-@ signal handler: reset & restore term
-
-@d<prototypes@>
-void sig_end(int i);
-void sig_escape(int i);
-void sig_reenter(int i);
-
-@u
 void
 sig_end(int i)
 {

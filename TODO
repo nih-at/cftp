@@ -1,7 +1,6 @@
 * handle cd ~user/.. in a better way
 F improve fn_lcd, add fn_show_ld
 F save dir listing
-P handle ftp servers unable to cd ~user (NetBSD)
 F get .tar[.gz] files
 F support for stor, dele
 F display.cw: (disp_dir) make max no of lines to scroll user setable
@@ -37,6 +36,7 @@ F fn_basic.cw (fn_help) help for `f'unktions, `k'eys, and `o'ptions
 B all output in first line outside screen
 B report resolv error, not errno
 ----------------------------------------------- done
+P handle ftp servers unable to cd ~user (NetBSD)
 P configure.in: check for ncurses
 B configure.in: abort if no termcap can be found
 B ftp.cw: (ftp_cat) stop writing when write error

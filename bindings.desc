@@ -9,6 +9,7 @@ bind	!	shell
 bind	:	colon
 bind	B	bind
 bind	m	response
+bind	r	reconnect
 
 bind	t	tag
 bind	T	list-tags

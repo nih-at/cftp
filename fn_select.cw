@@ -335,7 +335,7 @@ fn_cd(char **args)
     if (args)
 	path = args[0];
     else
-	path = read_string("directory: ");
+	path = read_string("directory: ", 1);
 	
     if (path[0] == '\0') {
 	disp_status("");

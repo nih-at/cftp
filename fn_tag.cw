@@ -232,7 +232,7 @@ fn_loadtag(char **args)
     if (args)
 	fname = args[0];
     else
-	fname = read_string("File: ");
+	fname = read_string("File: ", 1);
 
     if ((f=fopen(fname, "r")) == NULL) {
 	disp_status("can't open `%s': %s", fname, strerror(errno));

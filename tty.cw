@@ -86,7 +86,7 @@ tty_init(void)
 	tty_keypad_init();
 
 	if (tcgetattr(0, &tty_tio_ext) < 0) {
-		fprintf(stderr, "%s: can't get terminal attribues: %s\n",
+		fprintf(stderr, "%s: can't get terminal attributes: %s\n",
 			prg, strerror(errno));
 		return -1;
 	}
@@ -233,7 +233,7 @@ tty_goto(int x, int y)
 #define tty_standout()	(tty_put("so", 1))
 #define tty_standend()	(tty_put("se", 1))
 #define tty_hidecrsr()	(tty_put("vi", 1))
-#define tty_showcrsr()	(tty_put("vo", 1))
+#define tty_showcrsr()	(tty_put("ve", 1))
 
 
 @ turning echoing on and off

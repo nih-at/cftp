@@ -279,12 +279,12 @@ disp_sel(directory *d, int top, int sel, int selp)
 @ reading information.
 
 @d<prototypes@>
-char *read_string(char *prompt);
+char *read_string(char *prompt, int echop);
 int read_char(char *prompt);
 
 @u
 char *
-read_string(char *prompt)
+read_string(char *prompt, int echop)
 {
 	char *line;
 	int c, i, x;
@@ -299,24 +299,30 @@ read_string(char *prompt)
 	while ((c=getchar())!='\n' && c!=EOF) {
 		if (c == tty_verase && i > 0) {
 			--i;
-			printf("\b \b");
+			if (echop)
+			    printf("\b \b");
 		}
 		else if (c == tty_vwerase && i > 0) {
 			while (i>0 && line[--i] == ' ')
 				;
 			while (i>0 && line[i-1] != ' ')
 				--i;
-			tty_goto(x+i, tty_lines-1);
-			tty_clreol();
+			if (echop) {
+			    tty_goto(x+i, tty_lines-1);
+			    tty_clreol();
+			}
 		}
 		else if (c == tty_vkill && i > 0) {
 			i = 0;
-			tty_goto(x, tty_lines-1);
-			tty_clreol();
+			if (echop) {
+			    tty_goto(x, tty_lines-1);
+			    tty_clreol();
+			}
 		}
 		else if (i<tty_cols) {
 			line[i++] = c;
-			putchar(c);
+			if (echop)
+			    putchar(c);
 		}
 		fflush(stdout);
 	}

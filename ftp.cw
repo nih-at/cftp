@@ -38,11 +38,14 @@ struct ftp_hist {
 extern struct ftp_hist *ftp_history;
 
 extern char ftp_anon;
+extern char *ftp_host, *ftp_prt, *ftp_user, *ftp_pass;
 
 @d<local globals@>
 char *ftp_head, *ftp_lcwd, *ftp_pcwd = NULL;
 char ftp_curmode = ' ', ftp_anon = 0;
 char *ftp_last_resp = NULL;
+char *ftp_host = NULL, *ftp_prt = NULL,
+     *ftp_user = NULL, *ftp_pass = NULL;
 
 struct ftp_hist *ftp_history = NULL, *ftp_hist_last;
 int ftp_hist_cursize;
@@ -102,13 +105,11 @@ ftp_login(char *host, char *user, char *pass)
 		return -1;
 
 	if (strcmp(user, "ftp") != 0 && strcmp(user, "anonymous") != 0) {
-		ftp_lcwd = strdup("~/");
 		ftp_head = (char *)malloc(strlen(user)+strlen(host)+2);
 		sprintf(ftp_head, "%s@@%s", user, host);
 		ftp_anon = 0;
 	}
 	else {
-		ftp_lcwd = strdup("/");
 		ftp_head = strdup(host);
 		ftp_anon = 1;
 	}
@@ -129,6 +130,56 @@ ftp_login(char *host, char *user, char *pass)
 	return 0;
 }
 
+
+@ reconnecting.
+
+@d<prototypes@>
+int ftp_reconnect(void);
+
+@u
+int
+ftp_reconnect(void)
+{
+    char *path;
+    int keep_pass;
+
+    keep_pass = 1;
+
+    if (ftp_host == NULL || ftp_prt == NULL || ftp_user == NULL)
+	return -1;
+
+    if (conin)
+	fclose(conin);
+    if (conout)
+	fclose(conout);
+
+    if (ftp_pass == NULL) {
+	char *b;
+	
+	b = (char *)malloc(strlen(ftp_user)+strlen(ftp_host)+16);
+	sprintf(b, "Password (%s@@%s): ", ftp_user, ftp_host);
+	ftp_pass = read_string(b, 0);
+	keep_pass = 0;
+	free(b);
+    }
+
+    if (ftp_open(ftp_host, ftp_prt) == -1)
+	return -1;
+
+    if (ftp_login(ftp_host, ftp_user, ftp_pass) == -1)
+	return -1;
+
+    disp_head("%s: %s", ftp_head, ftp_pcwd);
+    free(ftp_pcwd);
+    ftp_pcwd = NULL;
+
+    if (!keep_pass) {
+	free(ftp_pass);
+	ftp_pass = NULL;
+    }
+
+    return 0;
+}
 
 @ closing the connection.
 

@@ -1,4 +1,4 @@
-@ miscanelous basic bindable functions.
+@ miscellaneous basic bindable functions.
 
 @(fn_basic.fn@)
 section(fn_basic, Basic Functions)
@@ -107,7 +107,7 @@ void fn_lcd(char **args)
 	    freep = 0;
 	}
 	else {
-	    lwd = read_string("local directory: ");
+	    lwd = read_string("local directory: ", 1);
 	    freep = 1;
 	}
 	exp = local_exp(lwd);
@@ -140,7 +140,7 @@ void fn_shell(char **args)
 	if (args)
 	    cmd = args[0];
 	else
-	    cmd = read_string("! ");
+	    cmd = read_string("! ", 1);
 
 	escape_disp(0);
 	if (cmd[0] != '\0') {
@@ -174,7 +174,7 @@ void fn_colon(char **args)
 	    args++;
 	}
 	else {
-	    line = p = read_string(": ");
+	    line = p = read_string(": ", 1);
 
 	    if ((cmd=rc_token(&p)) == NULL) {
 		disp_status("no function");
@@ -220,6 +220,20 @@ function(deidle, , fn_deidle, 0,
 void fn_deidle(char **args)
 {
     ftp_noop();
+}
+
+
+@ reconnecting
+
+@d<functions@>
+function(reconnect, , fn_reconnect, 0,
+	 {reconnect to server},
+ {Reopen connection to server after timeout.})
+
+@u
+void fn_reconnect(char **args)
+{
+    ftp_reconnect();
 }
 
 
@@ -309,7 +323,7 @@ fn_bind(char **args)
 	    args += 2;
     }
     else {
-	line = p = read_string("bind ");
+	line = p = read_string("bind ", 1);
 
 	if ((kname=rc_token(&p)) == NULL) {
 	    disp_status("no key");
@@ -390,7 +404,7 @@ void fn_set(char **args)
 	    value = args[1];
 	else {
 	    sprintf(prompt, "set %s ", opt);
-	    p = line = read_string(prompt);
+	    p = line = read_string(prompt, 1);
 	    if (line[0] == '\0') {
 		disp_status("");
 		return;
@@ -399,7 +413,7 @@ void fn_set(char **args)
 	}
     }
     else {
-	p = line = read_string("set ");
+	p = line = read_string("set ", 1);
 	if (line[0] == '\0') {
 	    disp_status("");
 	    return;

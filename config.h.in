@@ -1,0 +1,32 @@
+/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+
+/* for autoheader's sake; why do i have to do this myself?! */
+#define PACKAGE
+#define VERSION
+
+/* Define if you have the basename function.  */
+#undef HAVE_BASENAME
+
+/* Define if you have the fputchar function.  */
+#undef HAVE_FPUTCHAR
+
+/* Define if you have the getcwd function.  */
+#undef HAVE_GETCWD
+
+/* Define if you have the getdomainname function.  */
+#undef HAVE_GETDOMAINNAME
+
+/* Define if you have the strdup function.  */
+#undef HAVE_STRDUP
+
+/* Define if you have the strerror function.  */
+#undef HAVE_STRERROR
+
+/* Define if you have the nsl library (-lnsl).  */
+#undef HAVE_LIBNSL
+
+/* Define if you have the resolv library (-lresolv).  */
+#undef HAVE_LIBRESOLV
+
+/* Define if you have the socket library (-lsocket).  */
+#undef HAVE_LIBSOCKET
