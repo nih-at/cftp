@@ -174,9 +174,11 @@ ftp_list(char *path)
 		dir->list->name = dir->list->link = NULL;
 		return dir;
 	}
-	f = ftp_accept(fd, "r");
+	if ((f=ftp_accept(fd, "r")) == NULL)
+	    return NULL;
 	
 	dir = read_dir(f);
+
 	fclose(f);
 
 	ftp_resp();

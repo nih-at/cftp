@@ -32,9 +32,9 @@ B propagate errors (conn hung or eof?) up to fn_gettags
 F use `size' to determine unkown size (of links and tags)
 B display.cw: (disp_prompt_char) only returns after RET is pressed (but only
 	reads first char)
-B readdir.cw: (read_dir) don't segfault when connection failed
-B main.cw: (parse_url) ftp://user@host doesn't recognize user
 ----------------------------------------------- done
+B ftp.cw: (ftp_list) don't call read_dir when ftp_accept failed
+B main.cw: (parse_url) ftp://user@host doesn't recognize user
 B fn_tag.cw: (fn_gettags) don't update screen if dir_find returns -1
 B display.cw: (disp_status,disp_head): update status/head when not in disp
 C fn_basic.cw: (fn_shell) clear status line after command
