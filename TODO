@@ -7,6 +7,7 @@
 - move history from ftp.c
 - add function comments
 
+* save current url as alias to .cftprc
 * ftp.univie.ac.at: abort hoses connection state
 * sftp options: ssh command & flags, sftp server filename
 * declare replacement functions (to avoid warnings)
