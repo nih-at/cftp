@@ -58,3 +58,21 @@ AC_MSG_RESULT(no)
 ifelse([$5], , , [$5])
 fi])
 
+dnl Usage:
+dnl NIH_CHECK_DECL(includes, variable, a-if-fnd, a-if-not-fnd)
+AC_DEFUN(NIH_CHECK_DECL,
+[AC_MSG_CHECKING(for declaration of $2)
+AC_CACHE_VAL(nih_cv_check_decl_$2,
+[AC_TRY_COMPILE([$1], [$2 = 0;],
+ [nih_cv_check_decl_$2=yes],
+ [nih_cv_check_decl_$2=no])])
+if test "x$nih_cv_check_decl_$2" = xyes; then
+AC_MSG_RESULT(yes)
+ifelse([$4], ,
+[AC_DEFINE([HAVE_DECL_]translit($2, [a-z], [A-Z]),
+  1,[Define if you have member $3 in struct $2])],
+[$4])
+else
+AC_MSG_RESULT(no)
+ifelse([$5], , , [$5])
+fi])
