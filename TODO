@@ -4,7 +4,6 @@
 * rewrite parse_url
 * fix REFERENCES and include in dist
 * Makfile.am: fix rules that create files with > (use tmp file)
-* ftp_cat: convert *to* netascii if uploading
 * fix -Wall warnings (option and function array, termcap functions, getopt.c)
 * fix compile on HPUX (struct sockaddr)
 * get-tags: recoginze global failure (e. g. connection lost) and abort
@@ -14,7 +13,7 @@
 * rethink directory format auto detection logic
 * improve check wheter lib{socket,nsl,resolv} are needed
 * ^[[O triggers bindings for left and O
-* fix transfer rate display (verify correctness, stalled, ascii mode)
+* fix transfer rate display (verify correctness, stalled)
 * detect hung data connection
 * ftp_retr: check 150 format on different servers
 * handle 8 bit keys
