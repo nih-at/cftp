@@ -1,4 +1,3 @@
-* inet6: fix link local addresses
 * feature recognition and handling
 * complete getaddrinfo replacement
 * rethink directory format auto detection logic

@@ -724,10 +724,12 @@ ftp_port(void)
 		    (port>>8) & 0xff, port & 0xff);
 	}
 	else {
+	    saddr = sockaddr_ntop(ftp_addr);
+	    if ((s=strchr(saddr, '%')))
+		*s = '\0';
 	    ftp_put("eprt |%d|%s|%d|",
 		    /* proto no */ 2,
-		    sockaddr_ntop(ftp_addr),
-		    port);
+		    saddr, port);
 	}
 	
 	if (ftp_resp() != 200) {

@@ -1,5 +1,10 @@
 2000-12-06  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* ftp.c (ftp_port): omit scope id from address in EPRT command.
+
+	* main.c (main): initialize ftp_host et al before getting initial
+	directory.
+	
 	* ftp.c, mkbind.c, readdir.c, sockets.c, status.c, tag.c, tty.c:
 	code cleanup for -Wall.
 	
