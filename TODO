@@ -21,25 +21,25 @@ F readrc: host
 P configure.in: add -posix for NeXTStep
 P cc on HPUX: -Aa -D_POSIX_SOURCE, prototypes for LIBOBJS
 P tparm on HPUX doesn't work
-B options.h: dependencies seem wrong -- doesn't get remade
 F fn_basic.c: (fn_help) display type and value for options
 C rename disp_stat to disp_mesg (status line is what used to be head)
 B fn_tag.c: (fn_tag) line[0] isn't updated if arg is given
-B ERROR MESSAGES ON ERRORS!
 F main.c: scan .netrc for type commands
 C fn_basic.c: (fn_exit) implement as function, -f option.
 B bindable functions: abort on empty input
-B REPORT LOST CONNECTION!
 F forced reload of directory listing
 F status.c: add support for head status line (old style, but smarter)
 C status.c: rewrite status line code (better abstraction of common elements)
+B status.c: don't truncate hostname if there is enought space
 B fn_scroll.c: (fn_isearch) don't hardwire ^r/^s/^l (check binding)
 B ftp.c: (ftp_abort) abort on ascii connections hangs sometimes
 C fn_select.c: use :-syntax throughout
 B fn_basic.c: (fn_shell) command with args doesn't work when given via args
 F main.c: (parse_url) urldecode parts
-B if port is numerical, don't tell me service unknown.
+C consistent error handling
 ----------------------------------------------- done
+B sockets.c: (sopen) if port is numerical, use atoi
+B ftp.c: (ftp_resp) report lost connection and read errros
 F main.c: (parse_url) support for user:passwd syntax
 F ftp.c: (ftp_abort, ftp_cat) abort transfer via SIGINT
 F fn_select.c: (fn_pipe) new bindable

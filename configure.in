@@ -19,10 +19,6 @@ AC_SUBST(DOMAINNAME)dnl
 
 dnl programs
 
-AC_PROG_INSTALL
-AC_ARG_PROGRAM
-
-
 dnl libraries
 
 TERMCAP=none

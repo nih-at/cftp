@@ -48,11 +48,14 @@ sopen(char *host, char *service)
 	struct servent *serv;
 
 	if ((serv = getservbyname(service, "tcp")) == NULL) {
+	    if ((port=atoi(service)) == 0 && service[0] != '0') {
 		fprintf(stderr, "%s: can't get service `%s'\n",
 			prg, service);
 		return(-1);
+	    }
 	}
-	port = (u_short)serv->s_port;
+	else
+	    port = (u_short)serv->s_port;
 
         if ((hp = gethostbyname(host)) == NULL) {
                 fprintf(stderr, "%s: can't get host %s: %s\n",
