@@ -24,7 +24,7 @@ dnl NIH_CHECK_STRUCT(includes, struct, action-if-found, action-if-not-found)
 AC_DEFUN(NIH_CHECK_STRUCT,
 [AC_MSG_CHECKING(for struct $2)
 AC_CACHE_VAL(nih_cv_check_struct_$2,
-[AC_TRY_RUN([$1], [$2 var;],
+[AC_TRY_COMPILE([$1], [struct $2 var;],
  [nih_cv_check_struct_$2=yes], [nih_cv_check_struct_$2=no])])
 if test "x$nih_cv_check_struct_$2" = xyes; then
 AC_MSG_RESULT(yes)
