@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.76 2002/10/10 08:50:27 dillo Exp $
+  $NiH: ftp.c,v 1.77 2002/10/23 09:19:47 dillo Exp $
 
   ftp.c -- ftp protocol functions
   Copyright (C) 1996-2002 Dieter Baron
@@ -1099,13 +1099,15 @@ _ftp_update_transfer(struct _ftp_transfer_stats *tr, long got, int secs)
     if (tr->got != got) {
 	tr->got = got;
 	tr->stall_sec = secs;
+	if (got > tr->size)
+	    tr->size = -1;
     }
     tr->secs = secs;
 
     rtot = (got-tr->start)/(double)(secs*1024);
     rcur = ((tr->cur[tr->ccur] - tr->cur[(tr->ccur+1)%tr->ncur])
 	    / ((double)(secs < tr->ncur-1 ? secs : tr->ncur-1)*1024));
-    if (got == tr->start)
+    if (got == tr->start || tr->size == -1)
 	eta = -1;
     else {
 	rbps = (got-tr->start)/(double)secs;

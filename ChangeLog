@@ -1,3 +1,9 @@
+2003-01-29  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* ftp.c (_ftp_update_transfer): don't estimate time of completion
+	if size is unknown; if we got more bytes than the reported size,
+	discard size (it's obviously incorrect).
+
 2002-12-10  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* url.c: include config.h to get USE_SFTP definition.
