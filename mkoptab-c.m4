@@ -35,7 +35,7 @@ changequote(,)  { changequote({,})dnl
 changequote(,)},
 changequote({,})dnl
 divert(0)dnl
-type({$5}, {int }, {int }, {char *}, {int }){$3} = {$6};
+type({$5}, {int }, {int }, {char *}, {int }, {int }){$3} = {$6};
 ifelse({$4}, NULL, , extern void {$4}{()};
 )
 divert(-1)})

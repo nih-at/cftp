@@ -42,7 +42,6 @@ char d_status[8192];
 
 
 
-void disp_restat(void);
 void win_line(char *line, int sel);
 
 

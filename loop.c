@@ -27,8 +27,12 @@
 #include "functions.h"
 #include "display.h"
 #include "tty.h"
+#include "list.h"
+#include "tag.h"
 
 int fnexit(void);
+
+static int loop_readkey(void);
 
 static int _loop_key;
 
@@ -37,7 +41,7 @@ static int _loop_key;
 void
 loop()
 {
-    int c, ret = 0;
+    int c;
     struct binding *binding;
     function *f;
 
@@ -92,7 +96,7 @@ fnexit(void)
 
 
 
-int
+static int
 loop_readkey(void)
 {
     int k;

@@ -23,7 +23,7 @@
 
 #include <stdio.h>
 
-char *h_errlist[] = {
+static char *_h_errlist[] = {
     "Error 0",
     "Unknown host",			/* 1 HOST_NOT_FOUND */
     "Host name lookup failure",		/* 2 TRY_AGAIN */
@@ -32,7 +32,7 @@ char *h_errlist[] = {
     "Service unavailable",		/* 5 AIX: SERVICE_UNAVAILABLE */
 };
 
-int h_nerr = sizeof(h_errlist)/sizeof(h_errlist[0]);
+static int _h_nerr = sizeof(_h_errlist)/sizeof(_h_errlist[0]);
 
 
 
@@ -41,10 +41,10 @@ hstrerror(int err)
 {
     static char b[40];
 
-    if (err < 0 || err > h_nerr) {
+    if (err < 0 || err > _h_nerr) {
 	sprintf(b, "Unknown resolver error %d", err);
 	return b;
     }
 
-    return h_errlist[err];
+    return _h_errlist[err];
 }

@@ -153,9 +153,9 @@ tty_init(void)
 	}
 	signal(SIGWINCH, tty_winch);
 #endif
-	if (env=getenv("LINES"))
+	if ((env=getenv("LINES")))
 	    tty_lines = atoi(env);
-	if (env=getenv("COLUMNS"))
+	if ((env=getenv("COLUMNS")))
 	    tty_cols = atoi(env);
 
 	if (tty_lines == 0 && tty_cols == 0)
@@ -205,7 +205,7 @@ tty_keypad_init(void)
 		seq = tty_getcap(fnkey[i].cap);
 		if (seq && strlen(seq) > 1) {
 			fnkey[i].seq = seq;
-			keyflag[seq[0]] = KEY_PREF;
+			keyflag[(int)seq[0]] = KEY_PREF;
 		}
 	}
 }
@@ -322,7 +322,7 @@ tty_readkey(void)
 
     len = 0;
     
-    if (keyflag[s[0]] == KEY_PREF) {
+    if (keyflag[(int)s[0]] == KEY_PREF) {
 	while ((c=tty_ispref(s, l)) == EOF) {
  	    if (!vmin) {
 		tty_vmin(0, 5);

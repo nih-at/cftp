@@ -22,6 +22,8 @@
 
 
 
+#include <stdlib.h>
+
 #include "bindings.h"
 #include "functions.h"
 #include "display.h"
@@ -30,7 +32,7 @@
 
 
 
-int
+void
 fn_bind(char **args)
 {
     enum state state, s2;

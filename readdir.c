@@ -31,9 +31,8 @@
 #include "options.h"
 
 static int parse_unix(direntry *de, char *line);
+static void init_parse_time(void);
 static time_t parse_time(char *date);
-
-static int dir_sort_date(const void *, const void *);
 
 
 
@@ -50,7 +49,9 @@ read_dir(FILE *f)
     dir = malloc(sizeof(directory));
     list = NULL;
     sz = n = 0;
-	
+
+    init_parse_time();
+
     while ((line=ftp_gets(f)) != NULL) {
 	if (n >= sz) {
 	    sz += DIR_STEP;
@@ -161,16 +162,29 @@ parse_unix(direntry *de, char *line)
 
 
 
+static struct tm now;
+
+static void
+init_parse_time(void)
+{
+    struct tm *p;
+    time_t t;
+    
+    t = time(NULL);
+    p = gmtime(&t);
+    now = *p;
+}
+
 static time_t
 parse_time(char *date)
 {
     static char *mon[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
 			   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-    struct tm tm, *now;
-    time_t t;
+    struct tm tm;
     int i;
 
-    tm.tm_sec = tm.tm_wday = tm.tm_yday = tm.tm_isdst = tm.tm_gmtoff = 0;
+    tm = now;
+    tm.tm_sec = tm.tm_wday = tm.tm_yday = 0;
 
     for (i=0; i<12; i++)
 	if (strncasecmp(date, mon[i], 3) == 0) {
@@ -189,14 +203,11 @@ parse_time(char *date)
 	tm.tm_hour = atoi(date+7);
 	tm.tm_min = atoi(date+10);
 
-	t = time(NULL);
-	now = gmtime(&t);
-
-	if (tm.tm_mon < now->tm_mon
-	    || (tm.tm_mon == now->tm_mon && tm.tm_mday <= now->tm_mday))
-	    tm.tm_year = now->tm_year;
+	if (tm.tm_mon < now.tm_mon
+	    || (tm.tm_mon == now.tm_mon && tm.tm_mday <= now.tm_mday))
+	    tm.tm_year = now.tm_year;
 	else
-	    tm.tm_year = now->tm_year - 1;
+	    tm.tm_year = now.tm_year - 1;
     }
     else {
 	tm.tm_year = atoi(date+7);

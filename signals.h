@@ -27,6 +27,7 @@
 
 volatile int sig_intr, sig_pipe;
 
+int signals_init(void);
 void sig_end(int sno);
 void sig_escape(int sno);
 void sig_reenter(int sno);

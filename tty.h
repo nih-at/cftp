@@ -84,5 +84,6 @@ int tty_vmin(int min, int tim);
 char *tty_getcap(char *name);
 int tty_iscap(char *name);
 void tty_putp(char *cap, int line, int arg0, int arg1, int arg2, int arg3);
+void tty_parp(char *cap, char *pcap, int n, int pad);
 
 #endif /* tty.h */

@@ -71,6 +71,9 @@ char *prg, *srcdir;
 void print_args(FILE *fout, char **args);
 FILE *vpath_open(char *name);
 
+void initnames(void);
+
+
 
 
 int
@@ -79,7 +82,7 @@ main(int argc, char **argv)
     FILE *fin, *fout;
     char line[4069], *p, *tok, **args;
     struct binding *b;
-    int i, j, off, argoff, len, wlen;
+    int i, j, off, argoff, len;
     int maxkey;
 
     prg = argv[0];
@@ -252,8 +255,8 @@ main(int argc, char **argv)
 
 
 
-int
-initnames()
+void
+initnames(void)
 {
     char line[8192], *p, *q;
     FILE *f;
@@ -369,7 +372,7 @@ vpath_open(char *name)
     }
 
     if ((vname=(char *)malloc(strlen(name)+strlen(srcdir)+2)) == NULL) {
-	fprintf(stderr, "%s: malloc failure\n");
+	fprintf(stderr, "%s: malloc failure\n", prg);
 	exit(1);
     }
 

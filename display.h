@@ -52,6 +52,7 @@ int read_char(char *prompt);
 int disp_prompt_char(void);
 void disp_status(char *fmt, ...);
 void disp_head(char *fmt, ...);
+void disp_restat(void);
 FILE *disp_open(char *cmd, int quietp);
 int disp_close(FILE *f, int quietp);
 

@@ -23,6 +23,7 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 #include "rc.h"
@@ -80,7 +81,7 @@ rc_list(char *line)
     list = l;
     n = 128;
 
-    for (i=0; t=rc_token(&line); i++) {
+    for (i=0; (t=rc_token(&line)); i++) {
 	if (i >= n) {
 	    n += 32;
 	    if (n == 160) { /* list is alias for l */

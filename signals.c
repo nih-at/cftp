@@ -29,7 +29,8 @@ volatile int sig_intr, sig_pipe;
 
 
 
-int signals_init(void)
+int
+signals_init(void)
 {
     signal(SIGINT, sig_end);
     signal(SIGHUP, sig_end);

@@ -22,6 +22,8 @@
 
 
 
+#include <string.h>
+
 #include "directory.h"
 #include "bindings.h"
 #include "functions.h"

@@ -30,6 +30,8 @@
 #include <sys/stat.h>
 #include <pwd.h>
 #include <getopt.h>
+#include <unistd.h>
+
 
 #include "directory.h"
 #include "display.h"
@@ -42,6 +44,11 @@
 #include "signals.h"
 #include "tag.h"
 #include "status.h"
+#include "tty.h"
+
+/* in readrc.c */
+int readrc(char **userp, char **passp, char **hostp, char **portp,
+	   char **wdirp, int check_alias);
 
 
 

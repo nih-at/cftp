@@ -53,7 +53,7 @@ void list_line(struct list *list, int i, int selp, int clreolp);
 void
 list_do(int full)
 {
-    int desel, sel, up, n, per;
+    int up, n, per;
 
     if (disp_quiet ||
 	(!full && list->top == last_top && list->cur == last_sel))
