@@ -29,7 +29,7 @@ union optvar {
     char **s;
 };
 
-struct option {
+struct uoption {
     char *name, *shrt;
     char *help;
     int type;
@@ -37,7 +37,7 @@ struct option {
     void (*func)();
 };
 
-extern struct option option[];}
+extern struct uoption option[];}
 
 divert(-1)
 

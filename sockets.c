@@ -32,6 +32,10 @@
 
 extern char *prg;
 
+#ifndef H_ERRNO_DECLARED
+extern int h_errno;
+#endif
+
 
 
 int

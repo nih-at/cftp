@@ -30,6 +30,8 @@
 
 int fnexit(void);
 
+static int _loop_key;
+
 
 
 void
@@ -39,11 +41,12 @@ loop()
     struct binding *binding;
     function *f;
 
+    _loop_key = -1;
     list_do(1);
     tty_lowleft();
     fflush(stdout);
     
-    while ((c=tty_readkey()) != -1) {
+    while ((c=loop_readkey()) != -1) {
 	binding = get_function(c, bs_none);
 	if (binding->fn != -1) {
 	    f = functions+binding->fn;
@@ -86,3 +89,26 @@ fnexit(void)
 
     return ret;
 }
+
+
+
+int
+loop_readkey(void)
+{
+    int k;
+    
+    if (_loop_key != -1) {
+	k = _loop_key;
+	_loop_key = -1;
+	return k;
+    }
+
+    return tty_readkey();
+}
+
+void
+loop_putkey(int k)
+{
+    _loop_key = k;
+}
+	

@@ -53,7 +53,8 @@ void tty_winch(int s);
 #endif
 
 enum tty_am tty_am;
-int tty_cols, tty_lines, tty_metap, tty_noLP,
+volatile int tty_cols, tty_lines;
+int tty_metap, tty_noLP,
     tty_verase, tty_vwerase, tty_vkill;
 
 char termcap_entry[4196];

@@ -8,14 +8,14 @@ diverts:
 changequote(,)
 
 divert(1)dnl
-struct option option[] = {
+struct uoption option[] = {
 divert(2)dnl
 };
 divert(-1)
 
 changequote({,})
 
-struct option {
+struct uoption {
     char *name, *short;
     char *help;
     int type;

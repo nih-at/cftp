@@ -28,6 +28,7 @@
 #include "display.h"
 #include "tty.h"
 #include "list.h"
+#include "loop.h"
 
 void aux_scroll(int top, int sel, int force);
 void aux_scroll_line(int n);
@@ -201,7 +202,7 @@ fn_isearch(char **args)
 {
 
     char b[1024], *prompt, *p;
-    int n, c, start, current, research, state;
+    int n, c, start, current, research, state, wrap;
 
     state = 0;
 
@@ -251,17 +252,23 @@ fn_isearch(char **args)
 	    research = 2;
 	}
 	else if (c == 18 /* ^R */) {
-	    if (state & (FN_IS_FAIL|FN_IS_BACK))
+	    if ((state & FN_IS_FAIL) && (state & FN_IS_BACK))
 		state |= FN_IS_WRAP;
 	    state |= FN_IS_BACK;
 	    research = 2;
+	}
+	else if (c == 12 /* ^L */) {
+	    disp_redraw();
+	    research = 0;
 	}
 	else if (c >= 32 && c < 127) {
 	    *(p++) = c;
 	    *p = '\0';
 	}
-	else
-	    research = 0;
+	else {
+	    loop_putkey(c);
+	    return;
+	}
 
 	if (research) {
 	    n = current;
@@ -271,10 +278,17 @@ fn_isearch(char **args)
 		if (research == 2)
 		    n++;
 
+		wrap = 0;
 		while (!(state & FN_IS_FAIL)) {
+		    if (wrap && n == current+1) {
+			state |= FN_IS_FAIL;
+			break;
+		    }
 		    if (n >= list->len) {
-			if (state & FN_IS_WRAP)
+			if (state & FN_IS_WRAP) {
+			    wrap = 1;
 			    n = 0;
+			}
 			else {
 			    state |= FN_IS_FAIL;
 			    break;
@@ -282,20 +296,24 @@ fn_isearch(char **args)
 		    }
 		    if (strstr(LIST_LINE(list, n)->name, b) != NULL)
 			break;
-		    if (++n == current) {
-			state |= FN_IS_FAIL;
-			break;
-		    }
+		    n++;
 		}
 	    }
 	    else {
 		if (research == 2)
 		    --n;
 
+		wrap = 0;
 		while (!(state & FN_IS_FAIL)) {
+		    if (wrap && n == current-1) {
+			state |= FN_IS_FAIL;
+			break;
+		    }
 		    if (n < 0) {
-			if (state & FN_IS_WRAP)
+			if (state & FN_IS_WRAP) {
 			    n = list->len-1;
+			    wrap = 1;
+			}
 			else {
 			    state |= FN_IS_FAIL;
 			    break;
@@ -303,10 +321,7 @@ fn_isearch(char **args)
 		    }
 		    if (strstr(LIST_LINE(list, n)->name, b) != NULL)
 			break;
-		    if (--n == current) {
-			state |= FN_IS_FAIL;
-			break;
-		    }
+		    --n;
 		}
 	    }
 	}

@@ -49,7 +49,7 @@ status_do(enum state when)
     int cols, space, l;
 
     cols = tty_cols;
-    space = cols - 20;
+    space = cols - 25;
 
     if (when != bs_none && when != binding_state)
 	return;
@@ -67,10 +67,10 @@ status_do(enum state when)
 	    strcpy(status_line+8, status.host);
 	    space -= l;
 	}
-	memset(status_line+cols-12-space, ' ', space+2);
+	memset(status_line+cols-17-space, ' ', space+2);
 	switch (binding_state) {
 	case bs_remote:
-	    strcpy(status_line+cols-10, "<remote>--");
+	    strcpy(status_line+cols-15, "<remote>--");
 	    if (status.remote.path) {
 		l = strlen(status.remote.path);
 		if (l > space) {
@@ -80,13 +80,26 @@ status_do(enum state when)
 			    space-3);
 		}
 		else
-		    strncpy(status_line+cols-space-11, status.remote.path, l);
+		    strncpy(status_line+cols-space-16, status.remote.path, l);
 	    }
 	    break;
 	    
 	case bs_tag:
-	    strcpy(status_line+cols-10, "<tag>-----");
+	    strcpy(status_line+cols-15, "<tag>-----");
 	    break;
+	}
+	switch(status.percent) {
+	case -1:
+	    strcpy(status_line+cols-5, "All--");
+	    break;
+	case 0:
+	    strcpy(status_line+cols-5, "Top--");
+	    break;
+	case 100:
+	    strcpy(status_line+cols-5, "Bot--");
+	    break;
+	default:
+	    sprintf(status_line+cols-5, "%2d%%--", status.percent);
 	}
 	
 	if (!disp_quiet) {

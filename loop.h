@@ -27,5 +27,7 @@
 
 void loop(void);
 
+void loop_putkey(int key);
+
 #endif /* loop.h */
 

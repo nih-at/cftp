@@ -56,6 +56,6 @@ bind		pgdown	page-down
 bind		pgup	page-up
 bind		G	goto
 bind		^s	isearch
-bind		^r	isearch r
+bind		^r	isearch -r
 
 bind		g	cd

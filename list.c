@@ -53,7 +53,7 @@ void list_line(struct list *list, int i, int selp, int clreolp);
 void
 list_do(int full)
 {
-    int desel, sel, up, n;
+    int desel, sel, up, n, per;
 
     if (disp_quiet ||
 	(!full && list->top == last_top && list->cur == last_sel))
@@ -62,6 +62,15 @@ list_do(int full)
     if (list != last_list) {
 	full = 1;
 	last_list = list;
+    }
+
+    if (list->len <= win_lines)
+	per = -1;
+    else
+	per = (list->top*100)/(list->len-win_lines);
+    if (per != status.percent) {
+	status.percent = per;
+	status_do(bs_none);
     }
 
     if (full || abs(last_top-list->top) >= win_lines-opt_scrlimit) {

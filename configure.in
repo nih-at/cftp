@@ -3,7 +3,7 @@ dnl Process this file with autoconf to produce a configure script.
 dnl init
 
 AC_INIT(bindings.desc)
-AM_INIT_AUTOMAKE(cftp, 0.6a+)
+AM_INIT_AUTOMAKE(cftp, 0.6b)
 AM_CONFIG_HEADER(config.h)
 
 # We want these before the checks, so the checks can modify their values.
@@ -47,6 +47,18 @@ AC_CHECK_LIB(resolv, main)
 
 
 dnl header files
+
+
+AC_CACHE_CHECK([whether h_errno is declared in netdb.h],
+	dlo_cv_decl_h_errno,
+	AC_TRY_COMPILE([#include "netdb.h"], [h_errno = 0;],
+		[dlo_cv_decl_h_errno=yes],
+		[dlo_cv_decl_h_errno=no]))
+if test "$dlo_cv_decl_h_errno" = yes; then
+    AC_DEFINE(H_ERRNO_DECLARED)
+fi
+
+
 dnl typedefs
 dnl structures
 dnl compiler characteristics

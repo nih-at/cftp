@@ -36,7 +36,7 @@ struct list {
 };
 
 #define LIST_LINE(list, i)	\
-	((struct listentry *)((list)->line+(list)->size*(i)))
+	((struct listentry *)((char *)(list)->line+(list)->size*(i)))
 
 extern struct list *list;	/* currently displayed list */
 

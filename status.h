@@ -27,14 +27,15 @@
 
 struct status {
     char *host;
+    int percent;
     struct {
 	char *path;
     } remote;
     struct {
 	char *path;
     } local;
-    struct {
-    } tag;
+/*  struct {
+    } tag; */
 };
 
 extern struct status status;

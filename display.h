@@ -27,7 +27,7 @@
 
 #include <stdio.h>
 
-extern int tty_lines;
+extern volatile int tty_lines;
 extern int opt_emacs_status;
 /* first line of scrolling region */
 #define win_top		(opt_emacs_status ? 0 : 2)

@@ -18,7 +18,7 @@
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
+  */
 
 
 
@@ -48,17 +48,17 @@ void win_line(char *line, int sel);
 int
 init_disp(void)
 {
-	int err;
+    int err;
 
-	disp_quiet = 0;
+    disp_quiet = 0;
 
-	if (err=tty_setup())
-	    return err;
+    if (err=tty_setup())
+	return err;
 
-	tty_redraw = disp_redraw;
+    tty_redraw = disp_redraw;
 
-	tty_clear();
-	tty_hidecrsr();
+    tty_clear();
+    tty_hidecrsr();
 }
 
 
@@ -66,10 +66,10 @@ init_disp(void)
 void
 exit_disp()
 {
-	tty_goto(0, tty_lines-1);
-	tty_showcrsr();
-	tty_restore();
-	printf("\n");
+    tty_goto(0, tty_lines-1);
+    tty_showcrsr();
+    tty_restore();
+    printf("\n");
 }
 
 
@@ -80,14 +80,14 @@ escape_disp(int clearp)
     if (disp_quiet >= 0) {
 	tty_showcrsr();
 	if (clearp) {
-		tty_clear();
-		fflush(stdout);
+	    tty_clear();
+	    fflush(stdout);
 	}
 	else
-		tty_goto(0, tty_lines-1);
+	    tty_goto(0, tty_lines-1);
 	tty_restore();
 	if (!clearp)
-		printf("\n");
+	    printf("\n");
     }
     --disp_quiet;
 }
@@ -110,15 +110,15 @@ reenter_disp(void)
 void
 disp_redraw(void)
 {
-	int i;
+    int i;
 
-	if (disp_quiet)
-		return;
+    if (disp_quiet)
+	return;
 
-	tty_clear();
-	list_do(1);
-	status_do(bs_none);
-	disp_restat();
+    tty_clear();
+    list_do(1);
+    status_do(bs_none);
+    disp_restat();
 }
 
 
@@ -126,46 +126,48 @@ disp_redraw(void)
 char *
 read_string(char *prompt, int echop)
 {
-	char *line;
-	int c, i, x;
+    char *line;
+    int c, i, x;
 	
-	line = (char *)malloc(tty_cols+1);
+    line = (char *)malloc(tty_cols+1);
 	
-	tty_showcrsr();
-	disp_status("%s", prompt);
-	x = strlen(prompt);
+    tty_showcrsr();
+    disp_status("%s", prompt);
+    x = strlen(prompt);
 
-	i = 0;
-	while ((c=getchar())!='\n' && c!=EOF) {
-		if (c == tty_verase && i > 0) {
-			--i;
-			if (echop)
-			    printf("\b \b");
-		}
-		else if (c == tty_vwerase && i > 0) {
-			while (i>0 && line[--i] == ' ')
-				;
-			while (i>0 && line[i-1] != ' ')
-				--i;
-			if (echop) {
-			    tty_goto(x+i, tty_lines-1);
-			    tty_clreol();
-			}
-		}
-		else if (c == tty_vkill && i > 0) {
-			i = 0;
-			if (echop) {
-			    tty_goto(x, tty_lines-1);
-			    tty_clreol();
-			}
-		}
-		else if (i<tty_cols) {
-			line[i++] = c;
-			if (echop)
-			    putchar(c);
-		}
-		fflush(stdout);
+    i = 0;
+    while ((c=getchar())!='\n' && c!=EOF) {
+	if (c == tty_verase) {
+	    if (i > 0) {
+		--i;
+		if (echop)
+		    printf("\b \b");
+	    }
 	}
+	else if (c == tty_vwerase && i > 0) {
+	    while (i>0 && line[--i] == ' ')
+		;
+	    while (i>0 && line[i-1] != ' ')
+		--i;
+	    if (echop) {
+		tty_goto(x+i, tty_lines-1);
+		tty_clreol();
+	    }
+	}
+	else if (c == tty_vkill && i > 0) {
+	    i = 0;
+	    if (echop) {
+		tty_goto(x, tty_lines-1);
+		tty_clreol();
+	    }
+	}
+	else if (i<tty_cols) {
+	    line[i++] = c;
+	    if (echop)
+		putchar(c);
+	}
+	fflush(stdout);
+    }
 
 	line[i]	= '\0';
 
@@ -173,7 +175,7 @@ read_string(char *prompt, int echop)
 	fflush(stdout);
 	
 	return line;
-}
+    }
 
 
 
