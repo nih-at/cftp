@@ -26,7 +26,28 @@
 char *
 basename(char *name)
 {
-    char *p = strrchr(name, '/');
+    static char dot[] = ".";
+    char *p;
+    int len;
 
-    return (p ? p+1 : name);
+    if (name == NULL || *name == '\0')
+	return ".";
+
+    len = strlen(name);
+
+    if (strspn(name, '/') == len)
+	return name + len-1;
+
+    while (name[len-1] == '/')
+	name[--len] = '\0';
+    
+    p = strrchr(name, '/');
+
+    if (p) {
+	if (*p == '\0')
+	    return p;
+	else
+	    return p+1;
+    }
+    return name;
 }
