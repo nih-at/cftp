@@ -12,7 +12,7 @@ cftp_SOURCES=	directory.c display.c readdir.c loop.c functions.c \
 		fn_basic.c fn_prefix.c fn_scroll.c fn_select.c fn_options.c \
 		fn_tag.c
 noinst_HEADERS= directory.h display.h readdir.h loop.h functions.h tag.h\
-		ftp.h sockets.h options.h keys.h tty.h rc.h fntable.h
+		ftp.h sockets.h options.h keys.h tty.h rc.h fntable.h util.h
 mkbind_SOURCES=	mkbind.c keys.c rc.c
 
 cftp_DEPENDENCIES=    @LIBOBJS@
