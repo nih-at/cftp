@@ -28,10 +28,6 @@ EXTRA_DIST=	bindings.desc fntable.c.proto fntable.h.proto \
 
 # extra rules
 
-version.c: configure.in
-	echo "char version[] = \"$(PACKAGE) (version $(VERSION))\";" \
-		> version.c
-
 functions.texi : fntable.fn mkfntexi.m4
 	m4 mkfntexi.m4 fntable.fn >> functions.texi-unsort
 	sed -e '/^>>>>>>>>/,$$ d' functions.texi-unsort > functions.texi

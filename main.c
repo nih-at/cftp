@@ -47,6 +47,8 @@ char *usage[] = {
 	"url",
 	NULL };
 
+char help_head[] = "%s by Dieter Baron <dillo@giga.or.at>\n\n";
+
 char help[] = "\
   -h, --help        display this help message\n\
   -V, --version     display version number\n\
@@ -113,7 +115,7 @@ main(int argc, char **argv)
 	    printf("%s\n", version);
 	    exit(0);
 	case 'h':
-	    printf("%s\n\n", version);
+	    printf(help_head, version);
 	    print_usage(1);
 	    printf("\n%s", help);
 	    exit(0);

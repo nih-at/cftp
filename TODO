@@ -27,7 +27,6 @@ F cftp.texi: introduction, invoking, cftprc, binding states
 F readrc: host
 P configure.in: add -posix for NeXTStep
 P cc on HPUX: -Aa -D_POSIX_SOURCE, prototypes for LIBOBJS
-B version.c: is created before Makefile is updated
 B options.h: dependencies seem wrong -- doesn't get remade
 F fn_basic.c: (fn_help) display type and value for options
 F (fn_isearch) search backwards
@@ -43,6 +42,9 @@ B fn_tag.c: (fn_tag) line[0] isn't updated if arg is given
 B fn_select.c: (aux_download) report `can't open file' errors
 C mkbind.c: include file name and line number in error messages 
 ----------------------------------------------- done
+
+Apr 2, 1997 (0.6a)
+C version.c: now uses config.h to obtain version, not special make rule
 B mkbind.c: fixed offset bug in writing binding_pool
 F fn_select.c: (aux_scroll_page) rewrote behavior for more(?) consistency 
 B tag.c: (change_curdir) forget current position of old dir
