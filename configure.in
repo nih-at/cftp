@@ -16,9 +16,18 @@ dnl test -n "$GCC" && test -n "$auto_cflags" && CFLAGS="$CFLAGS -O"
 AC_SUBST(DOMAINNAME)dnl
 
 
+dnl automake
+
+PACKAGE=geturl
+VERSION=0.1
+AC_SUBST(PACKAGE)
+AC_SUBST(VERSION)
+
+
 dnl programs
 
 AC_PROG_INSTALL
+AC_ARG_PROGRAM
 
 
 dnl libraries
