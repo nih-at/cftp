@@ -1,3 +1,7 @@
+1998-10-07  Dillo Fenderson  <dillo@legba>
+
+	* ftp.c (ftp_stor): accept response 125.
+
 1998-10-07  Wiz  <wiz@danbala.tuwien.ac.at>
 
 	* fn_select.c (fn_reload): reload logically current dir, not

@@ -358,7 +358,7 @@ ftp_retr(char *file, int mode, long *startp)
 FILE *
 ftp_stor(char *file, int mode)
 {
-	int fd;
+	int fd, resp;
 	char *dir, *name, *can;
 	FILE *fin;
 
@@ -373,7 +373,7 @@ ftp_stor(char *file, int mode)
 		return NULL;
 	
 	ftp_put("stor %s", name);
-	if (ftp_resp() != 150) {
+	if ((resp=ftp_resp()) != 150 && resp != 125) {
 		close(fd);
 		return NULL;
 	}
