@@ -1,3 +1,13 @@
+1998-05-01  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* directory.c, tty.h: cleanup for -Wall
+
+1998-04-30  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* signals.c: cleanup for -Wall
+
+	* util.c (parse_url, deurl, hexdigit): moved from main.c
+
 1998-04-25  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* fn_basic.c (fn_mkdir): new function.

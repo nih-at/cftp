@@ -90,9 +90,6 @@ extern char version[];
 
 
 
-int parse_url(char *url, char **user, char **pass,
-	      char **host, char **port, char **dir);
-char *deurl(char *u);
 void print_usage(FILE *f);
 char *get_anon_passwd(void);
 void read_netrc(char *host, char **user, char **pass, char **wdir);
@@ -282,55 +279,6 @@ main(int argc, char **argv)
 
 
 
-int
-parse_url(char *url, char **user, char **pass,
-	  char **host, char **port, char **dir)
-{
-    char *p, *q, *r;
-    int userp = 0;
-
-    if (strncmp(url, "ftp://", 6) != 0)
-	return -1;
-    url+=6;
-
-    if ((p=strchr(url, '/')) != NULL)
-	*(p++) = '\0';
-    else
-	p = url+strlen(url);
-    
-    if ((q=strrchr(url, '@')) != NULL) {
-	*q = '\0';
-	if ((r=strchr(url, ':')) != NULL) {
-	    *(r++) = '\0';
-	    *pass = deurl(r);
-	}
-	*user = deurl(url);
-	url = q+1;
-	userp = 1;
-    }
-
-    if ((q=strchr(url, ':')) != NULL) {
-	*q = '\0';
-	if (*(q+1) != '\0')
-	    *port = deurl(q+1);
-    }
-	
-    *host = deurl(url);
-
-    if (p && *p != '\0') {
-	if ((*dir=(char *)malloc(strlen(p)+3)) == NULL) {
-	    fprintf(stderr, "%s: malloc failure\n", prg);
-	    return -1;
-	}
-	/* sprintf(*dir, "%s%s", userp ? "" : "/", p); */
-	*dir = deurl(p);
-    }
-
-    return 0;
-}
-
-
-
 void
 print_usage(FILE *f)
 {
@@ -464,47 +412,4 @@ read_netrc(char *host, char **user, char **pass, char **wdir)
 	}
     }
     fclose(f);
-}
-
-
-
-int
-hexdigit(int c)
-{
-    if (c >= '0' && c <= '9')
-	return c-'0';
-    if (c >= 'a' && c <= 'f')
-	return c-'a';
-    if (c >= 'A' && c <= 'F')
-	return c-'F';
-    
-    return 0;
-}
-
-char *
-deurl(char *s)
-{
-    char *t, *p;
-    int c;
-
-    if ((t=(char *)malloc(strlen(s)+1)) != NULL) {
-	for (p=t; *s; s++) {
-	    if (*s == '%') {
-		if (s[1] == '\0' || s[2] == '\0')
-		    *(p++) = '%';
-		else {
-		    c = hexdigit(*(++s))*16;
-		    c += hexdigit(*(++s));
-
-		if (c != 0)
-		    *(p++) = c;
-		}
-	    }
-	    else
-		    *(p++) = *s;
-	}
-	*p = '\0';
-    }
-
-    return t;
 }

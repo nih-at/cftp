@@ -36,7 +36,7 @@ extern int fputchar();
 
 #define TTY_CAP(cap)	(_tty_caps[(_TTY_##cap)])
 #define tty_put0(cap, lines)  \
-		(tputs(TTY_CAP(cap), (lines), fputchar))
+		(tputs(TTY_CAP(cap), (lines), (void (*)())fputchar))
 
 #define tty_clear()	(tty_put0(cl, tty_lines))
 #define tty_home()	(tty_put0(ho, 1))

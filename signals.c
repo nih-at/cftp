@@ -24,6 +24,7 @@
 
 #include <signal.h>
 #include "signals.h"
+#include "display.h"
 
 volatile int sig_intr, sig_pipe;
 

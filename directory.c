@@ -47,6 +47,9 @@ int cache_size = 30;
 void cache_remove(dircache *d);
 void cache_insert(dircache *d);
 
+/* XXX: should be in header file */
+void aux_scroll(int top, int sel, int force);
+
 
 
 void

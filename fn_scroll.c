@@ -232,7 +232,7 @@ void
 fn_isearch(char **args)
 {
 
-    char b[1024], *prompt, *p;
+    char b[1024], *p;
     int n, c, start, current, research, state, wrap;
 
     state = 0;
