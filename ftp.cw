@@ -4,6 +4,9 @@
 #include <stdio.h>
 @<prototypes@>
 
+@<globals@>
+
+
 @u
 #include <stdio.h>
 #include <stdarg.h>
@@ -28,6 +31,16 @@
 @d<local globals@>
 char *ftp_head, *ftp_lcwd, *ftp_pcwd = NULL;
 char ftp_curmode = ' ', ftp_anon = 0;
+
+
+@ last response.
+
+@d<globals@>
+extern char **ftp_response;
+
+@d<local globals@>
+char **ftp_response = NULL;
+long ftp_response_size = 0;
 
 
 @ opening a connection, and logging in.
@@ -304,24 +317,72 @@ int ftp_resp(void);
 int
 ftp_resp(void)
 {
-	char *line;
-	int resp;
+    char *line, **l;
+    int resp;
+    long i;
+    
+    if ((line=ftp_gets(conin)) == NULL)
+	return -1;
 
-	if ((line=ftp_gets(conin)) == NULL)
-		return -1;
+    resp = atoi(line);
+    disp_status("%s", line);
 
-	resp = atoi(line);
-	disp_status("%s", line);
-
-	while (!(isdigit(line[0]) && isdigit(line[1]) &&
-	       isdigit(line[2]) && line[3] == ' ')) {
-		free(line);
-		if ((line=ftp_gets(conin)) == NULL)
-			return -1;
+    if (ftp_response == NULL) {
+	if ((ftp_response=(char **)malloc(512*sizeof(char *))) != NULL) {
+	    	ftp_response_size = 512;
 	}
-	free(line);
+	else
+	    ftp_response_size = -1;
+    }
+    
+    if (ftp_response)
+	i = 0;
+    else
+	i = -1;
 
-	return resp;
+    while (!(isdigit(line[0]) && isdigit(line[1]) &&
+	     isdigit(line[2]) && line[3] == ' ')) {
+
+	if (i > ftp_response_size-3) {
+	    ftp_response_size += 512;
+	    l = (char **)malloc(ftp_response_size*sizeof(char *));
+	    if (l)
+		ftp_response = l;
+	    else {
+		if (i > 0)
+		    ftp_response[i] = NULL;
+		i = -1;
+	    }
+	}
+	if (i == 0) {
+	    for (i=0; ftp_response[i]; i++)
+		free(ftp_response[i]);
+	    ftp_response[0] = NULL;
+	    i = 0;
+	}
+
+	if (i >= 0)
+	    ftp_response[i++] = line;
+	else
+	    free(line);
+	
+	if ((line=ftp_gets(conin)) == NULL) {
+	    if (i >= 0)
+		ftp_response[i] = NULL;
+	    
+	    return -1;
+	}
+
+    }
+
+    if (i <= 0)
+	free(line);
+    else {
+	ftp_response[i++] = line;
+	ftp_response[i] = NULL;
+    }
+    
+    return resp;
 }
 
 

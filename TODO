@@ -10,9 +10,7 @@ F improve fn_lcd, add fn_show_ld
 F if url is file, download
 F save dir listing
 * handle ftp servers unable to cd ~user (NetBSD)
-F show multiline responses
 F get .tar[.gz] files
-F tag files (later download, save/load tags, detached download)
 F support for stor, dele
 F .cftprc 
 F display.cw: (disp_dir) make max no of lines to scroll user setable
@@ -24,7 +22,11 @@ P configure.in: add -posix for NeXTStep
 F quiet if in background
 F option: ring bell when finished (download)
 F readdir.cw: support other dir listing formats (vms, dos, descritpive, ...)
+F tag files: edit tags, save/load tags, detached download
+F tag: if tagged is directory, try .tar.gz, .tar.Z, .tar
 ----------------------------------------------- done
+F show multiline responses
+F tag files (later download)
 B readdir.cw: (parse_unix) handle no space between group and size
 B readdir.cw: (parse_unix) handle no space between permissions and links
 B fn_basic.cw: (fn_shell) get key at end hangs term

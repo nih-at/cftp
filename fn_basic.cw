@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <string.h>
 #include "directory.h"
+#include "ftp.h"
 #include "functions.h"
 #include "display.h"
 #include "rc.h"
@@ -175,4 +176,30 @@ void fn_colon(char **args)
 	    for (i=0; i<j; i++)
 		free(arg[i]);
 	}
+}
+
+
+@ displaying last response.
+
+@d<functions@>
+  { fn_response, "response", 0, "display last multiline response" }
+
+@u
+void fn_response(char **args)
+{
+    FILE *f;
+    long i;
+
+    if (ftp_response == NULL) {
+	disp_status("no response available");
+	return;
+    }
+    
+    if ((f=disp_open(-1)) == NULL)
+	return;
+
+    for (i=0; ftp_response[i]; i++)
+	fprintf(f, "%s\n", ftp_response[i]);
+
+    disp_close(f);
 }

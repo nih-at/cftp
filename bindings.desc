@@ -7,6 +7,7 @@ bind	H	help
 bind	c	lcd
 bind	!	shell
 bind	:	colon
+bind	m	response
 
 bind	t	tag
 bind	T	list-tags
