@@ -144,7 +144,7 @@ fn_gettags(char **args)
 		    t->next->name);
 	    if (aux_download(name, t->next->size) == 0) {
 		if (strcmp(d->next->name, curdir->path) == 0
-		    && (i=dir_find(curdir, t->next->name))) {
+		    && ((i=dir_find(curdir, t->next->name)) >= 0)) {
 		    curdir->list[i].line[0] = ' ';
 		    disp_reline(i);
 		}
