@@ -52,12 +52,12 @@ functions.texi : fntable.fn mkfntexi.m4
 	rm functions.texi-unsort
 
 methods.c: methods.mt mkmethods-c.m4
-	m4 $(srcdir)/mkmethods-c.m4 $(srcdir)/methods.mt > methods.c.$$ \
-	&& mv methods.c.$$ methods.c
+	m4 $(srcdir)/mkmethods-c.m4 $(srcdir)/methods.mt > methods.c.$$$$ \
+	&& mv methods.c.$$$$ methods.c
 
 methods.h: methods.mt mkmethods-h.m4
-	m4 $(srcdir)/mkmethods-h.m4 $(srcdir)/methods.mt > methods.h.$$ \
-	&& mv methods.h.$$ methods.h
+	m4 $(srcdir)/mkmethods-h.m4 $(srcdir)/methods.mt > methods.h.$$$$ \
+	&& mv methods.h.$$$$ methods.h
 
 options.c: options.op $(srcdir)/mkoptab-c.m4
 	m4 $(srcdir)/mkoptab-c.m4 $(srcdir)/options.op > options.c
