@@ -59,13 +59,26 @@ at top of screen, with blank lines surrounding the scrolling region.})
 option(pager, pg, opt_pager, NULL, s, "more", ,
  {pager used to view files},
  {Pager used to view files.  Defaults to the value of the environment
-variable $PAGER if set, to @code{more} otherwise.})
+variable @code{$PAGER} if set, to @code{more} otherwise.})
 
 values(sort, {"none", "name", "date", "name-r", "date-r"})
 
 option(sort, so, opt_sort, opt_set_sort, e, 1, sort,
- {sort directory listings chronologically},
- {sort directory listings chronologically})
+ {sort criterium for directory listings},
+ {Set how to sort directory listings; possible values are
+@table @code
+@item none
+list as returned by ftp server
+@item name
+alphabetically by file name
+@item date
+chronologically by modification time, newest first
+@item name-r
+alphabetically by file name, in reverse order
+@item date-r
+chronologically by modification time, oldest first
+@end table
+})
 dnl will be of type enum (none, name, date, name-reverse, date-reverse).
 
 endall

@@ -40,6 +40,8 @@
 #include "list.h"
 #include "options.h"
 #include "signals.h"
+#include "tag.h"
+#include "status.h"
 
 
 
@@ -58,6 +60,13 @@ char help[] = "\
   -u, --user USER   specify user\n\
 \n\
 Report bugs to <dillo@giga.or.at>.\n";
+
+char version_tail[] = "\
+Copyright (C) 1997 Dieter Baron\n\
+cftp comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
+You may redistribute copies of\n\
+cftp under the terms of the GNU General Public License.\n\
+For more information about these matters, see the files named COPYING.\n";
 
 #define OPTIONS	"hVp:u:"
 
@@ -95,7 +104,7 @@ main(int argc, char **argv)
     directory *dir;
     char *host, *user = NULL, *port = NULL, *pass = NULL, *wdir = NULL;
     int keep_pass = 1;
-    int c, err = 0;
+    int c;
     char *b, *b2;
     int check_alias;
 
@@ -114,8 +123,7 @@ main(int argc, char **argv)
 	
     if (tag_init() < 0)
 	exit(1);
-    if (status_init() < 0)
-	exit(1);
+    status_init(); /* can't fail */
 
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -128,11 +136,7 @@ main(int argc, char **argv)
 	    break;
 	case 'V':
 	    printf("%s\n", version);
-	    printf("Copyright (C) 1997 Dieter Baron\n\
-cftp comes with ABSOLUTELY NO WARRANTY.\n\
-You may redistribute copies of cftp under the terms of the\n\
-GNU General Public License.\n\
-For more information about these matters, see the files named COPYING.\n");
+	    fputs(version_tail, stdout);
 	    exit(0);
 	case 'h':
 	    printf(help_head, version);
@@ -424,11 +428,11 @@ read_netrc(char *host, char **user, char **pass, char **wdir)
 			&& *wdir == NULL
 			&& strncmp(b, "cd ", 3) == 0) {
 			p = b+3+strspn(b+3, " \t");
-			if (q=strchr(p, ' '))
+			if ((q=strchr(p, ' ')))
 			    *q='\0';
-			if (q=strchr(p, '\t'))
+			if ((q=strchr(p, '\t')))
 			    *q='\0';
-			if (q=strchr(p, '\n'))
+			if ((q=strchr(p, '\n')))
 			    *q='\0';
 			*wdir = strdup(p);
 		    }
@@ -472,12 +476,13 @@ char *
 deurl(char *s)
 {
     char *t, *p;
-    int c, hd;
+    int c;
 
     if ((t=(char *)malloc(strlen(s)+1)) != NULL) {
 	for (p=t; *s; s++) {
 	    if (*s == '%') {
-		c = hexdigit(*(++s))*16+hexdigit(*(++s));
+		c = hexdigit(*(++s))*16;
+		c += hexdigit(*(++s));
 
 		if (c != 0)
 		    *(p++) = c;

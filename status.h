@@ -43,6 +43,7 @@ extern char status_line[];
 
 
 
+void status_init(void);
 void status_do(enum state state);
 void enter_state(enum state state);
 

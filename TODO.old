@@ -1,0 +1,236 @@
+* handle cd ~user/.. in a better way
+F save dir listing
+F tty.c: (tty_readkey) make VTIME value user setable
+F readdir.c: support other dir listing formats (vms, dos, descritpive, ...)
+F tag files: edit tags, detached download
+F if file to download is directory, try .tar.gz, .tar.Z, .tar
+F use `size' to determine unkown size (of links and tags)
+F quiet if in background
+F automatically deidle connection
+C functions.texi: fix bad next pointer in last section (to first command)
+F if url is file, download
+C display.c: (disp_prompt_char) return after first key, not after newline
+F functions.texi: include default bindings
+F display.c: (read_string) line editing, completion
+F <local> (uploads, local tagging)
+---------------------------------------------------------------- till beta
+F tag files: globbing tag
+F handle closed connections due to timeout
+F cftp.texi: introduction, invoking, cftprc, binding states
+F readrc: host
+P configure.in: add -posix for NeXTStep
+P cc on HPUX: -Aa -D_POSIX_SOURCE, prototypes for LIBOBJS
+P tparm on HPUX doesn't work
+F fn_basic.c: (fn_help) display type and value for options
+C rename disp_stat to disp_mesg (status line is what used to be head)
+F main.c: scan .netrc for type commands
+C fn_basic.c: (fn_exit) implement as function, -f option.
+B bindable functions: abort on empty input
+F forced reload of directory listing
+F status.c: add support for head status line (old style, but smarter)
+B fn_scroll.c: (fn_isearch) don't hardwire ^r/^s/^l (check binding)
+B ftp.c: (ftp_abort) abort on ascii connections hangs sometimes
+C fn_select.c: use :-syntax throughout
+B fn_basic.c: (fn_shell) command with args doesn't work when given via args
+C consistent error handling
+C list.c: more efficient handling of line deletion
+B status.c: percentage wrong (all) in <tag>
+B fn_tag.c: taggin in an empty directory shouldn't tag
+B display ftp response when login failes
+----------------------------------------------- done
+Oct  8 1997 (0.7)
+B main.c: (get_annon_passwd) check for domainname (none), for . in hostname
+P ftp.c: include <sys/select.h> only if it exists (aix vs. linux)
+B ftp.c: (ftp_reconnect) print message before reconnecting
+
+Jul 31 1997 (0.6c)
+B fn_tag.c: (fn_tag) set size and type if found in curdir
+B tag.c: (_tag_update_curdir) new function: update line[0] in curdir
+B ftp.c (ftp_put) return if no connection
+C status.c: rewrote status line code (a little cleaner and smarter)
+B readrc.c: (readrc) fixed missing argument to parse_url
+F main.c: (parse_url) if multiple @s in login part, rightmost separates host
+F main.c: (parse_url) urldecode parts
+B sockets.c: (sopen) if port is numerical, use atoi
+B ftp.c: (ftp_resp) report lost connection and read errros
+F main.c: (parse_url) support for user:passwd syntax
+F ftp.c: (ftp_abort, ftp_cat) abort transfer via SIGINT
+F fn_select.c: (fn_pipe) new bindable
+B fn_select.c: (aux_download, aux_pipe) create file after retr command
+C configure.in: use fn_bind.c for finding srcdir (not bindings.desc)
+
+Apr 18 1997 (0.6b)
+B display.c: (read_string) ignore verase if at beginning of line
+C now compiles on pedantic OSF/1 compiler
+P configure.in, acconfig.h, sockets.c: check whether h_errno is declared
+F fn_scroll.c: (fn_isearch) rewritten. (backwards, fail, wrap, remember key)
+F status.c: added Top/Bot/All/xx% to status line
+B ftp.c: (ftp_cat) rewrote ascii transfer (handles long lines, nul chars)
+C mkbind.c: include file name and line number in error messages 
+F fn_tag.c (fn_saveurls) new function: save tags as url list
+B fn_select.c: (aux_download) report fopen(3) error
+F fn_basic.c: (fn_redraw) -c option centers cursor
+P mkbind.c, Makefile.am: support for srcdir
+B ftp.c: (ftp_cd) corrected initialization bug by failed list command
+
+Apr  2 1997 (0.6a)
+C version.c: now uses config.h to obtain version, not special make rule
+B mkbind.c: fixed offset bug in writing binding_pool
+F fn_select.c: (aux_scroll_page) rewrote behavior for more(?) consistency 
+B tag.c: (change_curdir) forget current position of old dir
+P tty.c: (tty_putp) use tparm for terminfo machines
+
+Mar 31 1997 (0.6)
+F fn_tag.c: (fn_gettags) rewritten to new tagging code; uses <tag> state
+B ftp.c: (ftp_gets) handle realloc failure
+C fn_tag.c: (fn_savetags) renamed fn_listtags, requires file name, rewriten
+F status.c: emacs like status line (smarter)
+F tag.c: completely rewritten; now remembers order of tagging
+F fn_basic.c: (fn_help) display arguments for key bindings
+C fntable.fn: doku for bind, update doku for help
+B list.c: (list_region) fixed scrolling region code
+F fn_basic.cw: (fn_help) help for `f'unktions, `k'eys, and `o'ptions
+F list.c: list code completely rewritten; (scrolling region, multiple lists)
+C check and update copyright notices
+
+Jan 28 1997 (0.5d)
+F readrc: alias and commands
+F long options
+B main.c: (main) canonify pathname if not starting with `/'
+B tty.c: (tty_init) sanity checks on screen size detection
+P hstrerror.c: AIX: Service unavailable (5); include h_errno in unknown msg
+
+Dec 19 1996 (0.5c)
+B show cursor
+B report resolv error, not errno
+F fn_isearch
+F .cftprc: alias
+P handle ftp servers unable to cd ~user (NetBSD)
+P configure.in: check for ncurses
+B configure.in: abort if no termcap can be found
+B ftp.cw: (ftp_cat) stop writing when write error
+
+Jul 30 1996 (0.5b)
+B fn_basic.cw (fn_colon) don't free arguments if there are none
+C fn_tag.cw (fn_listtag) display `no tagged files'
+F user options
+
+Jun 25 1996 (0.5a)
+F fn_basic.cw: (fn_bind) new function
+B fn_tag.cw: (fn_loadtag) relative names relative to current dir
+B tty.cw: (tty_readkey) don't discard chars by failed multibyte code
+B display.cw: (disp_prompt_char) eat up chars till newline
+F fn_basic.cw: (fn_lcd) handle ~, ~user
+F main.cw: (main) if startup dir doesn't exist, don't close connection
+F exchange backlog instead of last multiline response
+F function doku
+B Makefile.am: call makeinfo with --no-validate
+F fn_basic.cw: (fn_deidle) new function
+F ftp.cw: (ftp_noop) new function
+B ftp.cw: (ftp_list) don't call read_dir when ftp_accept failed
+B main.cw: (parse_url) ftp://user@host doesn't recognize user
+B fn_tag.cw: (fn_gettags) don't update screen if dir_find returns -1
+B display.cw: (disp_status,disp_head): update status/head when not in disp
+C fn_basic.cw: (fn_shell) clear status line after command
+B util.cw: (dirname) terminating nul char was one off
+F functions.texi: automate functions documentation
+B ftp.cw: (ftp_retr) canonicalize file name
+F on quit: warn if tags remain
+B ftp.cw: (ftp_retr) cd to dirname(file) and retr basename(file)
+P configure.in: check for libresolv
+B fn_select.cw: (fn_cd) don't move cursor if empty line entered
+
+May  6 1996 (0.5)
+F tag files: save/load tags
+F show multiline responses
+F tag files (later download)
+B readdir.cw: (parse_unix) handle no space between group and size
+B readdir.cw: (parse_unix) handle no space between permissions and links
+B fn_basic.cw: (fn_shell) get key at end hangs term
+B main.cw: (parse_url) don't segfault when trailing / is missing
+- fn_select.cw: handle args
+B rc.cw: (rc_token) bug at end of line detection
+F fn_colon
+F arguments for bindable functions
+B tty.cw: (tty_readkey): fixed bug in multi-char read
+F ftp.cw: (ftp_cat): update status at most once a second
+B main.cw, display.cw, ftp.cw: init_disp after opening connection
+
+Mar 30 1996 (0.4)
+B main.cw: (main) crashes when TERM is unknown -- fixed
+B tty.cw: check for window size & size change
+B display.cw (escape_disp, reenter_disp) don't redraw if disp_quiet
+B main.cw: doesn't suspend on SIG_TSTP
+B tty.cw: (tty_init) check for _POSIX_DISABLED in V...
+B Makefile.am: check what gets distributed
+B catch signals and restore term
+P tty.cw: (tty_init) VWERASE is VWERSE on AIX
+F use automake
+B display.cw: (win_line) problem with lines of length tty_lines-1 (e.g.
+	ftp.giga.or.at /)
+B display.cw: (disp_dir) problem with dirs of lenght win_lines+1 (e.g.
+	ftp.giga.or.at /pub/hacker)
+F support cursor keys
+* display.cw: (read_string) use ERASE, WERASE, KILL instead of '\b' etc.
+* wrote key name parser/printer
+* rewrote without curses (termcap)
+* clear screen before escaping curses (conditionally)
+
+??? (0.3b)
+* worked around realloc bug on SunOS [readdir.cw]
+* added strerror to LIBSRCS [Makfile.in, configure.in, additional.cw]
+* fixed bugs in read_netrc [main.cw]
+
+Dec 10 1995 (0.3a)
+* standard targets (intstall, clean, etc.) [Makefile.in, configure.in]
+* parse .netrc [main.cw]
+* if start directry fails, retain error message from ftp_cd [main.cw]
+
+Dec  9 1995 (0.3)
+* call fclose after ferror [make-bind.cw]
+* reformat source to comply to guidelines [*.cw]
+* added disp_prompt_char [display.cw]
+* set cbreak in reenter_disp [display.cw]
+* shell escape [fn_basic.cw, bindings.desc]
+* get user address (for anonymous password) [main.cw]
+* fixed dist and web-dist targets [Makefile.in]
+* added configure script [configure.in]
+
+Oct 10 1995 (0.2c)
+* handle standard compliant multiline responses
+* handle nonexistent startup directory
+
+Sep 10 1995 (0.2b)
+* show ``password'' when anonymous
+* strip trailing slash in dir names
+* include header line in .fn files
+* make transfer mode on download settable
+
+Sep  3 1995 (0.2a)
+* handle ~user dir syntax
+* parse urls on command line
+* handle symlinks
+* display empty listing if dir unreadable
+
+Sep  1 1995 (0.2)
+* include files needed for distribution (.fn, bindings.desc, make-bind)
+* help function
+* generate bindings
+* move fn type to table, not return value; add help string
+* aux_view, fn_enter_retr, fn_enter_view, fn_enter, fn_retr 
+
+Aug 31 1995 (0.1a)
+* remove magic values from aux_scroll in fn_cdup
+* fn_cd
+* handle error response in ls
+* optimize cwd command usage
+* get linewise in ascii mode
+
+Aug 29 1995 (0.1)
+* version string
+* parse unix dirlist
+* get local host address
+* fn_goto
+* print read bytes (ftp_cat)
+* curses exit
+* select parent in fn_cdup

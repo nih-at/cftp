@@ -88,9 +88,10 @@ void fn_help(char **args)
     int what, c, i;
     char *s;
 
-    what = read_char("Help on <F>unction, <K>ey, or <O>ption? ");
+    what = read_char("Help on <f>unction, <k>ey, or <o>ption "
+		     "(shift for list)? ");
 
-    switch (tolower(what)) {
+    switch (what) {
     case 'f':
 	s = read_string("Function: ", 1);
 	if (s == NULL || s[0] == '\0') {
@@ -205,10 +206,11 @@ void fn_lcd(char **args)
 	if (freep)
 	    free(lwd);
 
-	lwd = getcwd(NULL, 1024);
-	if (!rc_inrc)
+	if (!rc_inrc) {
+	    lwd = getcwd(NULL, 1024);
 	    disp_status("Current local directory: %s", lwd);
-	free(lwd);
+	    free(lwd);
+	}
 }
 
 

@@ -1,3 +1,11 @@
+1997-10-24  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* main.c: (main): moved version tail text variable version_tail;
+	adapted to example in GNU standards 97/07/4.
+	(deurl): fixed double increment of s in single statement.
+
+	* fn_basic.c (fn_lcd): don't get cwd if rc_inrc.
+
 1997-10-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* fn_basic.c (fn_set): handle enum options.
