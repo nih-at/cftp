@@ -23,15 +23,17 @@
 
 
 #include <stdio.h>
-#include <netdb.h>
+#include <stdlib.h>
 #include <string.h>
+#include <netdb.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <errno.h>
 
+#include "display.h"
+
 extern char *prg;
-extern int disp_active; /* init_disp was called; use disp_status for errors */
 
 #ifndef H_ERRNO_DECLARED
 extern int h_errno;
