@@ -1,9 +1,11 @@
 ! compatibility checks
+* fix -Wall warnings (libgen.h for basename)
 * fix warnings in GNU source (tparam, getopt)
 * fix compile on HPUX (struct sockaddr)
 * feature recognition and handling
 * complete getaddrinfo replacement
 * check warnings on NextSTEP
+* display progress when reading directory listing
 * rethink directory format auto detection logic
 * remove broken getdomain replacement, use user@
 * move fntable.[ch].proto into mkfntab-[ch].m4

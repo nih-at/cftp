@@ -3,7 +3,7 @@ dnl Process this file with autoconf to produce a configure script.
 dnl init
 
 AC_INIT(fn_bind.c)
-AM_INIT_AUTOMAKE(cftp, 0.9.3b)
+AM_INIT_AUTOMAKE(cftp, 0.10)
 AM_CONFIG_HEADER(config.h)
 
 # We want these before the checks, so the checks can modify their values.
