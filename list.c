@@ -1,5 +1,5 @@
 /*
-  $NiH: list.c,v 1.20 2002/09/17 11:59:46 dillo Exp $
+  $NiH: list.c,v 1.21 2002/09/27 16:35:01 dillo Exp $
 
   list.c -- display lists
   Copyright (C) 1996-2002 Dieter Baron
@@ -222,6 +222,9 @@ list_refill(struct list *list, int top, int n, int clreolp)
 void
 list_desel(struct list *list, int top, int sel)
 {
+    if (sel < 0 || sel >= list->len)	/* happens on empty lists */
+	return;
+    
     tty_goto(0, win_top+sel-top);
     list_line(list, sel, 0, 0);
 }
@@ -232,6 +235,9 @@ list_desel(struct list *list, int top, int sel)
 void
 list_sel(struct list *list)
 {
+    if (list->cur < 0 || list->cur >= list->len)
+	return;
+    
     tty_goto(0, win_top+list->cur-list->top);
     list_line(list, list->cur, 1, 0);
 }

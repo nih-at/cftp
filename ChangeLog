@@ -1,3 +1,9 @@
+2003-04-08  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* list.c (list_desel, list_sel): bounds check line to be
+	(de)selected.  This is (neccessarily) out of bounds for empty
+	list.
+
 2003-01-29  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (_ftp_update_transfer): don't estimate time of completion
