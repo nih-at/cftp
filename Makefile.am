@@ -52,6 +52,8 @@ fntable.h : $(FUNCS) fntable.h.proto mkfntab-h.m4
 	m4 mkfntab-h.m4 $(FUNCS) endall.m4 >> fntable.h
 	sed -e '1,/^----/ d' fntable.h.proto >> fntable.h
 
+fntable.o: fntable.c fntable.h
+
 bindings.c : mkbind bindings.desc fntable.c
 	./mkbind
 
