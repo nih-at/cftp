@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.18 2001/12/23 03:09:20 dillo Exp $
+  $NiH: sftp.c,v 1.19 2001/12/23 05:18:43 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001 Dieter Baron
@@ -422,7 +422,7 @@ _sftp_log_packet(int dir, struct packet *pkt)
     };
     static char *dir_pre[] = { "-> ", "<= " };
 
-    char buf[80], *fmt, *bp, *fp, *fq, *pp;
+    char buf[8192], *fmt, *bp, *fp, *fq, *pp;
     int n;
 
     if (pkt->type >= SSH_FXP_INIT && pkt->type <= SSH_FXP_RENAME)
@@ -443,6 +443,8 @@ _sftp_log_packet(int dir, struct packet *pkt)
 	sprintf(bp, "[%d] ", pkt->id);
 	bp += strlen(bp);
     }
+
+    /* XXX: check for buf overrun */
 
     fp=fmt;
     pp = pkt->dat;
@@ -470,7 +472,7 @@ _sftp_log_packet(int dir, struct packet *pkt)
 	    pp += 8;
 	    break;
 	case 'm':
-	    strcat(bp, _sftp_strerror(_sftp_get_uint32(pp, &pp)));
+	    strcpy(bp, _sftp_strerror(_sftp_get_uint32(pp, &pp)));
 	    break;
 	case 'p':
 	    _sftp_log_pflags(bp, pp, &pp);

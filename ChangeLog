@@ -1,3 +1,8 @@
+2002-01-07  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* sftp.c (_sftp_log_packet): enlarge buf, use strcpy instead of
+	strcat.
+
 2001-12-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* sftp.c (_sftp_log_packet): use sprintf-like format strings.
