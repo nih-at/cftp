@@ -44,61 +44,53 @@ extern int h_errno;
 int
 sopen(char *host, char *service)
 {
-    int s;
-    struct hostent *hp;
-    struct sockaddr_in sa;
-    u_short port;
-    struct servent *serv;
+    struct addrinfo hints, *res0, *res;
+    int s, err;
+    char *cause;
+    
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    
+    if ((err=getaddrinfo(host, service, &hints, &res0)) != 0) {
+	if (disp_active)
+	    disp_status("cannot get host/service %s/%s: %s\n",
+			host, service, gai_strerror(err));
+	else
+	    fprintf(stderr, "%s: can't get host/service %s/%s: %s\n",
+		    prg, host, service, gai_strerror(err));
+	return -1;
+    }
 
-    if ((serv = getservbyname(service, "tcp")) == NULL) {
-	if ((port=atoi(service)) == 0 && service[0] != '0') {
-	    if (disp_active)
-		disp_status("unknown service: %s", service);
-	    else
-		fprintf(stderr, "%s: unknown service: %s\n",
-			prg, service);
-	    return(-1);
+    s = -1;
+    for (res = res0; res; res = res->ai_next) {
+	if ((s=socket(res->ai_family, res->ai_socktype,
+		      res->ai_protocol)) < 0) {
+	    cause = "create socket";
+	    continue;
 	}
-	else
-	    port = htons(port);
-    }
-    else
-	port = (u_short)serv->s_port;
-    
-    if (inet_aton(host, &sa.sin_addr) == 0) {
-	if ((hp = gethostbyname(host)) == NULL) {
-	    if (disp_active)
-		disp_status("can't get host %s: %s",
-			    host, hstrerror(h_errno));
-	    else
-		fprintf(stderr, "%s: can't get host %s: %s\n",
-			prg, host, hstrerror(h_errno));
-	    return(-1);
+
+	if (connect(s, res->ai_addr, res->ai_addrlen) < 0) {
+	    cause = "connect";
+	    close(s);
+	    s = -1;
+	    continue;
 	}
-	memcpy(&sa.sin_addr, hp->h_addr, hp->h_length);
+
+	/* okay we got one */
+	break;
     }
-    sa.sin_family = AF_INET;
-    sa.sin_port = port;
-    
-    if ((s = socket(sa.sin_family, SOCK_STREAM, 0)) < 0) {
+    if (s < 0) {
 	if (disp_active)
-	    disp_status("can't allocate socket: %s\n",
-			strerror(errno));
+	    disp_status("cannot %s: %s\n",
+			cause, strerror(errno));
 	else
-	    fprintf(stderr, "%s: can't allocate socket: %s\n",
-		    prg, strerror(errno));
-	return(-1);
+	    fprintf(stderr, "%s: cannot %s: %s\n",
+		    prg, cause, strerror(errno));
     }
-    if (connect(s, (struct sockaddr *)&sa, sizeof(sa)) < 0) {
-	if (disp_active)
-	    disp_status("can't connect to %s: %s",
-			host, strerror(errno));
-	else
-	    fprintf(stderr, "%s: can't connect to %s: %s\n",
-		    prg, host, strerror(errno));
-	return(-1);
-    }
-    return(s);
+    freeaddrinfo(res0);
+
+    return s;
 }
 
 

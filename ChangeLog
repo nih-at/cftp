@@ -1,3 +1,7 @@
+2000-12-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* sockets.c (sopen): new version with inet6 support.
+
 2000-12-04  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* configure.in: check for presence of getaddrinfo.
