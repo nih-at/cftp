@@ -3,18 +3,18 @@ F improve fn_lcd, add fn_show_ld
 F save dir listing
 F get .tar[.gz] files
 F support for stor, dele
-F display.cw: (disp_dir) make max no of lines to scroll user setable
-F tty.cw: (tty_readkey) make VTIME value user setable
-F readdir.cw: support other dir listing formats (vms, dos, descritpive, ...)
+F display.c: (disp_dir) make max no of lines to scroll user setable
+F tty.c: (tty_readkey) make VTIME value user setable
+F readdir.c: support other dir listing formats (vms, dos, descritpive, ...)
 F tag files: edit/clear tags, detached download
 F tag: if tagged is directory, try .tar.gz, .tar.Z, .tar
-F fn_tag.cw: (fn_gettags) display tags list while downloading
+F fn_tag.c: (fn_gettags) display tags list while downloading
 F use `size' to determine unkown size (of links and tags)
 F quiet if in background
 F automatically deidle connection
 C functions.texi: fix bad next pointer in last section (to first command)
 F if url is file, download
-C display.cw: (disp_prompt_char) return after first key, not after newline
+C display.c: (disp_prompt_char) return after first key, not after newline
 F functions.texi: include default bindings
 ---------------------------------------------------------------- till beta
 F abort transfer
@@ -24,18 +24,19 @@ F tag files: tag regexp
 F forced reload of directory listing
 B handle immensly long lines in ftp_gets (malloc failure)
 F .cftprc 
-P display.cw: check for missing capabilities
-F display.cw: (disp_redir) don't clear screen, overwrite
+P display.c: check for missing capabilities
+F display.c: (disp_redir) don't clear screen, overwrite
 P configure.in: add -posix for NeXTStep
 B propagate errors (conn hung or eof?) up to fn_gettags
 F cftp.texi: introduction, invoking, cftprc
-C fn_basic.cw: docu for bind
-F fn_basic.cw: (fn_help) help for `f'unktions, `k'eys, and `o'ptions
+C fn_basic.c: docu for bind
+F fn_basic.c: (fn_help) help for `f'unktions, `k'eys, and `o'ptions
 C untangle fn_* files
 F (fn_isearch) search backwards
 B (fn_isearch) repeaded search sets start to wrong match
 B segfaults if called `cftp -u user host relative-dir'
 ----------------------------------------------- done
+B main.c: (main) canonify pathname if not starting with `/'
 B tty.c: (tty_init) sanity checks on screen size detecion
 P hstrerror.c: AIX: Service unavailable (5); include h_errno in unknown msg
 

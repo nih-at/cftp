@@ -76,7 +76,7 @@ main(int argc, char **argv)
 	char *host, *user = NULL, *port = NULL, *pass = NULL, *wdir = NULL;
 	int keep_pass = 1;
 	int c, err = 0;
-	char *b;
+	char *b, *b2;
 	int check_alias;
 
 	prg = argv[0];
@@ -177,12 +177,29 @@ main(int argc, char **argv)
 		exit(1);
 	}
 	
-	if (wdir == NULL)
-	    wdir = ftp_pwd();
+	if (wdir == NULL) {
+	    if ((wdir=ftp_pwd()) == NULL)
+		wdir = strdup("/");
+	}
+	else if (wdir[0] != '/') {
+	    if ((b=ftp_pwd()) == NULL)
+		wdir = strdup("/");
+	    else {
+		if (b[strlen(b)-1] == '/')
+		    b[strlen(b)-1] = '\0';
+		b2 = wdir;
+		if ((wdir=(char *)malloc(strlen(b2)+strlen(b)+2)) == NULL) {
+		    exit_disp();
+		    fprintf(stderr, "%s: malloc failure\n", prg);
+		    exit(1);
+		}
+		sprintf(wdir, "%s/%s", b, b2);
+	    }
+	}
 	
 	if ((dir=ftp_cd(wdir)) == NULL) {
 	    if ((wdir=ftp_pwd()) == NULL)
-		wdir="/";
+		wdir = strdup("/");
 	    if ((dir=ftp_cd(wdir)) == NULL) {
 		escape_disp(0);
 		ftp_close();
@@ -228,17 +245,17 @@ parse_url(char *url, char **user, char **host, char **port, char **dir)
     
     if ((q=strchr(url, '@')) != NULL) {
 	*q = '\0';
-	*user = url;
+	*user = strdup(url);
 	url = q+1;
 	userp = 1;
     }
 
     if ((q=strchr(url, ':')) != NULL) {
 	*q = '\0';
-	*port = q+1;
+	*port = strdup(q+1);
     }
 	
-    *host = url;
+    *host = strdup(url);
 
     if (p && *p != '\0') {
 	if ((*dir=(char *)malloc(strlen(p)+3)) == NULL) {
