@@ -1,0 +1,6 @@
+1997-10-08  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* ftp.c (ftp_login): Set status.remote.path to NULL after freeing.
+
+	* status.c (status_do): Print space in "host... ...path".
+
