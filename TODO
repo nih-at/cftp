@@ -4,6 +4,7 @@
 ! test ftp_cat error cases
 ! allow reading response if initial connect/login fails
 ! stop when local disk is full during download
+- transfer rate: disable total length when got gets bigger
 - move ftp_gets to util.c and rename
 - move history from ftp.c
 - add function comments
