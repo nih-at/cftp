@@ -31,12 +31,13 @@ F display.cw: (disp_redir) don't clear screen, overwrite
 P configure.in: add -posix for NeXTStep
 B propagate errors (conn hung or eof?) up to fn_gettags
 F cftp.texi: introduction, invoking, cftprc
-F user options
 C fn_basic.cw: docu for bind
 B show cursor on linux console
 F fn_basic.cw (fn_help) help for `f'unktions, `k'eys, and `o'ptions
 C fn_tags.cw (fn_listtag) display `no tagged files'
 ----------------------------------------------- done
+F user options
+
 Jun 25 (0.5a)
 F fn_basic.cw: (fn_bind) new function
 B fn_tags.cw: (fn_loadtag) relative names relative to current dir
