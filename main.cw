@@ -49,10 +49,16 @@ main(int argc, char **argv)
 	prg = argv[0];
 	
 	signal(SIGPIPE, SIG_IGN);
-
+	
 	@<process command line arguments@>
 	
 	init_disp();
+	signal(SIGINT, sig_end);
+	signal(SIGHUP, sig_end);
+	signal(SIGTERM, sig_end);
+	signal(SIGSTOP, sig_escape);
+	signal(SIGTSTP, sig_escape);
+	signal(SIGCONT, sig_reenter);
 
 	if (ftp_open(host, user, pass) == -1) {
 		exit_disp();
@@ -347,4 +353,32 @@ read_netrc(char *host, char **user, char **pass, char **wdir)
 		}
 	}
 	fclose(f);
+}
+
+
+@ signal handler: reset & restore term
+
+@d<prototypes@>
+void sig_end(int i);
+void sig_escape(int i);
+void sig_reenter(int i);
+
+@u
+void
+sig_end(int i)
+{
+    exit_disp();
+    exit(1);
+}
+
+void
+sig_escape(int i)
+{
+    escape_disp(0);
+}
+
+void
+sig_reenter(int i)
+{
+    reenter_disp();
 }
