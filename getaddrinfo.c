@@ -33,6 +33,10 @@
 #include "config.h"
 #include "sockets.h"
 
+#ifndef H_ERRNO_DECLARED
+extern int h_errno;
+#endif
+
 
 
 int
@@ -87,8 +91,17 @@ getaddrinfo(const char *nodename, const char *servname,
     }
     else {
 	if ((hp = gethostbyname(nodename)) == NULL) {
-	    /* XXX: switch on herrno */
-	    return EAI_NODATA;
+	    switch (h_errno) {
+	    case TRY_AGAIN:
+		return EAI_AGAIN;
+	    case HOST_NOT_FOUND:
+		return EAI_NONAME;
+	    case NO_DATA:
+		return EAI_NODATA;
+	    case NO_RECOVERY:
+	    default:
+		return EAI_FAIL;
+	    }
 	}
 	addr_list = hp->h_addr_list;
 	addr_len = hp->h_length;
