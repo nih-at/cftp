@@ -1,5 +1,4 @@
-* fix -Wall warnings
-* fix warnings in GNU source (tparam, getopt)
+* fix -Wall warnings (option and function array, termcap functions, getopt.c)
 * fix compile on HPUX (struct sockaddr)
 * feature recognition and handling
 * complete getaddrinfo replacement
@@ -13,8 +12,6 @@
 * fix transfer rate display
 * detect hung data connection
 * ftp_retr: check 150 format on different servers
-* termcap.h or similar (for -Wall): which one?!
-* clean up code for -Wall (fn_select - zzzz)
 * handle 8 bit keys
 * problems with listing of ftp://ftp.unicode.org/ and 128.223.95.87
 	(file names short)
