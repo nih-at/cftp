@@ -1,8 +1,0 @@
-#!/bin/sh
-
-for n in "$@"
-do
-	mv "$n" "$n".b
-	sed -e '/^#line/ d' "$n.b" > "$n"
-	rm "$n.b"
-done
