@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.17 2001/12/23 02:54:20 dillo Exp $
+  $NiH: sftp.c,v 1.18 2001/12/23 03:09:20 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001 Dieter Baron
@@ -106,9 +106,10 @@ static int _sftp_get_packet(struct packet *p, int flags);
 static char *_sftp_get_string(char *buf, char **endp);
 static unsigned int _sftp_get_uint32(char *p, char **endp);
 static unsigned long long _sftp_get_uint64(char *p, char **endp);
-static void _sftp_log_handle(char *buf, char *pre, char *cmd, char *data);
+static void _sftp_log_handle(char *buf, char *data, char **endp);
 static void _sftp_log_packet(int dir, struct packet *pkt);
-static void _sftp_log_str(char *buf, char *pre, char *cmd, char *data);
+void _sftp_log_pflags(char *buf, char *data, char **endp);
+static void _sftp_log_str(char *buf, char *data, char **endp);
 static void _sftp_make_packet(struct packet *pkt, int type, char *end);
 static int _sftp_parse_name(char *p, char **endp, direntry *e);
 static int _sftp_parse_status(struct packet *pkt);
@@ -389,84 +390,119 @@ static void
 _sftp_log_packet(int dir, struct packet *pkt)
 {
     static char *req[] = {
-	"init", "version", "open", "close", "read", "write",
-	"lstat", "fstat", "setstat", "fsetstat", "opendir",
-	"readdir", "remove", "mkdir", "rmdir", "realpath", "stat",
-	"rename"
+	"init %I",
+	"version %I",
+	"open %s %p %a",
+	"close %h",
+	"read %h @ %l + %i",
+	"write %h @ %l + %i",
+	"lstat %s",
+	"fstat %h",
+	"setstat, %s %a",
+	"fsetstat %h %a",
+	"opendir %s",
+	"readdir %h",
+	"remove %s",
+	"mkdir %s",
+	"rmdir %s",
+	"realpath %s",
+	"stat %s",
+	"rename %s %s"
     };
     static char *rsp[] = {
-	"status", "handle", "data", "name", "attrs"
+	"status %m",
+	"handle %h",
+	"data %i",
+	"name %i %s",
+	"attrs %a"
     };
-    static char *dir_pre[] = { "->", "<=" };
+    static char *ext[] = {
+	"extended %s",
+	"extended-reply"
+    };
+    static char *dir_pre[] = { "-> ", "<= " };
 
-    char buf[80], *pre, *cmd;
-
-    pre = dir_pre[dir!=0];
+    char buf[80], *fmt, *bp, *fp, *fq, *pp;
+    int n;
 
     if (pkt->type >= SSH_FXP_INIT && pkt->type <= SSH_FXP_RENAME)
-	cmd = req[pkt->type-SSH_FXP_INIT];
+	fmt = req[pkt->type-SSH_FXP_INIT];
     else if (pkt->type >= SSH_FXP_STATUS && pkt->type <= SSH_FXP_ATTRS)
-	cmd = rsp[pkt->type-SSH_FXP_STATUS];
-    else
-	cmd = NULL;
-
-    switch (pkt->type) {
-    case SSH_FXP_INIT:
-    case SSH_FXP_VERSION:
-	sprintf(buf, "%s %s %d", pre, cmd, pkt->id);
-	break;
-
-    case SSH_FXP_OPEN:
-	/* XXX: include flags & attrs */
-    case SSH_FXP_RENAME:
-	/* XXX: include new name */
-    case SSH_FXP_SETSTAT:
-	/* XXX: include attrs */
-    case SSH_FXP_OPENDIR:
-    case SSH_FXP_REALPATH:
-    case SSH_FXP_REMOVE:
-    case SSH_FXP_MKDIR:
-    case SSH_FXP_RMDIR:
-    case SSH_FXP_LSTAT:
-	_sftp_log_str(buf, pre, cmd, pkt->dat);
-	break;
-
-    case SSH_FXP_CLOSE:
-    case SSH_FXP_READDIR:
-    case SSH_FXP_HANDLE:
-    case SSH_FXP_FSETSTAT:
-	/* XXX: include attrs */
-    case SSH_FXP_FSTAT:
-	_sftp_log_handle(buf, pre, cmd, pkt->dat);
-	break;
-	
-    case SSH_FXP_READ:
-    case SSH_FXP_WRITE:
-	/* XXX: parse and log data */
-    case SSH_FXP_ATTRS:
-	sprintf(buf, "%s %s", pre, cmd);
-	break;
-
-    case SSH_FXP_STATUS:
-	sprintf(buf, "%s %s %s", pre, cmd,
-		_sftp_strerror(_sftp_get_uint32(pkt->dat, NULL)));
-	break;
-	    
-    case SSH_FXP_DATA:
-	sprintf(buf, "%s %s %d", pre, cmd, _sftp_get_uint32(pkt->dat, NULL));
-	break;
-
-    case SSH_FXP_NAME:
-	/* XXX: if count == 1, include name */
-	sprintf(buf, "%s %s %d", pre, cmd, _sftp_get_uint32(pkt->dat, NULL));
-	break;
-
-    default:
-	sprintf(buf, "%s unknown packet type %d", pre, pkt->type);
-
+	fmt = rsp[pkt->type-SSH_FXP_STATUS];
+    else if (pkt->type >= SSH_FXP_EXTENDED
+	     && pkt->type <= SSH_FXP_EXTENDED_REPLY) {
+	fmt = ext[pkt->type-SSH_FXP_EXTENDED];
     }
-    
+    else
+	fmt = "unknown packet type %t";
+
+    strcpy(buf, dir_pre[dir!=0]);
+    bp = buf+strlen(buf);
+
+    if (pkt->type != SSH_FXP_INIT && pkt->type != SSH_FXP_VERSION) {
+	sprintf(bp, "[%d] ", pkt->id);
+	bp += strlen(bp);
+    }
+
+    fp=fmt;
+    pp = pkt->dat;
+    while ((fq=strchr(fp, '%'))) {
+	n = fq-fp;
+	if (n) {
+	    strncpy(bp, fp, n);
+	    bp += n;
+	}
+
+	switch (fq[1]) {
+	case 'a':
+	    *bp = '\0';
+	    break;
+	case 'h':
+	    _sftp_log_handle(bp, pp, &pp);
+	    break;
+	case 'I':
+	    sprintf(bp, "%i", pkt->id);
+	    break;
+	case 'i':
+	    sprintf(bp, "%u", _sftp_get_uint32(pp, &pp));
+	    break;
+	case 'l':
+	    pp += 8;
+	    break;
+	case 'm':
+	    strcat(bp, _sftp_strerror(_sftp_get_uint32(pp, &pp)));
+	    break;
+	case 'p':
+	    _sftp_log_pflags(bp, pp, &pp);
+	    break;
+	case 's':
+	    _sftp_log_str(bp, pp, &pp);
+	    break;
+	case 'T':
+	    sprintf(bp, "%u", pkt->type);
+	    break;
+	default:
+	    bp[0] = '%';
+	    bp[1] = fq[1];
+	    break;
+	}
+
+	fp = fq+2;
+	bp += strlen(bp);
+    }
+    strcpy(bp, fp);
+
     disp_status(DISP_PROTO, "%s", buf);
+
+    if (pkt->type == SSH_FXP_INIT || pkt->type == SSH_FXP_VERSION) {
+	bp = buf+3;
+	while (pp < pkt->dat+pkt->plen) {
+	    _sftp_log_str(bp, pp, &pp);
+	    disp_status(DISP_HIST, "%s", buf);
+	    pp += _sftp_get_uint32(pp, NULL) + 4;
+	}
+    }
+
 }
 
 
@@ -1038,34 +1074,69 @@ sftp_pwd(void)
 
 
 static void
-_sftp_log_str(char *buf, char *pre, char *cmd, char *data)
+_sftp_log_str(char *buf, char *data, char **endp)
 {
     int len;
     char *p;
 
     len = _sftp_get_uint32(data, &p);
-    sprintf(buf, "%s %s \"%.*s\"", pre, cmd, len, p);
+    sprintf(buf, "\"%.*s\"", len, p);
+
+    if (endp)
+	*endp = p+len;
 }
 
 
 
 static void
-_sftp_log_handle(char *buf, char *pre, char *cmd, char *data)
+_sftp_log_handle(char *buf, char *data, char **endp)
 {
     int i, len;
-    char *p, *q;
+    char *p;
 
-    len = _sftp_get_uint32(data, &q);
-    sprintf(buf, "%s %s <", pre, cmd);
-    p = buf+strlen(buf);
+    len = _sftp_get_uint32(data, &p);
+    *(buf++) = '<';
 
     for (i=0; i<len; i++) {
 #define HEX_DIGIT(x) ((x) < 10 ? (x)+'0' : (x)+'a')
-	*(p++) = HEX_DIGIT(q[i]>>4);
-	*(p++) = HEX_DIGIT(q[i]&0xf);
+	*(buf++) = HEX_DIGIT(p[i]>>4);
+	*(buf++) = HEX_DIGIT(p[i]&0xf);
 #undef HEX_DIGIT
     }
-    strcpy(p, ">");
+    strcpy(buf, ">");
+
+    if (endp)
+	*endp = p+len;
+}
+
+
+
+/*
+  Put string representation of open pflags at DATA into BUF.  If ENDP
+  is non-NULL, point it at next unprocessed byte.
+*/
+
+void
+_sftp_log_pflags(char *buf, char *data, char **endp)
+{
+    static char *fl[] = {
+	"read", "write", "append", "creat", "trunc", "excl"
+    };
+    
+    int flags, i, n;
+
+    flags = _sftp_get_uint32(data, endp);
+
+    n = 0;
+    *(buf++) = '(';
+    for (i=0; i<sizeof(fl)/sizeof(fl[0]); i++) {
+	if (flags & (1<<i)) {
+	    sprintf(buf, "%s%s", (n ? ", " : ""), fl[i]);
+	    buf += strlen(buf);
+	    n = 1;
+	}
+    }
+    strcpy(buf, ")");
 }
 
 

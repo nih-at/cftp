@@ -1,5 +1,8 @@
 2001-12-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* sftp.c (_sftp_log_packet): use sprintf-like format strings.
+	(_sftp_log_pflags) new function.
+	
 	* mkfntab-c.m4, mkfntab-h.m4, mkfntexi.m4, fntable.fn,
 	mkoptab-c.m4, mkoptab-h.m4, mkoptexi.m4, options.op: include rcs
 	ids in included files.

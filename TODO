@@ -3,10 +3,9 @@
 ! sftp: ^c kills ssh subprocess (how to avoid?!)
 ! test ftp_cat error cases
 ! allow reading response if initial connect/login failes
-- finish _sftp_log_packet
 - move ftp_gets to util.c and rename
 - move history from ftp.c
-- add rcsid to m4 created files
+- add function comments
 
 * ftp.univie.ac.at: abort hoses connection state
 * sftp options: ssh command & flags, sftp server filename
