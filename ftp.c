@@ -121,25 +121,25 @@ ftp_init(void)
 int
 ftp_open(char *host, char *port)
 {
-	int fd;
-
-	if ((fd=sopen(host, port)) == -1)
-		return -1;
-
-	if (ftp_gethostaddr(fd) == -1) {
-		close(fd);
-		return -1;
-	}
-
-	conin = fdopen(fd, "r");
-	conout = fdopen(fd, "w");
-
-	if (!conin || !conout) {
-		close(fd);
-		return -1;
-	}
-
-	return 0;
+    int fd;
+    
+    if ((fd=sopen(host, port)) == -1)
+	return -1;
+    
+    if (ftp_gethostaddr(fd) == -1) {
+	close(fd);
+	return -1;
+    }
+    
+    conin = fdopen(fd, "r");
+    conout = fdopen(fd, "w");
+    
+    if (!conin || !conout) {
+	close(fd);
+	return -1;
+    }
+    
+    return 0;
 }
 
 
@@ -244,20 +244,20 @@ ftp_reconnect(void)
 int
 ftp_close(void)
 {
-	int err = 0;
-
-	if (conin == NULL)
-	    return 0;
-
-	ftp_put("quit");
-	if (ftp_resp() != 221)
-		err = 1;
-
-	fclose(conin);
-	fclose(conout);
-	conin = conout = NULL;
-
-	return err;
+    int err = 0;
+    
+    if (conin == NULL)
+	return 0;
+    
+    ftp_put("quit");
+    if (ftp_resp() != 221)
+	err = 1;
+    
+    fclose(conin);
+    fclose(conout);
+    conin = conout = NULL;
+    
+    return err;
 }
 
 
@@ -265,47 +265,47 @@ ftp_close(void)
 directory *
 ftp_list(char *path)
 {
-	directory *dir;
-	int fd;
-	FILE *f;
-
-	if (ftp_mode('a') == -1 || ftp_cwd(path) == -1)
-		return NULL;
-
-	free(status.remote.path);
-	status.remote.path = strdup(path);
-	status_do(bs_remote);
-
-	if ((fd=ftp_port()) == -1)
-		return NULL;
-	
-	ftp_put("list");
-	if (ftp_resp() != 150) {
-		close(fd);
-		dir = (directory *)malloc(sizeof(directory));
-		dir->line = (direntry *)malloc(sizeof(direntry));
-		dir->path = strdup(path);
-		dir->len = 0;
-		dir->cur = dir->top = 0;
-		dir->size = sizeof(struct direntry);
-		dir->line->line = strdup("");
-		dir->line->type = 'x';
-		dir->line->name = strdup("");
-		dir->line->link = NULL;
-		return dir;
-	}
-	if ((f=ftp_accept(fd, "r")) == NULL)
-	    return NULL;
-	
-	dir = read_dir(f);
-	if (dir)
-	    dir->path = strdup(path);
-
-	fclose(f);
-
-	ftp_resp();
-
+    directory *dir;
+    int fd;
+    FILE *f;
+    
+    if (ftp_mode('a') == -1 || ftp_cwd(path) == -1)
+	return NULL;
+    
+    free(status.remote.path);
+    status.remote.path = strdup(path);
+    status_do(bs_remote);
+    
+    if ((fd=ftp_port()) == -1)
+	return NULL;
+    
+    ftp_put("list");
+    if (ftp_resp() != 150) {
+	close(fd);
+	dir = (directory *)malloc(sizeof(directory));
+	dir->line = (direntry *)malloc(sizeof(direntry));
+	dir->path = strdup(path);
+	dir->len = 0;
+	dir->cur = dir->top = 0;
+	dir->size = sizeof(struct direntry);
+	dir->line->line = strdup("");
+	dir->line->type = 'x';
+	dir->line->name = strdup("");
+	dir->line->link = NULL;
 	return dir;
+    }
+    if ((f=ftp_accept(fd, "r")) == NULL)
+	return NULL;
+    
+    dir = read_dir(f);
+    if (dir)
+	dir->path = strdup(path);
+    
+    fclose(f);
+    
+    ftp_resp();
+    
+    return dir;
 }
 
 
@@ -313,24 +313,24 @@ ftp_list(char *path)
 directory *
 ftp_cd(char *wd, int force)
 {
-	directory *dir;
-	char *nwd;
+    directory *dir;
+    char *nwd;
+    
+    nwd = canonical(wd, NULL);
+    
+    dir = get_dir(nwd, force);
+    if (dir != NULL) {
+	free(ftp_lcwd);
+	ftp_lcwd = nwd;
 	
-	nwd = canonical(wd, NULL);
-
-	dir = get_dir(nwd, force);
-	if (dir != NULL) {
-		free(ftp_lcwd);
-		ftp_lcwd = nwd;
-		
-		free(status.remote.path);
-		status.remote.path = strdup(ftp_lcwd);
-		status_do(bs_remote);
-	}
-	else
-		free(nwd);
-
-	return dir;
+	free(status.remote.path);
+	status.remote.path = strdup(ftp_lcwd);
+	status_do(bs_remote);
+    }
+    else
+	free(nwd);
+    
+    return dir;
 }
 	
 
@@ -383,31 +383,31 @@ ftp_retr(char *file, int mode, long *startp, long *sizep)
 FILE *
 ftp_stor(char *file, int mode)
 {
-	int fd, resp;
-	char *dir, *name, *can;
-	FILE *fin;
-
-	can = canonical(file, NULL);
-	dir = dirname(can);
-	name = (char *)basename(can);
-	
-	if (ftp_mode(mode) == -1 || ftp_cwd(dir) == -1)
-		return NULL;
-
-	if ((fd=ftp_port()) == -1)
-		return NULL;
-	
-	ftp_put("stor %s", name);
-	if ((resp=ftp_resp()) != 150 && resp != 125) {
-		close(fd);
-		return NULL;
-	}
-	if ((fin=ftp_accept(fd, "w")) == NULL) {
-		close(fd);
-		return NULL;
-	}
-
-	return fin;
+    int fd, resp;
+    char *dir, *name, *can;
+    FILE *fin;
+    
+    can = canonical(file, NULL);
+    dir = dirname(can);
+    name = (char *)basename(can);
+    
+    if (ftp_mode(mode) == -1 || ftp_cwd(dir) == -1)
+	return NULL;
+    
+    if ((fd=ftp_port()) == -1)
+	return NULL;
+    
+    ftp_put("stor %s", name);
+    if ((resp=ftp_resp()) != 150 && resp != 125) {
+	close(fd);
+	return NULL;
+    }
+    if ((fin=ftp_accept(fd, "w")) == NULL) {
+	close(fd);
+	return NULL;
+    }
+    
+    return fin;
 }
 
 
@@ -502,33 +502,33 @@ ftp_pwd(void)
 char *
 ftp_gets(FILE *f)
 {
-	char buf[8192], *line;
-	int l;
-
-	if (fgets(buf, 8192, f) == NULL)
-		return NULL;
-
-	line = strdup(buf);
-	l = strlen(line);
-
-	while (line[l-1] != '\n') {
-		if (fgets(buf, 8192, f) == NULL) {
-			free(line);
-			return NULL;
-		}
-		l += strlen(buf);
-		if ((line=realloc(line, l+1)) == NULL) {
-		    disp_status("malloc failure");
-		    return NULL;
-		}
-		strcpy(line+l, buf);
+    char buf[8192], *line;
+    int l;
+    
+    if (fgets(buf, 8192, f) == NULL)
+	return NULL;
+    
+    line = strdup(buf);
+    l = strlen(line);
+    
+    while (line[l-1] != '\n') {
+	if (fgets(buf, 8192, f) == NULL) {
+	    free(line);
+	    return NULL;
 	}
-	if (line[l-2] == '\r')
-		line[l-2] = '\0';
-	else
-		line[l-1] = '\0';
-
-	return line;
+	l += strlen(buf);
+	if ((line=realloc(line, l+1)) == NULL) {
+	    disp_status("malloc failure");
+	    return NULL;
+	}
+	strcpy(line+l, buf);
+    }
+    if (line[l-2] == '\r')
+	line[l-2] = '\0';
+    else
+	line[l-1] = '\0';
+    
+    return line;
 }
 
 
@@ -536,34 +536,34 @@ ftp_gets(FILE *f)
 int
 ftp_put(char *fmt, ...)
 {
-	char buf[8192];
-	va_list argp;
-
-	if (conout == NULL) {
-	    disp_status("not connected");
-	    return -1;
-	}
-
-	va_start(argp, fmt);
-	vsprintf(buf, fmt, argp);
-	va_end(argp);
-
-	if (strncmp(buf, "pass ", 5) == 0 && ftp_anon == 0) {
-		disp_status("-> pass ********");
-		ftp_hist(strdup("-> pass ********"));
-	}
-	else {
-		disp_status("-> %s", buf);
-		ftp_histf("-> %s", buf);
-	}
-	fprintf(conout, "%s\r\n", buf);
-
-	if (fflush(conout) || ferror(conout)) {
-	    disp_status("error writing to server: %s", strerror(errno));
-	    return -1;
-	}
-
-	return 0;
+    char buf[8192];
+    va_list argp;
+    
+    if (conout == NULL) {
+	disp_status("not connected");
+	return -1;
+    }
+    
+    va_start(argp, fmt);
+    vsprintf(buf, fmt, argp);
+    va_end(argp);
+    
+    if (strncmp(buf, "pass ", 5) == 0 && ftp_anon == 0) {
+	disp_status("-> pass ********");
+	ftp_hist(strdup("-> pass ********"));
+    }
+    else {
+	disp_status("-> %s", buf);
+	ftp_histf("-> %s", buf);
+    }
+    fprintf(conout, "%s\r\n", buf);
+    
+    if (fflush(conout) || ferror(conout)) {
+	disp_status("error writing to server: %s", strerror(errno));
+	return -1;
+    }
+    
+    return 0;
 }	
 
 
@@ -771,15 +771,15 @@ ftp_accept(int fd, char *mode)
 int
 ftp_mode(char m)
 {
-	if (m == ftp_curmode)
-		return 0;
-
-	ftp_put("type %c", toupper(m));
-	if (ftp_resp() != 200)
-		return -1;
-
-	ftp_curmode = m;
+    if (m == ftp_curmode)
 	return 0;
+    
+    ftp_put("type %c", toupper(m));
+    if (ftp_resp() != 200)
+	return -1;
+    
+    ftp_curmode = m;
+    return 0;
 }
 
 
@@ -960,21 +960,21 @@ _ftp_update_transfer(char *fmt, long got, long *cur, int old_sec, int new_sec)
 int
 ftp_gethostaddr(int fd)
 {
-	int len;
+    int len;
 	
-	len = sizeof(ftp_addr);
-	if (getsockname(fd, (struct sockaddr *)&ftp_addr, &len) == -1) {
-	    if (disp_active)
-		disp_status("can't get host address: %s",
-			    strerror(errno));
-	    else
-		fprintf(stderr, "%s: can't get host addres: %s\n",
-			prg, strerror(errno));
-	    
-	    return -1;
-	}
-
-	return 0;
+    len = sizeof(ftp_addr);
+    if (getsockname(fd, (struct sockaddr *)&ftp_addr, &len) == -1) {
+	if (disp_active)
+	    disp_status("can't get host address: %s",
+			strerror(errno));
+	else
+	    fprintf(stderr, "%s: can't get host addres: %s\n",
+		    prg, strerror(errno));
+	
+	return -1;
+    }
+    
+    return 0;
 }
 
 
