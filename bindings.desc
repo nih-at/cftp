@@ -8,6 +8,8 @@ bind	c	lcd
 bind	!	shell
 bind	:	colon
 
+bind	t	tag
+
 bind	a	ascii
 bind	i	image
 

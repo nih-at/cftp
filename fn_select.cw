@@ -12,23 +12,9 @@
 #include "display.h"
 #include "ftp.h"
 #include "options.h"
+#include "util.h"
 
 @<local prototypes@>
-
-
-@ basename (this should probably go somewhere else. . .)
-
-@d<local prototypes@>
-char *basename(char *name);
-
-@u
-char *
-basename(char *name)
-{
-    char *p = strrchr(name, '/');
-
-    return (p ? p : name);
-}
 
 
 @ entering a directory.
@@ -47,7 +33,7 @@ aux_enter(char *name)
 	if (d == NULL)
 		return -1;
 
-	curdir = d;
+	change_curdir(d);
 	cursel = curtop = 0;
 
 	disp_dir(curdir, curtop, cursel, 1);
@@ -303,16 +289,13 @@ fn_cdup(char **args)
 		return;
 
 	par = strrchr(curdir->path, '/');
-	curdir = d;
+	change_curdir(d);
 	cursel = 0, curtop = 0;
 
-	if (par && *(par++)!='\0') {
-		for (sel=0; (sel<curdir->num &&
-			     strcmp(curdir->list[sel].name, par)); sel++)
-			;
-		if (sel == curdir->num)
-			sel = 0;
-	}
+	if (par && *(par++)!='\0')
+	    if ((sel=dir_find(curdir, par)) < 0)
+		sel = 0;
+	    
 	aux_scroll(sel-(win_lines/2), sel, 1);
 }
 
@@ -342,7 +325,7 @@ fn_cd(char **args)
     if (d == NULL)
 	return;
 
-    curdir = d;
+    change_curdir(d);
     cursel = curtop = 0;
     
     disp_dir(curdir, curtop, cursel, 1);

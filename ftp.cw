@@ -17,6 +17,7 @@
 #include "sockets.h"
 #include "ftp.h"
 #include "readdir.h"
+#include "util.h"
 
 @<local prototypes@>
 @<local globals@>
@@ -180,47 +181,18 @@ ftp_cd(char *wd)
 	directory *dir;
 	char *nwd, *d, *w, *p;
 	
-	if (wd[0] == '/' || wd[0] == '~') {
-		nwd = strdup(wd);
-		for (p=nwd+strlen(nwd)-1; p>nwd && *p=='/'; --p)
-			*p='\0';
-	}
-	else {
-		nwd = (char *)malloc(strlen(ftp_lcwd)+strlen(wd)+2);
-		strcpy(nwd, ftp_lcwd);
-		w = strdup(wd);
-		for (p=w+strlen(w); *p=='/'; --p)
-			*p='\0';
-
-		for (d=strtok(w, "/"); d; d=strtok(NULL, "/")) {
-			if (strcmp(d, "..") == 0) {
-				p = strrchr(nwd, '/');
-				if (p != NULL) {
-					if (p != nwd)
-						*p = '\0';
-					else
-						strcpy(nwd, "/");
-				}
-			}
-			else if (strcmp(d, ".") != 0) {
-				if (nwd[strlen(nwd)-1] != '/')
-					strcat(nwd, "/");
-				strcat(nwd, d);
-			}
-		}
-		
-		free(w);
-	}
+	nwd = canonical(wd, NULL);
 
 	dir = get_dir(nwd);
 	if (dir != NULL) {
 		free(ftp_lcwd);
 		ftp_lcwd = nwd;
+		
+		disp_head("%s: %s", ftp_head, ftp_lcwd);
 	}
 	else
 		free(nwd);
 
-	disp_head("%s: %s", ftp_head, ftp_lcwd);
 	return dir;
 }
 	

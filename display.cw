@@ -169,6 +169,22 @@ disp_dir(directory *d, int top, int sel, int newdir)
 	oldsel = sel;
 }
 
+@d<prototypes@>
+void disp_reline(int line);
+
+@u
+void
+disp_reline(int line)
+{
+    int y = line - oldtop;
+
+    if (y < 0 || y >= oldtop+win_lines)
+	return;
+    
+    tty_goto(0, y+2);
+    win_line(olddir->list[line].line, (line == oldsel));
+}
+
 @d<local prototypes@>
 void disp_redir(directory *d, int top, int sel);
 

@@ -22,6 +22,8 @@ use get_prefix(default_value) to retrieve the prefix argument.
 #include "directory.h"
 #include "display.h"
 #include "functions.h"
+#include "tag.h"
+#include "options.h"
 
 @<local globals@>
 
@@ -129,6 +131,35 @@ show_prefix(void)
 {
 
 	disp_status(": %d", prefix_arg);
+}
+
+
+@ changing the current directory.
+
+@d<prototypes@>
+void change_curdir(directory *dir);
+
+@u
+void
+change_curdir(directory *dir)
+{
+    extern dirtags *curtags;
+
+    dirtags *tags;
+    int i;
+
+    for (i=0; i<curdir->num; i++)
+	curdir->list[i].line[0] = ' ';
+
+    tag_changecurrent(dir->path);
+
+    if (curtags) {
+	for (tags=curtags->next; tags; tags=tags->next)
+	    if ((i=dir_find(dir, tags->name)) > 0)
+		dir->list[i].line[0] = opt_tagchar;
+    }
+
+    curdir = dir;
 }
 
 

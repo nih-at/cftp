@@ -1,7 +1,7 @@
 @ structures and routines to handle tagging of files for later
 download.
 
-@(directory.h@)
+@(tag.h@)
 @<types@>
 @<prototypes@>
 @<globals@>
@@ -9,7 +9,8 @@ download.
 @u
 #include <stdio.h>
 #include <string.h>
-@<local types@>
+#include "tag.h"
+
 @<local prototypes@>
 @<local globals@>
 
@@ -17,9 +18,9 @@ download.
 @ tagging information is stored in a sorted list (one entry for each
 directory) containing sorted lists (one entry for each file).
 
-@<types@>
+@d<types@>
 struct dirtags {
-	char *dir;
+	char *name;
 	struct dirtags *next;
 	struct filetags *tags;
 };
@@ -36,13 +37,26 @@ typedef struct filetags filetags;
 @ all taged files are kept in the global variable tags, all tags in
 the current directory are kept in the variable curtags.
 
-@<globals@>
+@d<globals@>
 extern dirtags tags;
 extern dirtags *curtags;
 
-@<local globals@>
+@d<local globals@>
 dirtags tags;
 dirtags *curtags;
+
+
+@ .
+
+@d<prototypes@>
+void tag_changecurrent(char *dir);
+
+@u
+void
+tag_changecurrent(char *dir)
+{
+    curtags = tag_getdir(dir);
+}
 
 
 @ functions to manipulate tags lists.
@@ -50,14 +64,23 @@ dirtags *curtags;
 @d<prototypes@>
 int tag_file(char *dir, char *file, int flag);
 
+@u
 int
 tag_file(char *dir, char *file, int flag)
 {
+    extern char *ftp_lcwd;
+
     int filep;
     filetags *tl;
-
-    if (dir == NULL)
+ 
+    if (dir == NULL) {
+	if (curtags == NULL) {
+	    curtags = tag_insdir(ftp_lcwd);
+	    if (curtags == NULL)
+		return -1;
+	}
 	tl = curtags->tags;
+    }
     else {
 	dirtags *d = tag_insdir(dir);
 	if (d == NULL)
@@ -104,16 +127,20 @@ tag_file(char *dir, char *file, int flag)
 	mem is a function called to alloc/dealoc an entry.
 
 @d<local prototypes@>
-filetags *tag_do(filetags *root, char *name, int flag, filetags (*mem)());
+filetags *tag_do(filetags *root, char *name, int flag, filetags *(*mem)());
 
 @u
 filetags *
-tag_do(filetags *root, char *name, int flag, filetags (*mem)())
+tag_do(filetags *root, char *name, int flag, filetags *(*mem)())
 {
-    int c = -1;
+    filetags *n;
+    int c = 1;
 
-    while (c < 0 && root->next)
-	c = strcmp(dir, root->next->dir);
+    while (root->next) {
+	if ((c=strcmp(name, root->next->name)) <= 0)
+	    break;
+	root = root->next;
+    }
 	
     if (c == 0) {
 	if (flag >= 0)
@@ -129,11 +156,13 @@ tag_do(filetags *root, char *name, int flag, filetags (*mem)())
 	}
     }
 
-    if (flag > 0)
+    if (flag <= 0)
 	return NULL;
 
-    filetags *n = mem(NULL);
+    n = mem(NULL);
+
     if (n != NULL) {
+	n->name = strdup(name);
 	n->next = root->next;
 	root->next = n;
     }
@@ -177,7 +206,7 @@ tag_freedir(filetags *f)
 	free(g->name);
 	free(g);
     }
-    free(d->dir);
+    free(d->name);
     free(d);
 
     return NULL;

@@ -161,3 +161,25 @@ cache_insert(dircache *d)
 	cache_head->next->prev = d;
 	cache_head->next = d;
 }
+
+
+@ other utility functions
+
+@d<prototypes@>
+int dir_find(directory *dir, char *entry);
+
+@u
+int
+dir_find(directory *dir, char *entry)
+{
+    int i;
+
+    for (i=0; (i<dir->num &&
+		 strcmp(dir->list[i].name, entry)); i++)
+	;
+    
+    if (i == dir->num)
+	i = -1;
+
+    return i;
+}
