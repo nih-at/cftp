@@ -143,7 +143,9 @@ main(int argc, char **argv)
     }
 
     fprintf(fout, "\n};\n\n");
-
+    fprintf(fout,
+	    "int binding_pool_len = sizeof(binding_pool);\n\n");
+    
     if (ferror(fout)) {
 	fprintf(stderr, "%s: write error (%s): %s.\n",
 		prg, FNAME ".c", strerror(errno));

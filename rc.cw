@@ -59,3 +59,48 @@ rc_token(char **linep)
 
 	return tok;
 }
+
+
+@ constructing a list of the remaining tokens in a line.
+
+@d<prototypes@>
+char **rc_list(char *line);
+
+@u
+char **
+rc_list(char *line)
+{
+    char *l[128], **list, *t;
+    int i, n;
+
+    list = l;
+    n = 128;
+
+    for (i=0; t=rc_token(&line); i++) {
+	if (i >= n) {
+	    n += 32;
+	    if (n == 160) { /* list is alias for l */
+		list = (char **)malloc(sizeof(char *)*n);
+		memcpy(list, l, 128*sizeof(char *));
+	    }
+	    else
+		list = (char **)realloc(list, (sizeof(char *)*n));
+	}
+	list[i] = strdup(t);
+    }
+
+    if (i == 0) {
+	if (n != 128) /* list is allocated */
+	    free(list);
+	return NULL;
+    }
+
+    list[i] = NULL;
+
+    if (n == 128) { /* list is alias for l */
+	list = (char **)malloc(sizeof(char *)*(i+1));
+	memcpy(list, l, sizeof(char *)*(i+1));
+    }
+
+    return list;
+}

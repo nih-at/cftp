@@ -165,7 +165,7 @@ function(colon, {[args @@dots{}]}, fn_colon, 0,
 @u
 void fn_colon(char **args)
 {
-	char *arg[128], *cmd, *tok, *p, *line = NULL;
+	char *cmd, *tok, *p, *line = NULL;
 	int i, j;
 
 	if (args) {
@@ -181,20 +181,15 @@ void fn_colon(char **args)
 	    }
 	}
 	
-	for (i=0; functions[i].name && strcmp(functions[i].name, cmd); i++)
-	    ;
-	if (functions[i].name == NULL) {
+	if ((i=find_function(cmd)) < 0) {
 	    disp_status("unknown function: %s", cmd);
+	    if (line)
+		free(line);
 	    return;
 	}
 
 	if (line) {
-	    for (j=0; tok=rc_token(&p); j++)
-		arg[j] = strdup(tok);
-	    if (j)
-		args = arg;
-	    else
-		args = NULL;
+	    args = rc_list(p);
 	}
 
 	disp_status("");
@@ -205,7 +200,8 @@ void fn_colon(char **args)
 	if (line) {
 	    free(line);
 	    for (i=0; i<j; i++)
-		free(arg[i]);
+		free(args[i]);
+	    free(args);
 	}
 }
 
@@ -281,4 +277,90 @@ fn_prefix(char **args)
 	if (p || args[0][0] == '0')
 	    set_prefix(p);
     }
+}
+
+
+@ binding keys
+
+@d<functions@>
+function(bind, {key [cmd [args @@dots{}]]}, fn_bind, 0,
+	 {bind key},
+ {})
+
+@u
+int
+fn_bind(char **args)
+{
+    extern int binding[];
+    extern char **binding_args[], *binding_pool[];
+    extern int binding_pool_len;
+
+    int key, fn, i;
+    char *line = NULL;
+    char *cmd, *kname, **list, *p;
+
+    
+    if (args) {
+	kname = args[0];
+	cmd = args[1];
+	    args += 2;
+    }
+    else {
+	line = p = read_string(": ");
+
+	if ((kname=rc_token(&p)) == NULL) {
+	    disp_status("no key");
+	    free(line);
+	    return;
+	}
+	cmd = rc_token(&p);
+    }
+
+    if ((key=parse_key(kname)) < 0) {
+	disp_status("unknown key: %s", kname);
+	if (line)
+	    free(line);
+	return;
+    }
+	
+    if (cmd) {
+	if ((fn=find_function(cmd)) < 0) {
+	    disp_status("unknown function: %s", cmd);
+	    if (line)
+		free(line);
+	    return;
+	}
+    }
+
+    disp_status("");
+	
+    if (binding[key] > -1) {
+	binding[key] = -1;
+	if (binding_args[key]) {
+	    if (binding_args[key] < binding_pool
+		|| (binding_args[key] >=
+		    binding_pool+binding_pool_len)) {
+		for (i=0; binding_args[key][i]; i++)
+		    free(binding_args[key][i]);
+		free(binding_args);
+	    }
+	    binding_args[key] = NULL;
+	}
+    }
+
+    if (cmd) {
+	if (line)
+	    list = rc_list(p);
+	else {
+	    for (i=0; args[i]; i++) {
+		list = (char **)malloc(sizeof(char *)*(i+1));
+		memcpy(list, args, sizeof(char *)*(i+1));
+	    }
+	}
+
+	binding[key] = fn;
+	binding_args[key] = list;
+    }
+
+    return;
 }

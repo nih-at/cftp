@@ -163,6 +163,24 @@ change_curdir(directory *dir)
 }
 
 
+@ find function (index) for function name.
+
+@d<prototypes@>
+int find_function(char *f);
+
+@u
+int
+find_function(char *f)
+{
+    int i;
+    
+    for (i=0; functions[i].name && strcmp(f, functions[i].name); i++)
+	    ;
+
+    return (functions[i].name ? i : -1);
+}
+
+
 @ shared functions from other function files.
 
 @d<prototypes@>
