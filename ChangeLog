@@ -4,9 +4,15 @@
 
 	* main.c (main): if startdir is file, download.
 
+1998-05-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* fputchar.c (fputchar): return a value.
+
+	* main.c, tty.h, display.h, fn_tag.c, tag.h: cleanup for -Wall.
+
 1998-05-01  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
-	* directory.c, tty.h: cleanup for -Wall
+	* directory.c, tty.h: cleanup for -Wall.
 
 1998-04-30  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 

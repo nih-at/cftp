@@ -55,5 +55,6 @@ void disp_head(char *fmt, ...);
 void disp_restat(void);
 FILE *disp_open(char *cmd, int quietp);
 int disp_close(FILE *f, int quietp);
+void disp_beep(void);
 
 #endif /* display.h */

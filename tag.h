@@ -25,6 +25,8 @@
 
 
 
+#include "directory.h"
+
 struct tagentry {
     char *line, *name;
     struct tagentry *next, *prev;
@@ -52,5 +54,7 @@ int tag_file(char *dir, char *file, long size, char type, enum tagopt what);
 void tag_delete(int n);
 void tag_clear(void);
 int tag_anytags(void);
+
+void change_curdir(directory *dir);
 
 #endif /* tag.h */

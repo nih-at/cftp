@@ -25,6 +25,8 @@
 
 
 
+#include <termcap.h>
+
 enum {
     _TTY_cl, _TTY_ho, _TTY_cd, _TTY_ce, _TTY_so, _TTY_se, _TTY_vi,
     _TTY_ve, _TTY_cs, _TTY_sf, _TTY_sr, _TTY_SF, _TTY_SR,

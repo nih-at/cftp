@@ -27,5 +27,5 @@
 int
 fputchar(int c)
 {
-    putchar(c);
+    return putchar(c);
 }

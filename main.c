@@ -45,6 +45,7 @@
 #include "tag.h"
 #include "status.h"
 #include "tty.h"
+#include "util.h"
 
 /* in readrc.c */
 int readrc(char **userp, char **passp, char **hostp, char **portp,
@@ -181,7 +182,7 @@ main(int argc, char **argv)
 	check_alias = 1;
     }
 
-    curdir == NULL;
+    curdir = NULL;
 
     /* XXX */ readrc(&user, &pass, &host, &port, &wdir, check_alias);
 

@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#include <ctype.h>
 #ifdef HAVE_FNMATCH
 #include <fnmatch.h>
 #else
@@ -40,6 +41,7 @@
 #include "tag.h"
 #include "util.h"
 #include "status.h"
+#include "list.h"
 
 
 
@@ -88,7 +90,7 @@ fn_tag(char **args)
 	    
 	    i = strlen(curdir->path);
 	    if ((base-file == 1 && i == 1)
-		|| i == base-file-1 && strncmp(curdir->path, file, i) == 0) {
+		|| (i == base-file-1 && strncmp(curdir->path, file, i) == 0)) {
 		i = dir_find(curdir, base);
 		if (i >= 0) {
 		    size = curdir->line[i].size;
@@ -128,7 +130,6 @@ fn_tag(char **args)
 void
 fn_cleartags(char **args)
 {
-    struct dirtags *p, *q;
     int i;
 
     tag_clear();
@@ -271,7 +272,7 @@ fn_loadtag(char **args)
     char *fname, *line, *p, *e;
     FILE *f;
     int count, len;
-    char *name, *dir, *file;
+    char *name;
     long size;
     int type;
     
@@ -322,7 +323,7 @@ fn_loadtag(char **args)
 	    type = 'l';
 
 	p += strspn(p, " \t\n");
-	if (len=strlen(p)) {
+	if ((len=strlen(p))) {
 	    if (p[len-1] == '\n')
 		p[len-1] = '\0';
 

@@ -36,6 +36,7 @@
 #include "options.h"
 #include "util.h"
 #include "list.h"
+#include "tag.h"
 
 int aux_enter(char *name);
 int aux_download(char *name, long size, int restart);
