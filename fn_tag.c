@@ -382,15 +382,14 @@ fn_saveurls(char **args)
 	return;
     }
 
-    
-
     for (i=0; i<tags.len && !ferror(f); i++)
 	fprintf(f, "ftp://%s%s\n", status.host, tags.line[i].name);
 
     if (ferror(f))
 	disp_status("write error on `%s': %s", name, strerror(errno));
     else
-	disp_status("%d url%s saved", tags.len, (tags.len == 1 ? "" : "s"));
+	disp_status((tags.len == 1 ? "%d URL saved" : "%d URLs saved"),
+		    tags.len);
 
     fclose(f);
 
