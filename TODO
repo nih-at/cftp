@@ -33,6 +33,8 @@ B ftp.c: (ftp_abort) abort on ascii connections hangs sometimes
 C fn_select.c: use :-syntax throughout
 B fn_basic.c: (fn_shell) command with args doesn't work when given via args
 C consistent error handling
+C list.c: more efficient handling of line deletion
+B status.c: percentage wrong (all) in <tag>
 ----------------------------------------------- done
 Jul 31 1997 (0.6c)
 B fn_tag.c: (fn_tag) set size and type if found in curdir
