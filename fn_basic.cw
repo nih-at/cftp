@@ -116,7 +116,7 @@ void fn_shell(char **args)
 	if (cmd[0] != '\0') {
 		system(cmd);
 		printf("[Press any key] ");
-		fflush(stdin);
+		fflush(stdout);
 		disp_prompt_char();
 	}
 	else
