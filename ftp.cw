@@ -29,7 +29,7 @@ char *ftp_head, *ftp_lcwd, *ftp_pcwd = NULL;
 char ftp_curmode = ' ', ftp_anon = 0;
 
 
-@ opening a connection and logging in.
+@ opening a connection, and logging in.
 
 @d<local globals@>
 FILE *conin=NULL, *conout=NULL;
