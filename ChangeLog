@@ -1,3 +1,8 @@
+2000-05-05  Dieter Baron  <dillo@danbala.ifoer.tuwien.ac.at>
+
+	* tag.c (_tag_insert): realloc tags.line on overflow, correcting
+	next/prev pointers.
+
 2000-05-02  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* tag.c (tag_file): don't initialize dir if not given, simplified

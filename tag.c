@@ -189,10 +189,18 @@ _tag_insert(int n, struct tagentry *t, char *file, long size, char type)
 
     if (tags.len >= tags.reallen) {
 	tags.reallen += 1024;
-	if ((tags.line=(struct tagentry *)realloc(tags.line, tags.reallen
+	if ((u=(struct tagentry *)realloc(tags.line, tags.reallen
 						  *sizeof(struct tagentry)))
 	    == NULL)
 	    return -1;
+
+	if (u != tags.line) {
+	    for (i=0; i<tags.len; i++) {
+		u[i].prev = u + (tags.line[i].prev - tags.line[0]);
+		u[i].next = u + (tags.line[i].next - tags.line[0]);
+	    }
+	    tags.line = u;
+	}
     }
     
     for (i=tags.len; i>n; --i) {
