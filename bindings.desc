@@ -7,6 +7,8 @@ bind		!	shell
 bind		:	colon
 bind		B	bind
 bind		m	response
+bind		n	show-name
+bind		N	show-name -u
 bind		r	reconnect
 
 bind		a	set mode a

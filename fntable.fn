@@ -44,6 +44,11 @@ is given (as it is in the default bindings), the cursor is centered on
 the screen.})
 
 
+function(show-name, , fn_showname, 0,
+	{show name of file under cursor},
+ {Display the name of the file under the cursor in the message area.})
+
+
 function(help, , fn_help, 0,
 	 {display help},
  {Display help on a function or option, or the binding of a key.

@@ -38,6 +38,7 @@
 #include "tty.h"
 #include "list.h"
 #include "tag.h"
+#include "status.h"
 
 extern char version[];
 
@@ -58,6 +59,29 @@ void fn_redraw(char **args)
 
 
 
+void
+fn_showname(char **args)
+{
+    if (args && strcmp(args[0], "-u") == 0) {
+	switch (binding_state) {
+	case bs_remote:
+	    disp_status("ftp://%s%s%s%s",
+			status.host, curdir->path,
+			(strcmp(curdir->path, "/") == 0 ? "" : "/"),
+			LIST_LINE(list, list->cur)->name);
+	    break;
+	case bs_tag:
+	    disp_status("ftp://%s%s", status.host,
+			LIST_LINE(list, list->cur)->name);
+	    break;
+	}
+    }
+    else
+	disp_status("%s", LIST_LINE(list, list->cur)->name);
+}
+
+
+
 void fn_help(char **args)
 {
     struct binding *b;
@@ -69,7 +93,7 @@ void fn_help(char **args)
     switch (tolower(what)) {
     case 'f':
 	s = read_string("Function: ", 1);
-	if (s == NULL || s[0] = '\0') {
+	if (s == NULL || s[0] == '\0') {
 	    free(s);
 	    disp_status("");
 	    return;
@@ -128,7 +152,7 @@ void fn_help(char **args)
 
     case 'o':
 	s = read_string("Option: ", 1);
-	if (s == NULL || s[0] = '\0') {
+	if (s == NULL || s[0] == '\0') {
 	    free(s);
 	    disp_status("");
 	    return;
