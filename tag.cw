@@ -29,6 +29,7 @@ struct filetags {
     char *name;
     struct filetags *next;
     long size;
+    char type;
 };
 
 typedef struct dirtags dirtags;
@@ -63,11 +64,11 @@ tag_changecurrent(char *dir)
 @ functions to manipulate tags lists.
 
 @d<prototypes@>
-int tag_file(char *dir, char *file, long size, int flag);
+int tag_file(char *dir, char *file, long size, char type, int flag);
 
 @u
 int
-tag_file(char *dir, char *file, long size, int flag)
+tag_file(char *dir, char *file, long size, char type, int flag)
 {
     extern char *ftp_lcwd;
     
@@ -98,6 +99,7 @@ tag_file(char *dir, char *file, long size, int flag)
     else if (!filep && flag >= 0) {
 	if (n=tag_insfile(tl, file)) {
 	    n->size = size;
+	    n->type = type;
 	    return 1;
 	}
 	else

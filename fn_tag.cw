@@ -6,10 +6,13 @@
 
 @u
 #include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
 #include "directory.h"
 #include "functions.h"
 #include "display.h"
 #include "options.h"
+#include "ftp.h"
 #include "tag.h"
 #include "util.h"
 
@@ -23,6 +26,7 @@ fn_tag(char **args)
 {
     char *name, *dir, *file;
     long size;
+    char type;
     int tagged, i;
 
     if (args) {
@@ -30,15 +34,17 @@ fn_tag(char **args)
 	dir = dirname(name);
 	file = basename(name);
 	size = -1;
+	type = 'l';
     }
     else {
 	name = NULL;
 	dir = NULL;
 	file = curdir->list[cursel].name;
 	size = curdir->list[cursel].size;
+	type = curdir->list[cursel].type;
     }
 	
-    if ((tagged=tag_file(dir, file, size, 0)) < 0)
+    if ((tagged=tag_file(dir, file, size, type, 0)) < 0)
 	return;
     
     if (args) {
@@ -77,20 +83,31 @@ fn_listtags(char **args)
     dirtags *d;
     filetags *t;
 
+    if (args)
+	if ((f=fopen(args[0], "w")) == NULL) {
+	    disp_status("can't open `%s': %s", args[0], strerror(errno));
+	    return;
+	}
+	
     for (d=tags.next; d; d=d->next)
 	for (t=d->tags->next; t; t=t->next) {
 	    if (f == NULL)
 		if ((f=disp_open(-1)) == NULL)
 		    return;
-	    fprintf(f, "%8ld  %s%s%s\n",
+	    fprintf(f, "%8ld  %c  %s%s%s\n",
 		    t->size,
+		    t->type,
 		    d->name,
 		    (strcmp(d->name, "/") == 0 ? "" : "/"),
 		    t->name);
 	}
 
-    if (f)
-	disp_close(f);
+    if (f) {
+	if (args)
+	    fclose(f);
+	else
+	    disp_close(f);
+    }
 }
     
 
@@ -140,4 +157,90 @@ fn_gettags(char **args)
 	else
 	    d = d->next;
     }
+}
+
+
+@ read in tags list
+
+@d<functions@>
+  { fn_loadtag, "load-tags", 0, "load tags list from file" }
+
+@u
+void
+fn_loadtag(char **args)
+{
+    char *fname, *line, *p, *e;
+    FILE *f;
+    int count, len;
+    char *name, *dir, *file;
+    long size;
+    int type;
+    
+    if (args)
+	fname = args[0];
+    else
+	fname = read_string("File: ");
+
+    if ((f=fopen(fname, "r")) == NULL) {
+	disp_status("can't open `%s': %s", fname, strerror(errno));
+	return;
+    }
+
+    count = 0;
+    while ((line=ftp_gets(f)) != NULL) {
+	p = line;
+	size = strtol(p, &e, 10);
+	if (size < -1 ||
+	    e == NULL || e == p || (*e != '\0' && !isspace(*e))) {
+	    size = -1;
+	}
+	else
+	    p = e;
+
+	p += strspn(p, " \t\n");
+	if (isspace(p[1])) {
+	    switch (p[0]) {
+	    case 'l':
+	    case 'd':
+		type = p[0];
+		break;
+	    case 'f':
+	    case '-':
+	    case 'p':
+		type = 'f';
+		break;
+	    default:
+		type = 'x';
+	    }
+	    p++;
+	}
+	else
+	    type = 'l';
+
+	p += strspn(p, " \t\n");
+	if (len=strlen(p)) {
+	    if (p[len-1] == '\n')
+		p[len-1] = '\0';
+
+	    name = canonical(p, (ftp_anon ? "/" : "~"));
+	    file = basename(name);
+	    dir = dirname(name);
+	    tag_file(dir, file, size, type, 1);
+	    if (strcmp(curdir->path, dir) == 0
+		&& (len=dir_find(curdir, file)) >= 0
+		&& curdir->list[len].line[0] != opt_tagchar) {
+		curdir->list[len].line[0] = opt_tagchar;
+		disp_reline(len);
+	    }
+
+	    count++;
+	}
+    }
+
+    if (ferror(f))
+	disp_status("read error: %s\n", strerror(errno));
+    else
+	disp_status("%d files tagged", count);
+
+    fclose(f);
 }

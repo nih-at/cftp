@@ -28,6 +28,9 @@
 
 @ keeping state.
 
+@d<globals@>
+extern char ftp_anon;
+
 @d<local globals@>
 char *ftp_head, *ftp_lcwd, *ftp_pcwd = NULL;
 char ftp_curmode = ' ', ftp_anon = 0;

@@ -76,7 +76,8 @@ fn_scroll.o: fn_scroll.c directory.h functions.h display.h
 fn_select.o: fn_select.c directory.h functions.h display.h ftp.h options.h \
 	util.h
 fn_options.o: fn_options.c directory.h functions.h display.h options.h
-fn_tag.o: fn_tag.c directory.h functions.h display.h util.h tag.h options.h
+fn_tag.o: fn_tag.c directory.h functions.h display.h util.h tag.h options.h \
+	ftp.h
 fntable.o: fntable.c fntable.h
 keys.o: keys.c keys.h
 tty.o: tty.c tty.h keys.h

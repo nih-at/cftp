@@ -22,9 +22,11 @@ P configure.in: add -posix for NeXTStep
 F quiet if in background
 F option: ring bell when finished (download)
 F readdir.cw: support other dir listing formats (vms, dos, descritpive, ...)
-F tag files: edit tags, save/load tags, detached download
+F tag files: edit/clear tags, detached download
 F tag: if tagged is directory, try .tar.gz, .tar.Z, .tar
+F remember home dir, use in disp_header
 ----------------------------------------------- done
+F tag files: save/load tags
 F show multiline responses
 F tag files (later download)
 B readdir.cw: (parse_unix) handle no space between group and size
