@@ -1,5 +1,8 @@
 2000-12-07  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* getaddrinfo.c (getaddrinfo): fix bug (ai allocation at wrong
+	time) found by OSF/1 cc.
+
 	* ftp.c (ftp_cat): disable transfer rate display (since it is
 	unreliable).
 

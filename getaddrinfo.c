@@ -79,10 +79,6 @@ getaddrinfo(const char *nodename, const char *servname,
     addr_len = 4;
 
     if (hints->ai_flags & AI_PASSIVE && nodename == NULL) {
-	if ((ai=malloc(sizeof(struct addrinfo))) == NULL) {
-	    freeaddrinfo(airet);
-	    return EAI_MEMORY;
-	}
 	sa.sin_addr.s_addr = INADDR_ANY;
 	memcpy(addr_list[0], &sa.sin_addr.s_addr, addr_len);
     }
