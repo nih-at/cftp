@@ -23,9 +23,12 @@ F display.cw: (disp_redir) don't clear screen, overwrite
 P configure.in: add -posix for NeXTStep
 F quiet if in background
 F option: ring bell when finished (download)
-B read_dir.cw: handle no space between permissions and links
-B fn_basic.cw: (fn_shell) get key at end hangs term
+F readdir.cw: support other dir listing formats (vms, dos, descritpive, ...)
 ----------------------------------------------- done
+B readdir.cw: (parse_unix) handle no space between group and size
+B readdir.cw: (parse_unix) handle no space between permissions and links
+B fn_basic.cw: (fn_shell) get key at end hangs term
+B main.cw: (parse_url) don't segfault when trailing / is missing
 - fn_select.cw: handle args
 B rc.cw: (rc_token) bug at end of line detection
 F fn_colon
