@@ -1,3 +1,10 @@
+1998-12-16  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* util.c util.h (argstostr): removed (args_to_string is
+	duplicate), changed callers.
+	(args_to_string): fixed bug which placed all args at beginning of
+	string.
+	
 1998-10-19  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* display.h, options.op, list.c (list_full),

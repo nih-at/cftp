@@ -141,31 +141,6 @@ local_exp(char *path)
 
 
 
-char *
-argstostr(char **args)
-{
-    char *s;
-    int i, l;
-
-    l = 0;
-
-    for (i=0; args[i]; i++)
-	l += strlen(args[i])+1;
-
-    if ((s=(char *)malloc(l)) == NULL)
-	return NULL;
-
-    for (i=0; args[i]; i++) {
-	strcat(s, args[i]);
-	if (args[+1])
-	    strcat(s, " ");
-    }
-
-    return s;
-}
-
-
-
 static char *deurl(char *u);
 
 int
@@ -278,7 +253,7 @@ args_to_string(char **args)
 
     len = 0;
     for (i=0; args[i]; i++) {
-	strcpy(s, args[i]);
+	strcpy(s+len, args[i]);
 	len += strlen(args[i]);
 	s[len++] = ' ';
     }

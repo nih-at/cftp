@@ -372,7 +372,7 @@ fn_pipe(char **args)
 	}
 
 	if (args[1])
-	    cmd = argstostr(args+1);
+	    cmd = args_to_string(args+1);
 	else
 	    cmd = read_string("| ", 1);
     }
