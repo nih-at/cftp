@@ -1,7 +1,10 @@
 This is Comfortable FTP, a full screen ftp client.
 
 For generic installation instructions, see file `INSTALL'; for
-documentation read the info file `cftp.info'.
+documentation read the info file `cftp.info'.  For key bindings, see
+the file `bindings.desc'.
+
+In cftp, press H for help.
 
 The texinfo documentation is a mess; any help most welcome (especially
 the outline of a good structure).

@@ -1,3 +1,7 @@
+New in 0.9.3:
+* mkdir: make directory on server (not really new, but I forgot to mention it)
+* site: send site specific commands
+
 New in 0.9.2:
 * reload: reload correct directory
 * show-name: new option -l: show symlink target
