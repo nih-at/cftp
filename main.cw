@@ -73,13 +73,16 @@ main(int argc, char **argv)
 	}
 	
 	if ((dir=ftp_cd(wdir)) == NULL) {
+	    if ((wdir=ftp_pwd()) == NULL)
+		wdir="/";
+	    if ((dir=ftp_cd(wdir)) == NULL) {
 		escape_disp(0);
 		ftp_close();
 		exit_disp();
 		exit(1);
+	    }
 	}
 	
-
 	curdir = dir;
 	curtop = 0;
 	cursel = curtop;

@@ -35,6 +35,7 @@ B display.cw: (disp_prompt_char) only returns after RET is pressed (but only
 F cftp.texi: introduction, invoking, cftprc
 F user options
 ----------------------------------------------- done
+F main.cw: (main) if startup dir doesn't exist, don't close connection
 F exchange backlog instead of last multiline response
 F function doku
 B Makefile.am: call makeinfo with --no-validate
