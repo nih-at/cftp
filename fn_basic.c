@@ -69,6 +69,12 @@ void fn_help(char **args)
     switch (tolower(what)) {
     case 'f':
 	s = read_string("Function: ", 1);
+	if (s == NULL || s[0] = '\0') {
+	    free(s);
+	    disp_status("");
+	    return;
+	}
+	    
 	if ((i=find_function(s)) == -1)
 	    disp_status("no such function: %s", s);
 	else
@@ -122,7 +128,12 @@ void fn_help(char **args)
 
     case 'o':
 	s = read_string("Option: ", 1);
-
+	if (s == NULL || s[0] = '\0') {
+	    free(s);
+	    disp_status("");
+	    return;
+	}
+	    
 	for (i=0; option[i].name; i++)
 	    if (strcasecmp(option[i].name, s) == 0
 		|| strcasecmp(option[i].shrt, s) == 0)

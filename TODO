@@ -12,6 +12,7 @@ F if url is file, download
 C display.c: (disp_prompt_char) return after first key, not after newline
 F functions.texi: include default bindings
 F display.c: (read_string) line editing, completion
+F <local> (uploads, local tagging)
 ---------------------------------------------------------------- till beta
 F tag files: globbing tag
 F handle closed connections due to timeout
@@ -23,7 +24,6 @@ P tparm on HPUX doesn't work
 B options.h: dependencies seem wrong -- doesn't get remade
 F fn_basic.c: (fn_help) display type and value for options
 C rename disp_stat to disp_mesg (status line is what used to be head)
-F <local> (uploads, local tagging)
 B fn_tag.c: (fn_tag) line[0] isn't updated if arg is given
 B ERROR MESSAGES ON ERRORS!
 F main.c: scan .netrc for type commands
@@ -37,10 +37,12 @@ B fn_scroll.c: (fn_isearch) don't hardwire ^r/^s/^l (check binding)
 B ftp.c: (ftp_abort) abort on ascii connections hangs sometimes
 C fn_select.c: use :-syntax throughout
 B fn_basic.c: (fn_shell) command with args doesn't work when given via args
+F main.c: (parse_url) urldecode parts
 ----------------------------------------------- done
-F ftp.c (ftp_abort, ftp_cat) abort transfer via SIGINT
-F fn_select.c (fn_pipe) new bindable
-B fn_select.c (aux_download, aux_pipe) create file after retr command
+F main.c: (parse_url) support for user:passwd syntax
+F ftp.c: (ftp_abort, ftp_cat) abort transfer via SIGINT
+F fn_select.c: (fn_pipe) new bindable
+B fn_select.c: (aux_download, aux_pipe) create file after retr command
 C configure.in: use fn_bind.c for finding srcdir (not bindings.desc)
 
 Apr 18 1997 (0.6b)

@@ -74,8 +74,8 @@ status_do(enum state when)
 	    if (status.remote.path) {
 		l = strlen(status.remote.path);
 		if (l > space) {
-		    strncpy(status_line+cols-space-11, "...", 3);
-		    strncpy(status_line+cols-space-8,
+		    strncpy(status_line+cols-space-16, "...", 3);
+		    strncpy(status_line+cols-space-13 ,
 			    status.remote.path+l-space+3,
 			    space-3);
 		}

@@ -72,7 +72,8 @@ extern char version[];
 
 
 
-int parse_url(char *url, char **user, char **host, char **port, char **dir);
+int parse_url(char *url, char **user, char **pass,
+	      char **host, char **port, char **dir);
 void print_usage(int flag);
 char *get_annon_passwd(void);
 void read_netrc(char *host, char **user, char **pass, char **wdir);
@@ -146,7 +147,7 @@ main(int argc, char **argv)
 	    print_usage(0);
 	    exit(1);
 	}
-	if (parse_url(argv[optind], &user, &host, &port, &wdir) < 0)
+	if (parse_url(argv[optind], &user, &pass, &host, &port, &wdir) < 0)
 	    exit(1);
 	
 	check_alias = 0;
@@ -259,9 +260,10 @@ main(int argc, char **argv)
 
 
 int
-parse_url(char *url, char **user, char **host, char **port, char **dir)
+parse_url(char *url, char **user, char **pass,
+	  char **host, char **port, char **dir)
 {
-    char *p, *q;
+    char *p, *q, *r;
     int userp = 0;
 
     if (strncmp(url, "ftp://", 6) != 0)
@@ -275,6 +277,10 @@ parse_url(char *url, char **user, char **host, char **port, char **dir)
     
     if ((q=strchr(url, '@')) != NULL) {
 	*q = '\0';
+	if ((r=strchr(url, ':')) != NULL) {
+	    *(r++) = '\0';
+	    *pass = strdup(r);
+	}
 	*user = strdup(url);
 	url = q+1;
 	userp = 1;
