@@ -1,3 +1,7 @@
+2001-12-11  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* ftp.c (ftp_list): don't update status bar.  Our callers will.
+
 2001-11-18  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* options.op: new option ``user_anon_passwd''.

@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   ftp -- ftp protocol functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
 
@@ -339,10 +341,6 @@ ftp_list(char *path)
     
     if (ftp_mode('a') == -1 || ftp_cwd(path) == -1)
 	return NULL;
-    
-    free(status.remote.path);
-    status.remote.path = strdup(path);
-    status_do(bs_remote);
     
     if ((fd=ftp_port()) == -1)
 	return NULL;
