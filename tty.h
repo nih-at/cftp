@@ -25,6 +25,16 @@
 
 
 
+#include "config.h"
+
+#ifndef HAVE_FPUTCHAR
+#ifndef USE_NCURSES
+void fputchar();
+#else
+int fputchar();
+#endif
+#endif
+
 enum {
     _TTY_cl, _TTY_ho, _TTY_cd, _TTY_ce, _TTY_so, _TTY_se, _TTY_vi,
     _TTY_ve, _TTY_cs, _TTY_sf, _TTY_sr, _TTY_SF, _TTY_SR,
@@ -32,11 +42,10 @@ enum {
     _TTY_al, _TTY_dl, _TTY_AL, _TTY_DL   
 };
 extern char *_tty_caps[];
-extern int fputchar();
 
 #define TTY_CAP(cap)	(_tty_caps[(_TTY_##cap)])
 #define tty_put0(cap, lines)  \
-		(tputs(TTY_CAP(cap), (lines), (void (*)())fputchar))
+		(tputs(TTY_CAP(cap), (lines), fputchar))
 
 #define tty_clear()	(tty_put0(cl, tty_lines))
 #define tty_home()	(tty_put0(ho, 1))

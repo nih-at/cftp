@@ -25,14 +25,17 @@ AC_CHECK_FUNC(tgetent, [TERMCAP=""])
 if test "$TERMCAP" = none
 then
 	AC_CHECK_LIB(termcap, tgetent, [TERMCAP=-ltermcap])
+	AC_DEFINE(USE_TERMCAP, 1, [define if we're linking against -ltermcap])
 fi
 if test "$TERMCAP" = none
 then
 	AC_CHECK_LIB(curses, tgetent, [TERMCAP=-lcurses])
+	AC_DEFINE(USE_CURSES, 1, [define if we're linking against -lcurses])
 fi
 if test "$TERMCAP" = none
 then
 	AC_CHECK_LIB(ncurses, tgetent, [TERMCAP=-lncurses])
+	AC_DEFINE(USE_NCURSES, 1, [define if we're linking against -lncurses])
 fi
 if test "$TERMCAP" = none
 then
@@ -47,7 +50,7 @@ AC_CHECK_LIB(resolv, main)
 
 dnl header files
 
-AC_CHECK_HEADERS(libgen.h sys/select.h)
+AC_CHECK_HEADERS(libgen.h sys/select.h termcap.h)
 
 AC_CACHE_CHECK([whether h_errno is declared in netdb.h],
 	dlo_cv_decl_h_errno,

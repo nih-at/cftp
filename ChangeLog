@@ -1,3 +1,15 @@
+2001-08-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* tty.c: if present, include termcap.h.  Adapt for gratuitous
+	differences of termcap implementations.
+	* tty.h: adapt for gratuitous differences of termcap
+	implementations.
+	* fputchar.c (fputchar): make return type dependent on termcap
+	library we're using.
+	* configure.in: check for termcap.h if using libtermcap.  Set one
+	of USE_TERMCAP, USE_CURSES, or USE_NCURSES to indicate which lib
+	we're using.
+
 2001-08-01  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (ftp_retr): set *sizep to -1 if we cannot extract a size

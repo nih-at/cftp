@@ -31,6 +31,14 @@
 #include <sys/ioctl.h>
 
 #include "config.h"
+#ifdef HAVE_TERMCAP_H
+#include <termcap.h>
+#endif
+#ifndef USE_NCURSES
+char PC, *BC, *UP;
+short ospeed;
+#endif
+
 #include "keys.h"
 #include "tty.h"
 
@@ -62,8 +70,6 @@ char termcap_entry[4196];
 char termcap_area[4196], *termcap_str;
 struct termios tty_tio, tty_tio_ext;
 speed_t tty_baud;
-char PC, *BC, *UP;
-short ospeed;
 
 #define KEY_PREF	1
 #define KEY_SLPREF	2

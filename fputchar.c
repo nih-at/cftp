@@ -24,8 +24,18 @@
 
 #include <stdio.h>
 
+#include "config.h"
+
+#ifndef USE_NCURSES
+void
+fputchar(int c)
+{
+    putchar(c);
+}
+#else /* USE_NCURSES */
 int
 fputchar(int c)
 {
     return putchar(c);
 }
+#endif
