@@ -28,13 +28,12 @@
 #include <stdio.h>
 
 extern volatile int tty_lines;
-extern int opt_emacs_status;
 /* first line of scrolling region */
-#define win_top		(opt_emacs_status ? 0 : 2)
+#define win_top		(0)
 /* last line of scrolling region */
 #define win_bottom	(tty_lines-3)
 /* number of lines in scrolling region */
-#define win_lines	(tty_lines-(opt_emacs_status ? 2 : 4))
+#define win_lines	(tty_lines-2)
 
 extern int disp_quiet;
 extern int disp_active;

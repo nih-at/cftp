@@ -125,8 +125,7 @@ list_full(struct list *list)
     if (!*TTY_CAP(ce)) {
 	tty_goto(0, win_top);
 	tty_clreos(win_lines+2);
-	if (opt_emacs_status)
-	    status_do(bs_none);
+	status_do(bs_none);
 	disp_restat();
     }
     tty_goto(0, win_top);

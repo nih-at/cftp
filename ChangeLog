@@ -1,5 +1,8 @@
 1998-10-19  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* display.h, options.op, list.c (list_full),
+	status.c (opt_set_status): removed opt_emacs_status.
+
 	* status.c (status_do): handle short status line (space < 0).
 
 1998-10-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>

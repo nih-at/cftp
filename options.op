@@ -54,12 +54,6 @@ option(scroll-limit, sl, opt_scrlimit, NULL, i, 0, ,
  {Don't scroll lists if overlap of old and new positions is less than
 @code{scroll-limit} lines; make a full redraw instead.})
 
-option(emacs-status, es, opt_emacs_status, opt_set_status, b, 1, ,
- {Emacs like status line},
- {If set, status line appears at the bottom of the screen -- right
-above the message area -- in standout mode.  If unset, it is displayed
-at top of screen, with blank lines surrounding the scrolling region.})
-
 option(pager, pg, opt_pager, NULL, s, "more", ,
  {pager used to view files},
  {Pager used to view files.  Defaults to the value of the environment

@@ -143,8 +143,6 @@ status_do(enum state when)
 	    fputc('\n', stdout);
 	}
     }
-
-    /* XXX: handle non-emacs-mode */
 }
 
 
