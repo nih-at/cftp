@@ -492,11 +492,11 @@ disp_open(int lines)
 {
     FILE *f;
     
+    escape_disp(1);
+
     if ((f=popen("less", "w")) == NULL)
 	return NULL;
     
-    escape_disp(1);
-
     return f;
 }
 
