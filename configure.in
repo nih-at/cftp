@@ -19,7 +19,7 @@ AC_SUBST(DOMAINNAME)dnl
 dnl automake
 
 PACKAGE=cftp
-VERSION=0.5
+VERSION=0.5+
 AC_SUBST(PACKAGE)
 AC_SUBST(VERSION)
 
@@ -42,6 +42,7 @@ LIBS="$LIBS -l$TERMCAP"
 
 AC_CHECK_LIB(socket, main)
 AC_CHECK_LIB(nsl, main)
+AC_CHECK_LIB(resolv, main)
 
 
 dnl header files
