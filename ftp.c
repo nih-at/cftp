@@ -696,6 +696,7 @@ ftp_port(void)
     unsigned long host;
     int fd, port, val, i, delim;
     int len;
+    unsigned int s_addr;
     unsigned char addr[4];
     char baddr[16], bport[6], *s, *e;
     char *saddr, *sport;
@@ -717,12 +718,11 @@ ftp_port(void)
 	port = htons(((struct sockaddr_in *)&sa)->sin_port);
 
 	if (ftp_addr->sa_family == AF_INET) {
+	    s_addr = htonl(sin->sin_addr.s_addr);
 	    ftp_put("port %d,%d,%d,%d,%d,%d",
-		    (sin->sin_addr.s_addr) & 0xff,
-		    (sin->sin_addr.s_addr>>8) & 0xff,
-		    (sin->sin_addr.s_addr>>16) & 0xff,
-		    (sin->sin_addr.s_addr>>24) & 0xff,
-		    port>>8, port&0xff);
+		    (s_addr>>24) & 0xff, (s_addr>>16) & 0xff,
+		    (s_addr>>8) & 0xff, s_addr & 0xff,
+		    (port>>8) & 0xff, port & 0xff);
 	}
 	else {
 	    ftp_put("eprt |%d|%s|%d|",
