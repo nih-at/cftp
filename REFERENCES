@@ -1,0 +1,20 @@
+RFCs:
+
+ 959: File Transfer Protocol
+1123: Requirements for Internet Hosts -- Application and Support
+1738: Uniform Resource Locators (URL)
+2228: FTP Security Extensions
+2389: Feature Negotiation for the File Transfer Protocol
+2428: FTP Extensions for IPv6 and NATs
+2640: Internationalization of the File Transfer Protocol
+2732: Format for Literal IPv6 Addresses in URLs
+
+Internet Drafts:
+
+draft-ietf-ftpext-mlst-12: Extensions to FTP
+
+
+
+1579: Firewall-Friendly FTP
+2396: Uniform Resource Identifiers (URI): Generic Syntax.
+2577: FTP Security Considerations
