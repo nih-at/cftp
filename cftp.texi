@@ -167,6 +167,26 @@ In addition to its own config file @file{.cftprc}, see @ref{cftprc},
 initial directory)
 @end itemize
 
+An entry for a specific host:
+
+@example
+machine @var{host} login @var{user} password @var{passwd}
+macdef init
+cd @var{startdir}
+
+@end example
+
+The default entry (used for all hosts not matched by a specific entry):
+
+@example
+default login @var{user} password @var{passwd}
+macdef init
+cd @var{startdir}
+
+@end example
+
+The @code{macdef init} must be terminated by a blank line.
+@code{password} and @code{macdef init} may be ommited.
 
 @include functions.texi
 
