@@ -14,8 +14,6 @@
 * detect hung data connection
 * ftp_retr: check 150 format on different servers
 * handle 8 bit keys
-* problems with listing of ftp://ftp.unicode.org/ and 128.223.95.87
-	(file names short)
 * <local> mode
 * decent documentation
 * write passwd and port in save-urls

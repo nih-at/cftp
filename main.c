@@ -326,7 +326,11 @@ get_anon_passwd(void)
 	strcpy(pass, "unknown@");
 
     gethostname(host, 1023);
+#ifdef HAVE_GETDOMAINNAME
     getdomainname(domain, 1023);
+#else
+    domain[0] = '\0';
+#endif
 
     if (strcmp(domain, "(none)") != 0 && domain[0] != '\0') {
 	if (domain[0] != '.')
