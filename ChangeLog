@@ -1,3 +1,7 @@
+2003-12-21  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* sftp.c: bump SFTP_DATA_LEN to 8192.
+
 2003-12-19  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (rftp_fclose): correct logic in checking response.

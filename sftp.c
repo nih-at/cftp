@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.22 2002/09/16 12:42:42 dillo Exp $
+  $NiH: sftp.c,v 1.23 2003/07/12 13:58:02 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001, 2002 Dieter Baron
@@ -55,7 +55,7 @@
 #define SFTP_DATA_HEADER_LEN	SFTP_HEADER_LEN+4
 					/* no of bytes before data in a
 					   SSH_FXP_DATA packet */
-#define SFTP_DATA_LEN		4096	/* data length used for read/write */
+#define SFTP_DATA_LEN		8192	/* data length used for read/write */
 
 #define SFTP_FL_LOG		0x1	/* log packet */
 #define SFTP_FL_IS_PATH		0x2	/* string is path (prepend cwd) */
