@@ -1,3 +1,5 @@
+* host specific rc file sections
+* run time disabling of IPv6
 * use mkhoststr in show-url
 * rewrite parse_url
 * fix REFERENCES and include in dist
