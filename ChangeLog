@@ -1,3 +1,7 @@
+2001-12-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* ftp.c (rftp_xfer_read): select fileno(f) for reading.
+
 2001-12-20  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* util.c (set_file_blocking): Return old blocking mode.

@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.67 2001/12/20 05:53:59 dillo Exp $
+  $NiH: ftp.c,v 1.68 2001/12/20 13:01:49 dillo Exp $
 
   ftp -- ftp protocol functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -1414,7 +1414,7 @@ rftp_xfer_read(void *buf, size_t len, void *file)
 		    FD_ZERO(&fdset);
 		    FD_SET(fileno(f), &fdset);
 		    
-		    if (select(fileno(f)+1, NULL, &fdset, NULL, NULL) == -1
+		    if (select(fileno(f)+1, &fdset, NULL, NULL, NULL) == -1
 			|| !FD_ISSET(fileno(f), &fdset))
 			return 0;
 		    continue;
