@@ -1,5 +1,5 @@
 /*
-  $NiH: signals.c,v 1.10 2001/12/11 14:37:40 dillo Exp $
+  $NiH: signals.c,v 1.11 2002/09/16 12:42:42 dillo Exp $
 
   signals.c -- signal handling functions
   Copyright (C) 1996-2002 Dieter Baron
@@ -25,6 +25,8 @@
 
 
 #include <signal.h>
+#include <stdlib.h>
+
 #include "signals.h"
 #include "display.h"
 
