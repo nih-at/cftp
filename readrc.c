@@ -31,6 +31,9 @@
 #include "bindings.h"
 #include "functions.h"
 #include "rc.h"
+#include "url.h"
+
+
 
 int
 readrc(char **userp, char **passp, char **hostp, char **portp, char **wdirp, 

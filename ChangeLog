@@ -1,3 +1,11 @@
+2000-12-13  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* fn_tag.c (fn_saveurls): use mkhoststr to include user, password
+	and port in written URL.
+	* ftp.c (ftp_login): use mkhoststr.
+	* util.c (mkhoststr): new function.
+	* url.c: new file for URL handling: encoding, decoding, parsing.
+
 2000-12-11  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* util.c (get_anon_passwd): move to util.c from main.c.

@@ -1,3 +1,5 @@
+* use mkhoststr in show-url
+* rewrite parse_url
 * fix REFERENCES and include in dist
 * Makfile.am, mkbind: fix rules that create files with > (use tmp file)
 * ftp_cat: convert *to* netascii if uploading
@@ -16,7 +18,6 @@
 * handle 8 bit keys
 * <local> mode
 * decent documentation
-* write passwd in save-urls
 * segfault while tagging on GNU/Linux
 * improve abort handling, especially when downloading tagged files
 * don't exit if initial connect/login fails (allow reading message log)

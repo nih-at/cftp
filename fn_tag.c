@@ -52,6 +52,7 @@ char *basename(char *);
 #include "util.h"
 #include "status.h"
 #include "list.h"
+#include "url.h"
 
 
 
@@ -359,8 +360,8 @@ void
 fn_saveurls(char **args)
 {
     FILE *f;
-    char *name;
-    int i;
+    char *name, *host, *p;
+    int i, n, len;
 
     if (!tag_anytags()) {
 	disp_status("no tags");
@@ -382,8 +383,22 @@ fn_saveurls(char **args)
 	return;
     }
 
-    for (i=0; i<tags.len && !ferror(f); i++)
-	fprintf(f, "ftp://%s%s\n", status.host, tags.line[i].name);
+    host = mkhoststr(1, 1);
+
+    n = 0;
+    p = NULL;
+    for (i=0; i<tags.len && !ferror(f); i++) {
+	len = url_enclen(tags.line[i].name, URL_UCHAR)+1;
+	if (len > n) {
+	    free(p);
+	    p = malloc(len);
+	    n = len;
+	}
+	fprintf(f, "ftp://%s%s", host, url_encode(p, tags.line[i].name,
+						  URL_XCHAR));
+    }
+    free(p);
+    free(host);
 
     if (ferror(f))
 	disp_status("write error on `%s': %s", name, strerror(errno));

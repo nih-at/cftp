@@ -8,13 +8,13 @@ bin_PROGRAMS=	cftp
 info_TEXINFOS=	cftp.texi
 cftp_TEXINFOS=	functions.texi options.texi
 noinst_PROGRAMS=mkbind
-cftp_SOURCES=	directory.c display.c readdir.c loop.c functions.c \
+cftp_SOURCES=	directory.c display.c readdir.c loop.c functions.c url.c \
 		ftp.c sockets.c main.c options.c keys.c tty.c rc.c readrc.c \
 		list.c tag.c util.c version.c bindings.c status.c signals.c \
 		fntable.c fn_basic.c fn_scroll.c fn_select.c fn_tag.c fn_bind.c
 noinst_HEADERS= directory.h display.h readdir.h loop.h functions.h tag.h \
 		ftp.h sockets.h options.h keys.h tty.h rc.h fntable.h util.h \
-		getopt.h list.h bindings.h status.h signals.h \
+		getopt.h list.h bindings.h status.h signals.h url.h \
 		fnmatch_repl.h
 mkbind_SOURCES=	mkbind.c keys.c rc.c fn_bind.c functions.c
 

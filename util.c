@@ -29,6 +29,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "directory.h"
+#include "ftp.h"
+#include "util.h"
+#include "url.h"
+
 
 
 char *
@@ -141,108 +146,6 @@ local_exp(char *path)
 
 
 
-static char *deurl(char *u);
-
-int
-parse_url(char *url, char **user, char **pass,
-	  char **host, char **port, char **dir)
-{
-    char *p, *q, *h, *r;
-
-    if (strncmp(url, "ftp://", 6) != 0)
-	return -1;
-    url+=6;
-
-    if ((p=strchr(url, '/')) != NULL)
-	*(p++) = '\0';
-    else
-	p = url+strlen(url);
-    
-    if ((q=strrchr(url, '@')) != NULL) {
-	*q = '\0';
-	if ((r=strchr(url, ':')) != NULL) {
-	    *(r++) = '\0';
-	    *pass = deurl(r);
-	}
-	*user = deurl(url);
-	url = q+1;
-    }
-
-    if (url[0] == '[' && (h=strchr(url, ']')) != NULL
-	&& (h[1] == ':' || h[1] == '\0')) {
-	url++;
-	*(h++) = '\0';
-    }
-    else
-	h = url;
-
-    if ((q=strchr(h, ':')) != NULL) {
-	*q = '\0';
-	if (*(q+1) != '\0')
-	    *port = deurl(q+1);
-    }
-	
-    *host = deurl(url);
-
-    if (p && *p != '\0') {
-	if ((*dir=(char *)malloc(strlen(p)+3)) == NULL) {
-	    /* fprintf(stderr, "%s: malloc failure\n", prg); */
-	    fprintf(stderr, "malloc failure\n");
-	    return -1;
-	}
-	*dir = deurl(p);
-    }
-
-    return 0;
-}
-
-
-
-static int
-hexdigit(int c)
-{
-    if (c >= '0' && c <= '9')
-	return c-'0';
-    if (c >= 'a' && c <= 'f')
-	return c-'a';
-    if (c >= 'A' && c <= 'F')
-	return c-'F';
-    
-    return 0;
-}
-
-
-
-static char *
-deurl(char *s)
-{
-    char *t, *p;
-    int c;
-
-    if ((t=(char *)malloc(strlen(s)+1)) != NULL) {
-	for (p=t; *s; s++) {
-	    if (*s == '%') {
-		if (s[1] == '\0' || s[2] == '\0')
-		    *(p++) = '%';
-		else {
-		    c = hexdigit(*(++s))*16;
-		    c += hexdigit(*(++s));
-
-		if (c != 0)
-		    *(p++) = c;
-		}
-	    }
-	    else
-		    *(p++) = *s;
-	}
-	*p = '\0';
-    }
-
-    return t;
-}
-
-
-
 char *
 args_to_string(char **args)
 {
@@ -300,3 +203,62 @@ get_anon_passwd(void)
     
     return strdup(pass);
 }
+
+
+
+char *
+mkhoststr(int passp, int urlp)
+{
+    int len, i, n;
+    char *str[7], *hs, *t;
+    int encode[7], slen[7];
+
+    n = 0;
+    len = 0;
+    if (!ftp_anon() || (passp && ftp_pass())) {
+	str[n] = ftp_user();
+	encode[n++] = urlp;
+	if (passp && ftp_pass()) {
+	    str[n] = ":";
+	    encode[n++] = 0;
+	    str[n] = ftp_pass();
+	    encode[n++] = urlp;
+	}
+	str[n] = "@";
+	encode[n++] = 0;
+    }
+    str[n] = ftp_host();
+    encode[n++] = 1;
+    if (ftp_prt()) {
+	str[n] = ":";
+	encode[n++] = 0;
+	str[n] = ftp_prt();
+	encode[n++] = urlp;
+    }
+
+    len = 0;
+    for (i=0; i<n; i++) {
+	if (encode[i])
+	    slen[i] = url_enclen(str[i], URL_UCHAR);
+	else
+	    slen[i] = strlen(str[i]);
+	len += slen[i];
+    }
+    len++;
+
+    t = hs = (char *)malloc(len);
+
+    len = 0;
+    for (i=0; i<n; i++) {
+	if (encode[i])
+	    url_encode(t, str[i], URL_UCHAR);
+	else
+	    strcpy(t, str[i]);
+	t += slen[i];
+    }
+    *t = '\0';
+
+    return hs;
+}
+
+

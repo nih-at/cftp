@@ -178,8 +178,7 @@ int
 ftp_login(char *user, char *pass)
 {
     int resp;
-    int len, n, i;
-    char *str[5], *b;
+    char *b;
     int free_pass;
 
     if (user) {
@@ -198,26 +197,7 @@ ftp_login(char *user, char *pass)
     else
 	_ftp_anon = 1;
 
-    len = n = 0;
-    if (!_ftp_anon) {
-	len += strlen(_ftp_user) + 1;
-	str[n++] = _ftp_user;
-	str[n++] = "@";
-    }
-    len += strlen(_ftp_host);
-    str[n++] = _ftp_host;
-    if (_ftp_port) {
-	len += strlen(_ftp_port) + 1;
-	str[n++] = ":";
-	str[n++] = _ftp_port;
-    }
-    len++;
-
-    status.host = (char *)malloc(len);
-    status.host[0] = '\0';
-    for (i=0; i<n; i++)
-	strcat(status.host, str[i]);
-
+    status.host = mkhoststr(0, 0);
     
     ftp_put("user %s", user);
     resp = ftp_resp();

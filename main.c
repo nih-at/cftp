@@ -46,6 +46,7 @@
 #include "status.h"
 #include "tty.h"
 #include "util.h"
+#include "url.h"
 
 /* in readrc.c */
 int readrc(char **userp, char **passp, char **hostp, char **portp,

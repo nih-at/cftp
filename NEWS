@@ -1,4 +1,5 @@
 New in 0.10.1:
+* write proper URLs (encoding special chars, include user and port)
 * only ask for password if server wants one
 * display progress while reading directories
 

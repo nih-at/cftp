@@ -1,8 +1,8 @@
-#ifndef HAD_UTIL_H
-#define HAD_UTIL_H
+#ifndef HAD_URL_H
+#define HAD_URL_H
 
 /*
-  util.h -- auxiliary functions
+  url.h -- functions to parse and create URLs
   Copyright (C) 1996, 1997, 1998, 1999, 2000 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
@@ -25,11 +25,17 @@
 
 
 
-char *canonical(char *path, char *current);
-char *dirname(char *name);
-char *local_exp(char *path);
-char *args_to_string(char **args);
-char *get_anon_passwd(void);
-char *mkhoststr(int passp, int urlp);
+#define URL_UCHAR  0x1
+#define URL_XCHAR  0x2
 
-#endif /* util.h */
+
+
+int parse_url(char *url, char **user, char **pass,
+	      char **host, char **port, char **dir);
+char *url_decode(char *d, const char *s);
+int url_declen(char *s);
+char *url_encode(char *d, const char *s, int which);
+int url_enclen(char *s, int which);
+int url_special(int c, int which);
+
+#endif /* url.h */
