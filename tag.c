@@ -27,6 +27,7 @@
 #include "tag.h"
 #include "directory.h"
 #include "options.h"
+#include "list.h"
 
 #define tag_getdir(dir)	\
 	((dirtags *)tag_do((filetags *)&tags, (dir), 0, NULL))
@@ -248,4 +249,5 @@ change_curdir(directory *dir)
     }
 
     curdir = dir;
+    list = curdir;
 }

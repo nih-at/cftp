@@ -39,6 +39,7 @@ loop()
     struct binding *binding;
     function *f;
 
+    binding_state = bs_remote;
     list_do(1);
 	
     while ((c=tty_readkey()) != -1) {
