@@ -1,4 +1,8 @@
-2000-05-09  Dieter Baron  <dillo@danbala.ifoer.tuwien.ac.at>
+2000-05-18  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* ftp.c (ftp_cat): correct transfer rate display when start != 0.
+
+2000-05-09  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (ftp_cat, _ftp_update_transfer): display transfer rate.
 

@@ -832,7 +832,6 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size)
     long got, cur[4];
     int old_alarm;
 
-    got = start;
 
     if (size >= 0)
 	sprintf(fmt, "transferred %%ld/%ld "
@@ -841,6 +840,7 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size)
     else
 	strcpy(fmt, "transferred %ld (total: %%.2fkb/s, current: %%.2fkb/s)");
 
+    got = start;
     cur[0] = cur[1] = cur[2] = cur[3] = 0;
     old_alarm = sig_alarm = sig_intr = 0;
 
@@ -858,7 +858,8 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size)
 	    }
 	    got += n;
 	    if (old_alarm != sig_alarm) {
-		_ftp_update_transfer(fmt, got, cur, old_alarm, sig_alarm);
+		_ftp_update_transfer(fmt, got-start, cur,
+				     old_alarm, sig_alarm);
 		old_alarm = sig_alarm;
 	    }
 	}
@@ -879,7 +880,8 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size)
 		break;
 
 	    if (old_alarm != sig_alarm) {
-		_ftp_update_transfer(fmt, got, cur, old_alarm, sig_alarm);
+		_ftp_update_transfer(fmt, got-start, cur,
+				     old_alarm, sig_alarm);
 		old_alarm = sig_alarm;
 	    }
 	}
