@@ -215,9 +215,12 @@ ftp_list(char *path)
 		dir->line = (direntry *)malloc(sizeof(direntry));
 		dir->path = path;
 		dir->len = 1;
+		dir->cur = dir->top = 0;
+		dir->size = sizeof(struct direntry);
 		dir->line->line = strdup("");
 		dir->line->type = 'x';
-		dir->line->name = dir->line->link = NULL;
+		dir->line->name = strdup("");
+		dir->line->link = NULL;
 		return dir;
 	}
 	if ((f=ftp_accept(fd, "r")) == NULL)

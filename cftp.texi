@@ -19,7 +19,7 @@ END-INFO-DIR-ENTRY
 @ifinfo
 This file documents cftp @value{VERSION}
 
-Copyright 1996, 1997 Dieter Baron
+Copyright 1996, 1997 Dieter Baron, Thomas Klausner
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -48,10 +48,11 @@ approved by the Free Software Foundation.
 @title @sc{cftp} -- Comfortable FTP
 @subtitle For version @value{VERSION}, @value{UPDATED}
 @author Dieter Baron
+@author Thomas Klausner
 @c copyright page
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1996, 1997 Dieter Baron
+Copyright @copyright{} 1996, 1997 Dieter Baron, Thomas Klausner
 @sp 2
 This is a draft edition of the @sc{cftp} documentation,@*
 and is consistent with @sc{cftp} @value{VERSION}.@*
@@ -83,7 +84,8 @@ approved by the Free Software Foundation.
 @top cftp
 
 This file documents @sc{cftp}, a fullscreen ftp client running on
-ASCII-terminals.  This edition documents version @value{VERSION}.
+ASCII-terminals or terminal emulations (like xterm).  This edition
+documents version @value{VERSION}.
 
 @menu
 * Introduction::        An introduction to @sc{cftp}
@@ -102,9 +104,10 @@ ASCII-terminals.  This edition documents version @value{VERSION}.
 @cindex Introduction
 
 @sc{cftp} is used to transfer files from a remote computer to your local
-computer via the ftp-protocol. It's advantages over most standard
-ftp-clients is its "graphical" representation of the remote directory so
-you can easily choose what to get or where to go. 
+computer via the FTP protocol.  (Uploading files to the remote computer
+is currently not supported.)  It's advantages over most standard
+ftp-clients is its fullscreen representation of the remote directory so
+you can easily choose what to get or where to go.
 
 
 @c ****************************************************************
@@ -112,6 +115,12 @@ you can easily choose what to get or where to go.
 @chapter Invoking @sc{cftp}
 @cindex Invokation
 
+There are two ways to specify the connection:
+
+@itemize @bullet
+@item cftp [-u @var{user}] [-p @var{port}] @{@var{host}|@var{alias}@} @var{directory}
+@item cftp @var{url}
+@end itemize
 @c XXX das mach ich schon
 
 

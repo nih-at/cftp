@@ -131,21 +131,21 @@ endsec()
 
 section(fn_scroll, Scrolling Functions)
 
-function(down, [@var{n}], fn_down, 0,
+function(down, {[@var{n}]}, fn_down, 0,
 	 {move cursor N lines down (default: 1)},
  {Move cursor down @var{n} lines, wrapping around at the bottom.
 
 @var{n} can be a prefix argument.})
 
 
-function(up, [@var{n}], fn_up, 0,
+function(up, {[@var{n}]}, fn_up, 0,
 	 {move cursor N lines up (default: 1)},
  {Move cursor up @var{n} lines, wrapping around at the top.  
 
 @var{n} can be a prefix argument.})
 
 
-function(page-down, [@var{n}], fn_pg_down, 0,
+function(page-down, {[@var{n}]}, fn_pg_down, 0,
 	 {move N screens down (default: 1)},
  {Move down @var{n} screens, placing the cursor at the top of the
 screen. Wrap around to the first line if at the last screen.  
@@ -153,7 +153,7 @@ screen. Wrap around to the first line if at the last screen.
 @var{n} can be a prefix argument.})
 
 
-function(page-up, [@var{n}], fn_pg_up, 0,
+function(page-up, {[@var{n}]}, fn_pg_up, 0,
 	 {move N screens up (default: 1)},
  {Move up @var{n} screens, placing the cursor at the top of the
 screen. Wrap around to the last screen if at the first line.  
@@ -161,7 +161,7 @@ screen. Wrap around to the last screen if at the first line.
 @var{n} can be a prefix argument.})
 
 
-function(goto, [@var{n}], fn_goto, 0,
+function(goto, {[@var{n}]}, fn_goto, 0,
 	 {goto line N (default: last)},
  {Move cursor to line @var{n}.
 

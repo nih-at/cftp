@@ -62,7 +62,8 @@ read_dir(FILE *f)
 	dir->line = (direntry *)malloc(sizeof(direntry));
 	dir->line->line = strdup("");
 	dir->line->type = 'x';
-	dir->line->name = dir->line->link = NULL;
+	dir->line->name = strdup("");
+	dir->line->link = NULL;
 	n = 1;
     }
     else {
