@@ -1,5 +1,6 @@
 * fix -Wall warnings (option and function array, termcap functions, getopt.c)
 * fix compile on HPUX (struct sockaddr)
+* get-tags: recoginze global failure (e. g. connection lost) and abort
 * feature recognition and handling
 * complete getaddrinfo replacement
 * check warnings on NextSTEP

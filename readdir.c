@@ -29,6 +29,7 @@
 
 #include "directory.h"
 #include "ftp.h"
+#include "display.h"
 #include "options.h"
 
 static int parse_unix(direntry *de, char *line);
@@ -54,12 +55,14 @@ read_dir(FILE *f)
     direntry *list;
     int i, n, sz, pf, ret;
     char *line;
+    time_t oldt, newt;
 
     dir = malloc(sizeof(directory));
     list = NULL;
     sz = n = 0;
 
     pf = 0;
+    oldt = 0;
 
     init_parse_time();
 
@@ -84,6 +87,11 @@ read_dir(FILE *f)
 	    n++;
 	}
 	free(line);
+
+	if ((newt=time(NULL)) != oldt) {
+	    disp_status("listed %d", n);
+	    oldt = newt;
+	}
     }
 
     if (n == 0) {

@@ -1,3 +1,7 @@
+2000-12-11  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* readdir.c (read_dir): display progress.
+
 2000-12-10  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* fn_select.c, fn_tag.c, ftp.c, tag.c: remove unnecessary casts of
