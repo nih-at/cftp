@@ -48,7 +48,7 @@ int ftp_reconnect(void);
 int ftp_close(void);
 directory *ftp_list(char *path);
 directory *ftp_cd(char *wd, int force);
-FILE *ftp_retr(char *file, int mode, long *startp);
+FILE *ftp_retr(char *file, int mode, long *startp, long *sizep);
 FILE *ftp_stor(char *file, int mode);
 int ftp_fclose(FILE *f);
 int ftp_mkdir(char *path);

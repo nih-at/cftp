@@ -1,6 +1,13 @@
+1998-12-31  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* ftp.c (ftp_retr): place size from 150 response in *sizep (new
+	argument); changed callers.
+	* fn_select.c (aux_download): use size from ftp_retr if size
+	unknown.
+
 1998-12-16  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
-	* util.c util.h (argstostr): removed (args_to_string is
+	* util.c (argstostr): removed (args_to_string is
 	duplicate), changed callers.
 	(args_to_string): fixed bug which placed all args at beginning of
 	string.

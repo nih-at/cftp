@@ -1,3 +1,5 @@
+* detect hung data connection
+* ftp_retr: check 150 format on different servers
 * termcap.h or similar (for -Wall): which one?!
 * clean up code for -Wall (fn_select - zzzz)
 * handle 8 bit keys

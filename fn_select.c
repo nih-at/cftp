@@ -71,7 +71,7 @@ aux_download(char *name, long size, int restart)
     FILE *fin, *fout;
     struct stat st;
     char *mode;
-    long start;
+    long start, rsize;
 
     start = 0;
     
@@ -80,7 +80,7 @@ aux_download(char *name, long size, int restart)
 	    start = st.st_size;
     }
 
-    if ((fin=ftp_retr(name, opt_mode, &start)) == NULL)
+    if ((fin=ftp_retr(name, opt_mode, &start, &rsize)) == NULL)
 	return -2;
     if (start > 0)
 	mode = "a";
@@ -93,6 +93,9 @@ aux_download(char *name, long size, int restart)
 		    (char *)basename(name), strerror(errno));
 	return -2;
     }
+
+    if (size == -1)
+	size = rsize;
 
     err = ftp_cat(fin, fout, start, size);
 
@@ -115,7 +118,7 @@ aux_pipe(char *name, long size, int mode, char *cmd, int quietp)
     int err;
     FILE *fin, *fout;
 	
-    if ((fin=ftp_retr(name, (mode ? mode : opt_mode), NULL)) == NULL)
+    if ((fin=ftp_retr(name, (mode ? mode : opt_mode), NULL, NULL)) == NULL)
 	return -2;
 
     if ((fout=disp_open(cmd, quietp)) == NULL)

@@ -327,10 +327,10 @@ ftp_cd(char *wd, int force)
 
 
 FILE *
-ftp_retr(char *file, int mode, long *startp)
+ftp_retr(char *file, int mode, long *startp, long *sizep)
 {
     int fd;
-    char *dir, *name, *can;
+    char *dir, *name, *can, *p;
     FILE *fin;
     
     can = canonical(file, NULL);
@@ -353,6 +353,13 @@ ftp_retr(char *file, int mode, long *startp)
     if (ftp_resp() != 150) {
 	close(fd);
 	return NULL;
+    }
+    if (sizep != NULL) {
+	/* XXX: check how other servers format 150s */
+	if (strcmp(ftp_last_resp+strlen(ftp_last_resp)-8, " bytes).") == 0) {
+	    if ((p=strrchr(ftp_last_resp, '(')) != NULL)
+		*sizep = strtol(p+1, NULL, 10);
+	}
     }
     if ((fin=ftp_accept(fd, "r")) == NULL) {
 	close(fd);

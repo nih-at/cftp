@@ -1,4 +1,5 @@
 New in 0.9.3:
+* downloads: if size is unknown, use size from server response
 * mkdir: make directory on server (not really new, but I forgot to mention it)
 * site: send site specific commands
 * removed option emacs-status (which has been ignored anyway)
