@@ -2,6 +2,7 @@
 ! tagging segfaults on linux
 ! abort doesn't work
 ! stop when local disk is full during download
++ option: maximum transfer rate
 + display transfer rate at end of transfer
 + fix buffer overflows
 + sftp: ^c kills ssh subprocess (how to avoid?!)
