@@ -30,6 +30,6 @@ char *dirname(char *name);
 char *local_exp(char *path);
 int parse_url(char *url, char **user, char **pass,
 	      char **host, char **port, char **dir);
-char *args_to_str(char **args);
+char *args_to_string(char **args);
 
 #endif /* util.h */

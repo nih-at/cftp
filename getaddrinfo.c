@@ -76,10 +76,9 @@ getaddrinfo(const char *nodename, const char *servname,
 	ai->ai_socktype = SOCK_STREAM; /* XXX: from hints */
 	ai->ai_protocol = IPPROTO_TCP; /* XXX: from hints */
 	sa.sin_addr.s_addr = INADDR_ANY;
-	if ((ai->ai_addr=malloc(sizeof(struct sockaddr_in))) == NULL) {
-	    freeaddrinfo(airet);
+	if ((ai->ai_addr=malloc(sizeof(struct sockaddr_in))) == NULL)
 	    return EAI_MEMORY;
-	}
+	
 	memcpy(ai->ai_addr, &sa, sizeof(struct sockaddr_in));
 	ai->ai_addrlen = sizeof(struct sockaddr_in);
 
