@@ -63,21 +63,12 @@ canonical(char *path, char *current)
 }
 
 
-@ basename and dirname
+@ dirname
 
 @d<prototypes@>
-char *basename(char *name);
 char *dirname(char *name);
 
 @u
-char *
-basename(char *name)
-{
-    char *p = strrchr(name, '/');
-
-    return (p ? p+1 : name);
-}
-
 char *
 dirname(char *name)
 {
