@@ -82,8 +82,7 @@ sopen(char *host, char *service, int family)
     }
     if (s < 0) {
 	if (disp_active)
-	    disp_status("cannot %s: %s\n",
-			cause, strerror(errno));
+	    disp_status("cannot %s: %s", cause, strerror(errno));
 	else
 	    fprintf(stderr, "%s: cannot %s: %s\n",
 		    prg, cause, strerror(errno));
