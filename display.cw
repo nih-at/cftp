@@ -142,12 +142,12 @@ disp_dir(directory *d, int top, int sel, int newdir)
 	if (!newdir && oldtop==top && oldsel==sel)
 		return;
 
-	if (newdir || abs(oldtop-top) > win_lines-2)
-		disp_redir(d, top, sel);
-	else if (top == oldtop) {
+	if (!newdir && top == oldtop) {
 		disp_sel(d, top, oldsel, 0);
 		disp_sel(d, top, sel, 1);
 	}
+	else if (cap_dl == NULL || abs(oldtop-top) > win_lines-2)
+		disp_redir(d, top, sel);
 	else if (top > oldtop)
 		disp_updir(d, oldtop, oldsel, top, sel);
 	else
@@ -428,14 +428,14 @@ win_line(char *line, int sel)
 		printf("%s\n", line);
 	else {
 		if (l >i) {
-			save = line[i-1];
-			line[i-1] = '\0';
+			save = line[i];
+			line[i] = '\0';
 		}
 		printf("%s", line);
 		if (!tty_am)
 			putchar('\n');
 		if (l > i)
-			line[i-1] = save;
+			line[i] = save;
 	}
 
 	if (sel)

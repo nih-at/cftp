@@ -1,29 +1,30 @@
-* fn_search
+F fn_search
 * handle closed connections due to timeout
-* proper read line (editing)
-* abort transfer
-* deidle connection
-* forced reload of directory listing
+F proper read line (editing)
+F abort transfer
+F deidle connection
+F forced reload of directory listing
 * handle cd ~user/.. in a better way
-* handle immensly long lines in ftp_gets (malloc failure)
-* improve fn_lcd, add fn_show_ld
-* if url is file, download
+B handle immensly long lines in ftp_gets (malloc failure)
+F improve fn_lcd, add fn_show_ld
+F if url is file, download
 * catch signals and restore term
-* save dir listing
+F save dir listing
 * handle ftp servers unable to cd ~user (NetBSD)
-* show multiline responses
-* get .tar[.gz] files
-* optionally no bytecount at download / don't flood tty on fast connections
-* tag files (later download, save/load tags, detached download)
-* support for stor, dele
-* use automake
-* .cftprc 
-* display.cw: (disp_dir) make max no of lines to scroll user setable
-* tty.cw (tty_readkey) make VTIME value user setable
-* display.cw: (disp_dir) problem with lines of length tty_lines-1
-* display.cw: (disp_dir) problem with dirs of lenght win_lines+1 (e.g.
-	ftp.giga.or.at /)
+F show multiline responses
+F get .tar[.gz] files
+F optionally no bytecount at download / don't flood tty on fast connections
+F tag files (later download, save/load tags, detached download)
+F support for stor, dele
+F use automake
+F .cftprc 
+F display.cw: (disp_dir) make max no of lines to scroll user setable
+F tty.cw (tty_readkey) make VTIME value user setable
 ----------------------------------------------- done
+B display.cw: (win_line) problem with lines of length tty_lines-1 (e.g.
+	ftp.giga.or.at /)
+B display.cw: (disp_dir) problem with dirs of lenght win_lines+1 (e.g.
+	ftp.giga.or.at /pub/hacker)
 * support cursor keys
 * display.cw: (read_string) use ERASE, WERASE, KILL instead of '\b' etc.
 * wrote key name parser/printer
