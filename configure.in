@@ -6,6 +6,10 @@ AC_INIT(fn_bind.c)
 AM_INIT_AUTOMAKE(cftp, 0.11.2a)
 AM_CONFIG_HEADER(config.h)
 
+AC_ARG_ENABLE(sftp,
+    [  --enable-sftp           enable support for sftp protocol],
+    USE_SFTP=no, USE_SFTP=yes)
+
 # We want these before the checks, so the checks can modify their values.
 test -z "$CFLAGS" && CFLAGS='-g' auto_cflags=1
 
@@ -14,7 +18,10 @@ AC_PROG_CC
 dnl # If we're using gcc and the user hasn't specified CFLAGS, add -O to CFLAGS.
 dnl test -n "$GCC" && test -n "$auto_cflags" && CFLAGS="$CFLAGS -O"
 
-
+if test "$USE_SFTP" = "yes"
+then
+    AC_DEFINE(USE_SFTP, 1, [Define if you want sftp support])
+fi
 
 dnl programs
 

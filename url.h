@@ -2,7 +2,7 @@
 #define HAD_URL_H
 
 /*
-  $NiH$
+  $NiH: url.h,v 1.3 2001/12/11 14:37:44 dillo Exp $
 
   url.h -- functions to parse and create URLs
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -32,7 +32,8 @@
 
 
 
-int parse_url(char *url, char **user, char **pass,
+int is_url(char *str);
+int parse_url(char *url, int *proto, char **user, char **pass,
 	      char **host, char **port, char **dir);
 char *url_decode(char *d, const char *s);
 int url_declen(char *s);

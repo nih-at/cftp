@@ -1,5 +1,5 @@
 /*
-  $NiH: main.c,v 1.43 2001/12/11 14:37:37 dillo Exp $
+  $NiH: main.c,v 1.44 2001/12/11 14:45:33 dillo Exp $
 
   main -- main function
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -58,7 +58,7 @@ int readrc(char **userp, char **passp, char **hostp, char **portp,
 
 char *usage[] = {
 	"{-h|-V}",
-	"[-p port] [-u user] {host|alias} [directory]",
+	"[-p port] [-u user] [-s] {host|alias} [directory]",
 	"url",
 	NULL };
 
@@ -69,6 +69,7 @@ char help[] = "\
   -V, --version     display version number\n\
   -p, --port PORT   specify port\n\
   -u, --user USER   specify user\n\
+  -s, --sftp        use sftp\n\
 \n\
 Report bugs to <dillo@giga.or.at>.\n";
 
@@ -79,13 +80,14 @@ You may redistribute copies of\n\
 cftp under the terms of the GNU General Public License.\n\
 For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS	"hVp:u:"
+#define OPTIONS	"hVp:u:s"
 
 struct option options[] = {
     { "help",      0, 0, 'h' },
     { "version",   0, 0, 'V' },
     { "port",      1, 0, 'p' },
     { "user",      1, 0, 'u' },
+    { "sftp",      1, 0, 's' },
     { NULL,        0, 0, 0   }
 };
 
@@ -132,6 +134,8 @@ main(int argc, char **argv)
 	exit(1);
     status_init(); /* can't fail */
 
+    ftp_proto = 0;
+
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
 	switch (c) {
@@ -140,6 +144,9 @@ main(int argc, char **argv)
 	    break;
 	case 'u':
 	    user = strdup(optarg);
+	    break;
+	case 's':
+	    ftp_proto = 1;
 	    break;
 	case 'V':
 	    printf("%s\n", version);
@@ -160,13 +167,14 @@ main(int argc, char **argv)
 	print_usage(stderr);
 	exit(1);
     }
-    
-    if (strncmp(argv[optind], "ftp://", 6) == 0) {
+
+    if (is_url(argv[optind])) {
 	if (argc > optind+1) {
 	    print_usage(stderr);
 	    exit(1);
 	}
-	if (parse_url(argv[optind], &user, &pass, &host, &port, &wdir) < 0)
+	if (parse_url(argv[optind], &ftp_proto, &user, &pass,
+		      &host, &port, &wdir) < 0)
 	    exit(1);
 	
 	check_alias = 0;
@@ -187,24 +195,26 @@ main(int argc, char **argv)
 
     /* XXX */ readrc(&user, &pass, &host, &port, &wdir, check_alias);
 
-    if (user == NULL) {
-	read_netrc(host, &user, &pass, &wdir);
+    if (ftp_proto == 0) {
+	if (user == NULL) {
+	    read_netrc(host, &user, &pass, &wdir);
+	}
+	
+	if (user == NULL ||
+	    (strcmp(user, "ftp") == 0 || strcmp(user, "anonymous") == 0)) {
+	    if (user == NULL)
+		user = "ftp";
+	    if (pass == NULL)
+		pass = get_anon_passwd();
+	}
     }
     
-    if (user == NULL ||
-	(strcmp(user, "ftp") == 0 || strcmp(user, "anonymous") == 0)) {
-	if (user == NULL)
-	    user = "ftp";
-	if (pass == NULL)
-	    pass = get_anon_passwd();
-    }
-
     if (tty_init() < 0)
 	exit(1);
 
     ftp_init();
 
-    if (ftp_open(host, port) == -1)
+    if (ftp_open(host, port, user, pass) == -1)
 	exit(1);
 
     if (init_disp() < 0)

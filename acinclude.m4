@@ -1,3 +1,5 @@
+dnl  $NiH$
+dnl
 dnl  acinclude.m4 -- test for autoconf
 dnl  Copyright (C) 2000, 2001 Dieter Baron
 dnl

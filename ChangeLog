@@ -1,4 +1,44 @@
+2001-12-13  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* ftp.c: garbage collect code not ENABLE_TRANSFER_RATE.
+	
+	* fn_basic.c (fn_deidle), ftp.c (rftp_noop): rename method to
+	deidle.
+
+	* fn_select (aux_download, aux_pipe, aux_upload): adapt to
+	stor/retr method interface changes.
+
+	* ftp.c: declare all internal functions static.
+	* ftp.c (ftp_init, ftp_reconnect): make protocol independent.
+	* ftp.c (rftp_cat, rftp_fclose, rftp_retr, rftp_stor): change
+	server side files to void *.
+
+	* ftp.c (ftp_remember_host, ftp_remember_user): new functions.
+
+	* ftp.h: include methods.h, remove prototypes for methods.
+
+	* main.c (main): only reed .netrc if we're using ftp.
+
+	* mkfntab-c.m4, mkfntab-h.m4, mkfntexi.m4, mkoptab-c.m4,
+	mkoptab-h.m4, mkoptexi.m4: add copyright message.
+
+	* util.c (mkhoststr): handle NULL user.
+	
 2001-12-12  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* main.c (main): new option -s (--sftp), use is_url().
+	* readrc.c (readrc): use is_url().
+	* url.c (parse_url): handle sftp URLs.
+	(is_url): new function.
+	
+	* mkmethods-c.m4, mkmethods-h.m4, methods.mt: add framework for
+	protocl method redirection.
+	* ftp.c: rename ftp protocol methods (change prefix to rftp_).
+	* sftp.c: new file.
+	
+	* configure.in: add --enable-sftp option.
+	
+	* aclocal.m4 (NIH_CHECK_DECL): correct comment for conifg.h.in
 
 	* ftp.h, ftp.c: move prototypes for ftp_hist and ftp_histf to
 	ftp.h.

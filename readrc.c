@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: readrc.c,v 1.15 2001/12/11 14:37:40 dillo Exp $
 
   readrc -- read .cftprc file
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -31,6 +31,7 @@
 
 #include "util.h"
 #include "bindings.h"
+#include "ftp.h"
 #include "functions.h"
 #include "rc.h"
 #include "url.h"
@@ -78,9 +79,9 @@ readrc(char **userp, char **passp, char **hostp, char **portp, char **wdirp,
 		continue;
 
 	    if ((tok=rc_token(&p)) != NULL) {
-		if (strncmp(tok, "ftp://", 6) == 0) {
-		    parse_url(tok, &user, &pass, &host, &port, &wdir);
-		}
+		if (is_url(tok))
+		    parse_url(tok, &ftp_proto, &user, &pass,
+			      &host, &port, &wdir);
 		else {
 		    user = pass = port = NULL;
 		    host = strdup(tok);

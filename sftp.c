@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.6 2001/12/12 06:09:02 dillo Exp $
+  $NiH: sftp.c,v 1.7 2001/12/12 17:48:41 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001 Dieter Baron
@@ -24,39 +24,64 @@
 
 
 
+#include "config.h"
+#ifdef USE_SFTP
+
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "directory.h"
 #include "display.h"
 #include "ftp.h"
-#include "sftp.h"
+#include "methods.h"
+#include "status.h"
+#include "util.h"
 
 
 
-#define SFTP_MAX_PACKET_SIZE	4102 /* max read size + SSH_FXP_DATA header */
+#define SFTP_MAX_PACKET_SIZE	32*1024
 
-int sftp_file_close(char *hnd);
-char *sftp_get_handle(void);
-int sftp_put_str(int type, char *str, int is_path);
-int sftp_readdir(char *hnd, char *buf, int *lenp);
+#define SFTP_FL_LOG		0x1
+#define SFTP_FL_IS_PATH		0x2
+
+struct handle {
+    int len;
+    char *str;
+};
+
+
+
+int sftp_file_close(struct handle *hnd);
+struct handle *sftp_get_handle(void);
+int sftp_put_handle(int type, struct handle *hnd, int flags);
+int sftp_put_str(int type, char *str, int len, int flags);
+int sftp_readdir(struct handle *hnd, char *buf, int *lenp);
+int sftp_send_init(int proto_version);
 int sftp_status(void);
 
-static int _sftp_get_packet(FILE *f, char *buf, int *lenp, int log_resp);
+static int _sftp_get_packet(FILE *f, char *buf, int *lenp, int flags);
 static char *_sftp_get_string(char *buf, char **endp);
 static unsigned int _sftp_get_uint32(unsigned char *p);
 static unsigned long long _sftp_get_uint64(unsigned char *p);
+static void _sftp_log_handle(char *buf, char *pre, char *cmd,
+			     unsigned char *data);
 static void _sftp_log_packet(int dir, int type, char *data, int len);
+static void _sftp_log_str(char *buf, char *pre, char *cmd,
+			  unsigned char *data);
 static int _sftp_parse_name(unsigned char **pp, direntry *e);
 static int _sftp_parse_status(int type, char *buf, int len);
 static int _sftp_put_packet(FILE *f, int type, char *buf, int len,
 			    int log_req);
 static void _sftp_put_uint32(unsigned char *p, unsigned int i);
-static directory *_sftp_read_dir(char *hnd);
+static directory *_sftp_read_dir(struct handle *hnd);
+static void _sftp_start_ssh(int fdin, int fdout);
 static char *_sftp_strerror(int error);
 
 
@@ -139,6 +164,9 @@ static char *_sftp_errlist[] = {
 static int _sftp_nerr = sizeof(_sftp_errlist) / sizeof(_sftp_errlist[0]);
 
 static int _sftp_nextid;
+static pid_t _sftp_ssh_pid;
+
+extern char *prg;
 
 /* XXX: shared with ftp.c */
 
@@ -149,7 +177,7 @@ extern FILE *conin, *conout;
 int
 sftp_mkdir(char *path)
 {
-    sftp_put_str(SSH_FXP_MKDIR, path, 1);
+    sftp_put_str(SSH_FXP_MKDIR, path, 0, SFTP_FL_LOG|SFTP_FL_IS_PATH);
     if (sftp_status() != SSH_FX_OK)
 	return -1;
     return 0;
@@ -160,7 +188,7 @@ sftp_mkdir(char *path)
 int
 sftp_rmdir(char *path)
 {
-    sftp_put_str(SSH_FXP_RMDIR, path, 1);
+    sftp_put_str(SSH_FXP_RMDIR, path, 0, SFTP_FL_LOG|SFTP_FL_IS_PATH);
     if (sftp_status() != SSH_FX_OK)
 	return -1;
     return 0;
@@ -172,9 +200,9 @@ directory *
 sftp_list(char *path)
 {
     directory *dir;
-    char *hnd;
+    struct handle *hnd;
 
-    sftp_put_str(SSH_FXP_OPENDIR, path, 1);
+    sftp_put_str(SSH_FXP_OPENDIR, path, 0, SFTP_FL_LOG|SFTP_FL_IS_PATH);
 
     if ((hnd=sftp_get_handle()) == NULL) {
 	/* XXX: why return empty dir here and NULL below? */
@@ -204,7 +232,7 @@ sftp_list(char *path)
 
 
 static directory *
-_sftp_read_dir(char *hnd)
+_sftp_read_dir(struct handle *hnd)
 {
     directory *dir;
     direntry entry;
@@ -221,7 +249,10 @@ _sftp_read_dir(char *hnd)
 	   == SSH_FXP_NAME) {
 	pn = _sftp_get_uint32(_sftp_buffer+4);
 	for (p = _sftp_buffer+8; pn--;) {
-	    if (_sftp_parse_name(&p, &entry)) {
+	    if (_sftp_parse_name(&p, &entry) == 0) {
+		if (strcmp(entry.name, ".") == 0
+		    || strcmp(entry.name, "..") == 0)
+		    continue;
 		dir_add(dir, &entry);
 		n++;
 	    }
@@ -234,7 +265,7 @@ _sftp_read_dir(char *hnd)
     }
 
     if (_sftp_parse_status(type, _sftp_buffer, len) != SSH_FX_EOF) {
-	/* XXX: error */
+	_sftp_log_packet(1, type, _sftp_buffer, len);
     }
 
     return dir;
@@ -294,34 +325,84 @@ _sftp_get_packet(FILE *f, char *buf, int *lenp, int log_resp)
 static void
 _sftp_log_packet(int dir, int type, char *data, int len)
 {
-    int status;
-    char *msg, buf[80];
+    static char *req[] = {
+	"init", "version", "open", "close", "read", "write",
+	"lstat", "fstat", "setstat", "fsetstat", "opendir",
+	"readdir", "remove", "mkdir", "rmdir", "realpath", "stat",
+	"rename"
+    };
+    static char *rsp[] = {
+	"status", "handle", "data", "name", "attrs"
+    };
+    static char *dir_pre[] = { "->", "<=" };
+
+    char buf[80], *pre, *cmd;
+
+    pre = dir_pre[dir!=0];
+
+    if (type >= SSH_FXP_INIT && type <= SSH_FXP_RENAME)
+	cmd = req[type];
+    else if (type >= SSH_FXP_STATUS && type <= SSH_FXP_ATTRS)
+	cmd = rsp[type-SSH_FXP_STATUS];
+    else
+	cmd = NULL;
 
     switch (type) {
-    case SSH_FXP_STATUS:
-	status = _sftp_get_uint32(data+4);
-	if (status == SSH_FX_OK) {
-	    status = 200;
-	    msg = "Ok.";
-	}
-	else {
-	    msg = _sftp_strerror(status);
-	    status += 500;
-	}
-	sprintf(buf, "%d %s", status, msg);
+    case SSH_FXP_INIT:
+    case SSH_FXP_VERSION:
+	sprintf(buf, "%s %s %d", pre, cmd, _sftp_get_uint32(data));
 	break;
 
-    case SSH_FXP_VERSION:
-	sprintf(buf, "202 protocol version %d",
-		_sftp_get_uint32(data));
+    case SSH_FXP_OPEN:
+	/* XXX: include flags & attrs */
+    case SSH_FXP_RENAME:
+	/* XXX: include new name */
+    case SSH_FXP_SETSTAT:
+	/* XXX: include attrs */
+    case SSH_FXP_OPENDIR:
+    case SSH_FXP_REALPATH:
+    case SSH_FXP_REMOVE:
+    case SSH_FXP_MKDIR:
+    case SSH_FXP_RMDIR:
+    case SSH_FXP_LSTAT:
+	_sftp_log_str(buf, pre, cmd, data);
+	break;
+
+    case SSH_FXP_CLOSE:
+    case SSH_FXP_READDIR:
+    case SSH_FXP_HANDLE:
+    case SSH_FXP_FSETSTAT:
+	/* XXX: include attrs */
+    case SSH_FXP_FSTAT:
+	_sftp_log_handle(buf, pre, cmd, data);
 	break;
 	
-    /* XXX: other packet types */
+    case SSH_FXP_READ:
+    case SSH_FXP_WRITE:
+	/* XXX: parse and log data */
+    case SSH_FXP_ATTRS:
+	sprintf(buf, "%s %s", pre, cmd);
+	break;
+
+    case SSH_FXP_STATUS:
+	sprintf(buf, "%s %s %s", pre, cmd,
+		_sftp_strerror(_sftp_get_uint32(data+4)));
+	break;
+	    
+    case SSH_FXP_DATA:
+	sprintf(buf, "%s %s %d", pre, cmd, len-4);
+	break;
+
+    case SSH_FXP_NAME:
+	/* XXX: if count == 1, include name */
+	sprintf(buf, "%s %s %d", pre, cmd, _sftp_get_uint32(data+4));
+	break;
 
     default:
-	sprintf(buf, "500 Unknown packet type %d", type);
-    }
+	sprintf(buf, "%s unknown packet type %d", pre, type);
 
+    }
+    
     disp_status("%s", buf);
     ftp_hist(strdup(buf));
 }
@@ -340,6 +421,7 @@ _sftp_parse_name(unsigned char **pp, direntry *e)
 
     e->name = _sftp_get_string(p, &p);
     e->line = _sftp_get_string(p, &p);
+    e->link = NULL;
 
     flags = _sftp_get_uint32(p);
     p += 4;
@@ -466,31 +548,43 @@ _sftp_parse_status(int type, char *buf, int len)
 
 
 
-char *
+struct handle *
 sftp_get_handle(void)
 {
     int len;
+    struct handle *hnd;
 
     if (_sftp_get_packet(conin, _sftp_buffer, &len, 1) != SSH_FXP_HANDLE)
 	return NULL;
 
-    return _sftp_get_string(_sftp_buffer+4, NULL);
+    hnd = malloc(sizeof(*hnd));
+
+    hnd->len = _sftp_get_uint32(_sftp_buffer+4);
+    hnd->str = malloc(len);
+    memcpy(hnd->str, _sftp_buffer+8, len);
+    
+    return hnd;
 }
 
 
 
 int
-sftp_file_close(char *hnd)
+sftp_file_close(struct handle *hnd)
 {
-    return sftp_put_str(SSH_FXP_CLOSE, hnd, 0);
+    sftp_put_handle(SSH_FXP_CLOSE, hnd, SFTP_FL_LOG);
+
+    free(hnd->str);
+    free(hnd);
+
+    return sftp_status();
 }
 
 
 
 int
-sftp_readdir(char *hnd, char *buf, int *lenp)
+sftp_readdir(struct handle *hnd, char *buf, int *lenp)
 {
-    sftp_put_str(SSH_FXP_READDIR, hnd, 0);
+    sftp_put_handle(SSH_FXP_READDIR, hnd, 0);
 
     return _sftp_get_packet(conin, buf, lenp, 0);
 }
@@ -498,23 +592,25 @@ sftp_readdir(char *hnd, char *buf, int *lenp)
 
 
 int
-sftp_put_str(int type, char *str, int is_path)
+sftp_put_str(int type, char *str, int slen, int flags)
 {
     int len;
 
     len = 8;
-    if (is_path) {
+    if ((flags & SFTP_FL_IS_PATH) && str[0] != '/') {
 	strcpy(_sftp_buffer+len, ftp_lcwd);
 	len += strlen(ftp_lcwd);
 	_sftp_buffer[len++] = '/';
     }
-    strcpy(_sftp_buffer+len, str);
-    len += strlen(str);
+    if (!slen)
+	slen = strlen(str);
+    memcpy(_sftp_buffer+len, str, slen);
+    len += slen;
 
     _sftp_put_uint32(_sftp_buffer, _sftp_nextid++);
     _sftp_put_uint32(_sftp_buffer+4, len-8);
     
-    return _sftp_put_packet(conout, type, _sftp_buffer, len, 1);
+    return _sftp_put_packet(conout, type, _sftp_buffer, len, flags);
 }
 
 
@@ -531,12 +627,12 @@ _sftp_put_uint32(unsigned char *p, unsigned int i)
 
 
 static int
-_sftp_put_packet(FILE *f, int type, char *buf, int len, int log_req)
+_sftp_put_packet(FILE *f, int type, char *buf, int len, int flags)
 {
     char b[9];
 
     _sftp_put_uint32(b, len+1);
-    b[5] = type;
+    b[4] = type;
 
     if (fwrite(b, 1, 5, f) != 5)
 	return -1;
@@ -544,8 +640,348 @@ _sftp_put_packet(FILE *f, int type, char *buf, int len, int log_req)
     if (fwrite(buf, 1, len, f) != len)
 	return -1;
 
-    if (log_req)
+    fflush(f);
+
+    if (flags & SFTP_FL_LOG)
 	_sftp_log_packet(0, type, buf, len);
 
     return 0;
 }
+
+
+
+int
+sftp_login(char *user, char *pass)
+{
+    /* XXX: handle user != NULL */
+
+    status.host = mkhoststr(0, 0);
+    
+    return 0;
+}
+
+
+
+int
+sftp_open(char *host, char *port, char *user, char *pass)
+{
+    int pin[2], pout[2];
+    pid_t pid;
+
+    ftp_remember_host(host, port);
+    ftp_remember_user(user, pass);
+
+    if (pipe(pin) != 0 || pipe(pout) != 0) {
+	if (disp_active)
+	    disp_status("cannot create pipes: %s", strerror(errno));
+	else
+	    fprintf(stderr, "%s: cannot create pipes: %s",
+		    prg, strerror(errno));
+	return -1;
+    }
+
+    switch ((pid=fork())) {
+    case -1:
+	if (disp_active)
+	    disp_status("cannot fork: %s", strerror(errno));
+	else
+	    fprintf(stderr, "%s: cannot fork: %s", prg, strerror(errno));
+	return -1;
+
+    case 0:
+	close(pin[0]);
+	close(pout[1]);
+	_sftp_start_ssh(pout[0], pin[1]);
+	/* NOTREACHED */
+
+    default:
+	_sftp_ssh_pid = pid;
+	
+	close(pin[1]);
+	close(pout[0]);
+
+	conin = conout = NULL;
+	if ((conin=fdopen(pin[0], "rb")) == NULL) {
+	    if (disp_active)
+		disp_status("cannot fdopen input pipe: %s", strerror(errno));
+	    else
+		fprintf(stderr, "cannot fdopen input pipe: %s",
+			prg, strerror(errno));
+	    close(pout[1]);
+	    sftp_close();
+	    return -1;
+	}
+	if ((conout=fdopen(pout[1], "wb")) == NULL) {
+	    if (disp_active)
+		disp_status("cannot fdopen output pipe: %s", strerror(errno));
+	    else
+		fprintf(stderr, "cannot fdopen output pipe: %s",
+			prg, strerror(errno));
+	    sftp_close();
+	    return -1;
+	}
+	/* XXX: check for minmal server version */
+	if (sftp_send_init(SSH_FX_PROTO_VERSION) < 0) {
+	    sftp_close();
+	    return -1;
+	}
+	return 0;
+    }
+}
+
+
+
+static void
+_sftp_start_ssh(int fdin, int fdout)
+{
+    char *args[20];
+    int n;
+    
+    close(0);
+    close(1);
+
+    if (dup(fdin) == -1 || dup(fdout) == -1) {
+	fprintf(stderr, "%s<child>: cannot dup: %s\n",
+		prg, strerror(errno));
+	exit(1);
+    }
+    close(fdin);
+    close(fdout);
+
+    n = 0;
+    args[n++] = "ssh";
+    args[n++] = "-2";
+    args[n++] = "-s";
+    if (ftp_prt()) {
+	args[n++] = "-P";
+	args[n++] = ftp_prt();
+    }
+    if (ftp_user()) {
+	args[n++] = "-l";
+	args[n++] = ftp_user();
+    }
+    args[n++] = ftp_host();
+    args[n++] = "sftp";
+    args[n++] = NULL;
+
+    execvp("ssh", args);
+    fprintf(stderr, "%s<child>: exec failed: %s\n",
+	    prg, strerror(errno));
+    exit(1);
+}
+
+
+
+int
+sftp_close(void)
+{
+    int status;
+    
+    if (conin) {
+	fclose(conin);
+	conin = NULL;
+    }
+    if (conout) {
+	fclose(conout);
+	conout = NULL;
+    }
+    if (_sftp_ssh_pid != 0) {
+	if (waitpid(_sftp_ssh_pid, &status, 0) == -1) {
+	    if (disp_active)
+		disp_status("cannot wait on ssh (pid %d): %s",
+			    (int)_sftp_ssh_pid, strerror(errno));
+	    else
+		fprintf(stderr, "%s: cannot wait on ssh (pid %d): %s",
+			prg, (int)_sftp_ssh_pid, strerror(errno));
+	    return -1;
+	}
+	if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
+	    if (disp_active)
+		disp_status("ssh exited with %d", WEXITSTATUS(status));
+	    else
+		fprintf(stderr, "%s: ssh exited with %d",
+			prg, WEXITSTATUS(status));
+	    return -1;
+	}
+	else if (WIFSIGNALED(status)) {
+	    if (disp_active)
+		disp_status("ssh exited due to signal %d",
+			    WTERMSIG(status));
+	    else
+		fprintf(stderr, "%s: ssh exited due to signal %d",
+			prg, WTERMSIG(status));
+	    return -1;
+	}
+    }
+
+    return 0;
+}
+
+
+
+int
+sftp_send_init(int proto_version)
+{
+    int len;
+    
+    _sftp_put_uint32(_sftp_buffer, proto_version);
+
+    if (_sftp_put_packet(conout, SSH_FXP_INIT, _sftp_buffer, 4,
+			 SFTP_FL_LOG) < 0)
+	return -1;
+    if (_sftp_get_packet(conin, _sftp_buffer, &len, 1) != SSH_FXP_VERSION)
+	return -1;
+
+    return _sftp_get_uint32(_sftp_buffer);
+}
+
+
+
+char *
+sftp_pwd(void)
+{
+    int len;
+    char *dir;
+    
+    if (sftp_put_str(SSH_FXP_REALPATH, ftp_lcwd ? ftp_lcwd : "", 0,
+		     SFTP_FL_LOG) < 0)
+	return NULL;
+    if (_sftp_get_packet(conin, _sftp_buffer, &len, 1) != SSH_FXP_NAME)
+	return NULL;
+
+    dir = _sftp_get_string(_sftp_buffer+8, NULL);
+
+    if (dir) {
+	free(ftp_lcwd);
+	ftp_lcwd = strdup(dir);
+    }
+
+    return dir;
+}
+
+
+
+static void
+_sftp_log_str(char *buf, char *pre, char *cmd, unsigned char *data)
+{
+    int len;
+
+    len = _sftp_get_uint32(data+4);
+    sprintf(buf, "%s %s \"%.*s\"", pre, cmd, len, data+8);
+}
+
+
+
+static void
+_sftp_log_handle(char *buf, char *pre, char *cmd, unsigned char *data)
+{
+    int i, len;
+    char *p;
+
+    len = _sftp_get_uint32(data+4);
+    sprintf(buf, "%s %s <", pre, cmd);
+    p = buf+strlen(buf);
+
+    for (i=0; i<len; i++) {
+#define HEX_DIGIT(x) ((x) < 10 ? (x)+'0' : (x)+'a')
+	*(p++) = HEX_DIGIT(data[i+8]>>4);
+	*(p++) = HEX_DIGIT(data[i+8]&0xf);
+#undef HEX_DIGIT
+    }
+    strcpy(p, ">");
+}
+
+
+
+int
+sftp_put_handle(int type, struct handle *hnd, int flags)
+{
+    return sftp_put_str(type, hnd->str, hnd->len, flags & ~SFTP_FL_IS_PATH);
+}
+
+
+
+int
+sftp_deidle(void)
+{
+    /* XXX: deidle connection */
+    return 0;
+}
+
+
+
+void *
+sftp_retr(char *file, int mode, long *startp, long *sizep)
+{
+    /* XXX: implement */
+    return NULL;
+}
+
+
+
+void *
+sftp_stor(char *file, int mode)
+{
+    /* XXX: implement */
+    return NULL;
+}
+
+
+
+int
+sftp_cat(void *fin, void *fout, long start, long size, int upload)
+{
+    /* XXX: implement */
+    return 0;
+}
+
+
+
+int
+sftp_fclose(void *f)
+{
+    /* XXX: implement */
+    return 0;
+}
+
+
+
+int
+sftp_site(char *cmd)
+{
+    /* map to extended somehow? */
+    /* what return value? */
+    return 0;
+}
+
+
+
+int
+sftp_cwd(char *path)
+{
+    int flags, len, off;
+    mode_t mode;
+    
+    if (sftp_put_str(SSH_FXP_STAT, path, 0, SFTP_FL_LOG|SFTP_FL_IS_PATH) < 0)
+	return -1;
+    if (_sftp_get_packet(conin, _sftp_buffer, &len, 1) != SSH_FXP_ATTRS)
+	return -1;
+
+    flags = _sftp_get_uint32(_sftp_buffer+4);
+
+    if (flags & SSH_FILEXFER_ATTR_PERMISSIONS) {
+	off = 8 + (flags & SSH_FILEXFER_ATTR_SIZE ? 8 : 0)
+	    + (flags & SSH_FILEXFER_ATTR_UIDGID ? 8 : 0);
+	mode = _sftp_get_uint32(_sftp_buffer+off);
+
+	if ((mode & S_IFMT) != S_IFDIR)
+	    return -1;
+    }
+
+    free(ftp_pcwd);
+    ftp_pcwd = strdup(path);
+    
+    return 0;
+}
+
+#endif /* USE_SFTP */

@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: url.c,v 1.3 2001/12/11 14:37:44 dillo Exp $
 
   url -- functions to parse and create URLs
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -148,14 +148,21 @@ url_decode(char *d, const char *s)
 
 
 int
-parse_url(char *url, char **user, char **pass,
+parse_url(char *url, int *proto, char **user, char **pass,
 	  char **host, char **port, char **dir)
 {
     char *p, *q, *h, *r;
 
-    if (strncmp(url, "ftp://", 6) != 0)
+    if (strncmp(url, "ftp://", 6) == 0) {
+	url += 6;
+	*proto = 0;
+    }
+    else if (strncmp(url, "sftp://", 7) == 0) {
+	url += 7;
+	*proto = 1;
+    }
+    else
 	return -1;
-    url+=6;
 
     if ((p=strchr(url, '/')) != NULL)
 	*(p++) = '\0';
@@ -199,4 +206,16 @@ parse_url(char *url, char **user, char **pass,
     }
 
     return 0;
+}
+
+
+
+int
+is_url(char *str)
+{
+    return (strncmp(str, "ftp://", 6) == 0
+#ifdef USE_SFTP
+	    || strncmp(str, "sftp://", 7) == 0
+#endif
+	);
 }

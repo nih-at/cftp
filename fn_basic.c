@@ -1,5 +1,5 @@
 /*
-  $NiH: fn_basic.c,v 1.24 2001/12/11 14:37:30 dillo Exp $
+  $NiH: fn_basic.c,v 1.25 2001/12/11 19:52:05 dillo Exp $
 
   fn_basic -- bindable functions: basics
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -438,7 +438,7 @@ void fn_colon(char **args)
 
 void fn_deidle(char **args)
 {
-    ftp_noop();
+    ftp_deidle();
 }
 
 

@@ -1,4 +1,12 @@
-* sftp support
+! don't (unconditionally) use disp_status in sftp_connect
+! provide flags to disp_status: add to hist, print to stderr if !disp_active
+! prepend space to direntry line
+! implement sftp transfers
+- move ftp_gets to util.c and rename
+- move history from ftp.c
+- make transfer rate stuff available to sftp
+- add rcsid to *.m4 and created files
+
 * declare replacement functions (to avoid warnings)
 * find bug when viewing or piping rfc-index.txt
 * host specific rc file sections

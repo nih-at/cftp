@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: util.c,v 1.16 2001/12/11 14:37:45 dillo Exp $
 
   util -- auxiliary functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -222,7 +222,7 @@ mkhoststr(int passp, int urlp)
 
     n = 0;
     len = 0;
-    if (!ftp_anon() || (passp && ftp_pass())) {
+    if ((ftp_user() && !ftp_anon()) || (passp && ftp_pass())) {
 	str[n] = ftp_user();
 	encode[n++] = urlp;
 	if (passp && ftp_pass()) {

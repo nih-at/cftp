@@ -2,7 +2,7 @@
 #define HAD_STATUS_H
 
 /*
-  $NiH$
+  $NiH: status.h,v 1.8 2001/12/11 14:37:42 dillo Exp $
 
   status.h -- status line
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -24,6 +24,8 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+
+#include "bindings.h"
 
 
 

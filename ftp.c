@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.61 2001/12/12 05:32:44 dillo Exp $
+  $NiH: ftp.c,v 1.62 2001/12/12 05:36:05 dillo Exp $
 
   ftp -- ftp protocol functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -107,35 +107,30 @@ struct _ftp_transfer_stats {
 
 
 
-int ftp_abort(FILE *fin);
-FILE *ftp_accept(int fd, char *mode);
-int ftp_cwd(char *path);
-int ftp_gethostaddr(int fd);
-int ftp_mode(char m);
-int ftp_port(void);
-int ftp_put(char *fmt, ...);
-int ftp_resp(void);
-void ftp_unresp(int resp);
+static int ftp_abort(FILE *fin);
+static FILE *ftp_accept(int fd, char *mode);
+static int ftp_gethostaddr(int fd);
+static int ftp_mode(char m);
+static int ftp_port(void);
+static int ftp_put(char *fmt, ...);
+static int ftp_resp(void);
+static void ftp_unresp(int resp);
 
 static int _ftp_ascii2host(char *buf, char *buf2, int n, int *trail_cr);
 static int _ftp_host2ascii(char *buf, char *buf2, int n, int *trail_cr);
 
-#define ENABLE_TRANSFER_RATE
-
-#ifdef ENABLE_TRANSFER_RATE
 static void _ftp_transfer_stats_init(struct _ftp_transfer_stats *tr,
 				     long start, long size, int ncur);
 static void _ftp_transfer_stats_cleanup(struct _ftp_transfer_stats *tr);
 static void _ftp_update_transfer(struct _ftp_transfer_stats *tr, long got,
 				 int secs);
-#endif
 
 
 
 void
 ftp_init(void)
 {
-    ftp_pcwd = NULL;
+    ftp_lcwd = ftp_pcwd = NULL;
     ftp_curmode = ' ';
     _ftp_anon = 0;
     ftp_last_resp = NULL;
@@ -151,7 +146,7 @@ ftp_init(void)
 
 
 int
-ftp_open(char *host, char *port)
+rftp_open(char *host, char *port, char *user, char *pass)
 {
     int fd;
 
@@ -186,37 +181,23 @@ ftp_open(char *host, char *port)
 	return -1;
     }
 
+    ftp_remember_user(user, pass);
+
     return 0;
 }
 
 
 
 int
-ftp_login(char *user, char *pass)
+rftp_login(char *user, char *pass)
 {
     int resp;
     char *b;
     int free_pass;
 
-    if (user) {
-	free(_ftp_user);
-	_ftp_user = strdup(user);
-
-	free(_ftp_pass);
-	if (pass)
-	    _ftp_pass = strdup(pass);
-	else
-	    _ftp_pass = NULL;
-    }
-
-    if (strcmp(_ftp_user, "ftp") != 0 && strcmp(_ftp_user, "anonymous") != 0)
-	_ftp_anon = 0;
-    else
-	_ftp_anon = 1;
-
     status.host = mkhoststr(0, 0);
     
-    ftp_put("user %s", user);
+    ftp_put("user %s", _ftp_user);
     resp = ftp_resp();
 	
     if (resp == 331) {
@@ -261,7 +242,7 @@ ftp_login(char *user, char *pass)
 
 
 int
-ftp_site(char *cmd)
+rftp_site(char *cmd)
 {
     ftp_put("%s", cmd);
     return ftp_resp();
@@ -279,18 +260,11 @@ ftp_reconnect(void)
     if (_ftp_host == NULL || _ftp_port == NULL || _ftp_user == NULL)
 	return -1;
 
-    if (conin) {
-	fclose(conin);
-	conin = NULL;
-    }
-    if (conout) {
-	fclose(conout);
-	conout = NULL;
-    }
+    ftp_close();
 
     disp_status("connecting. . .");
 
-    if (ftp_open(NULL, NULL) == -1) {
+    if (ftp_open(NULL, NULL, NULL, NULL) == -1) {
 	/* Error printed in ftp_open or sopen. */
 	return -1;
     }
@@ -311,7 +285,7 @@ ftp_reconnect(void)
 
 
 int
-ftp_close(void)
+rftp_close(void)
 {
     int err = 0;
     
@@ -321,9 +295,13 @@ ftp_close(void)
     ftp_put("quit");
     if (ftp_resp() != 221)
 	err = 1;
+
+    if (conin)
+	fclose(conin);
+
+    if (conout)
+	fclose(conout);
     
-    fclose(conin);
-    fclose(conout);
     conin = conout = NULL;
     
     return err;
@@ -332,7 +310,7 @@ ftp_close(void)
 
 
 directory *
-ftp_list(char *path)
+rftp_list(char *path)
 {
     directory *dir;
     int fd;
@@ -400,8 +378,8 @@ ftp_cd(char *wd, int force)
 	
 
 
-FILE *
-ftp_retr(char *file, int mode, long *startp, long *sizep)
+void *
+rftp_retr(char *file, int mode, long *startp, long *sizep)
 {
     int fd;
     char *dir, *name, *can, *p;
@@ -447,8 +425,8 @@ ftp_retr(char *file, int mode, long *startp, long *sizep)
 
 
 
-FILE *
-ftp_stor(char *file, int mode)
+void *
+rftp_stor(char *file, int mode)
 {
     int fd, resp;
     char *dir, *name, *can;
@@ -480,7 +458,7 @@ ftp_stor(char *file, int mode)
 
 
 int
-ftp_fclose(FILE *f)
+rftp_fclose(void *f)
 {
     int err;
 
@@ -495,7 +473,7 @@ ftp_fclose(FILE *f)
 
 
 int
-ftp_mkdir(char *path)
+rftp_mkdir(char *path)
 {
     ftp_put("mkd %s", path);
     if (ftp_resp() != 257)
@@ -507,7 +485,7 @@ ftp_mkdir(char *path)
 
 
 int
-ftp_rmdir(char *path)
+rftp_rmdir(char *path)
 {
     ftp_put("rmd %s", path);
     if (ftp_resp() != 250)
@@ -519,7 +497,7 @@ ftp_rmdir(char *path)
 
 
 int
-ftp_noop(void)
+rftp_deidle(void)
 {
     ftp_put("noop");
     if (ftp_resp() != 200)
@@ -531,7 +509,7 @@ ftp_noop(void)
 
 
 char *
-ftp_pwd(void)
+rftp_pwd(void)
 {
     char *s, *e, *dir;
 
@@ -612,7 +590,7 @@ ftp_gets(FILE *f)
 
 
 
-int
+static int
 ftp_put(char *fmt, ...)
 {
     char buf[8192];
@@ -647,7 +625,7 @@ ftp_put(char *fmt, ...)
 
 
 
-int
+static int
 ftp_abort(FILE *fin)
 {
     int resp;
@@ -711,7 +689,7 @@ ftp_abort(FILE *fin)
 
 
 
-int
+static int
 ftp_resp(void)
 {
     char *line;
@@ -759,14 +737,15 @@ ftp_resp(void)
 
 
 
-void ftp_unresp(int resp)
+static void
+ftp_unresp(int resp)
 {
     _ftp_keptresp = resp;
 }
 
 
 
-int
+static int
 ftp_port(void)
 {
     int fd, port, val, i, delim;
@@ -876,7 +855,7 @@ ftp_port(void)
 
 
 
-FILE *
+static FILE *
 ftp_accept(int fd, char *mode)
 {
     int len, ns;
@@ -898,7 +877,7 @@ ftp_accept(int fd, char *mode)
 
 
 
-int
+static int
 ftp_mode(char m)
 {
     if (m == ftp_curmode)
@@ -915,7 +894,7 @@ ftp_mode(char m)
 
 
 int
-ftp_cwd(char *path)
+rftp_cwd(char *path)
 {
     char *s, *e;
     int off;
@@ -960,10 +939,10 @@ ftp_cwd(char *path)
 
 
 
-#ifdef ENABLE_TRANSFER_RATE
 int
-ftp_cat(FILE *fin, FILE *fout, long start, long size, int upload)
+rftp_cat(void *vfin, void *vfout, long start, long size, int upload)
 {
+    FILE *fin, *fout;
     char buf[4096], buf2[8192], *p;
     int nread, nwritten, err, trail_cr, errno_copy;
     enum { ERR_NONE, ERR_FIN, ERR_FOUT } error_cause;
@@ -973,6 +952,9 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size, int upload)
     struct _ftp_transfer_stats trstat;
     int flags, ret, do_read;
     fd_set fds;
+
+    fin = (FILE *)vfin;
+    fout = (FILE *)vfout;
 
     got = start;
     signal(SIGINT, sig_remember);
@@ -1082,89 +1064,8 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size, int upload)
     return 0;
 }
 
-#endif
-
 
 
-#ifndef ENABLE_TRANSFER_RATE
-
-int
-ftp_cat(FILE *fin, FILE *fout, long start, long size, int upload)
-{
-    char buf[4096], fmt[4096];
-    int c, n, err;
-    long got;
-    time_t oldt, newt;
-
-    if (size >= 0)
-	sprintf(fmt, "transferred %%ld/%ld", size);
-    else
-	strcpy(fmt, "transferred %ld");
-
-    got = start;
-    signal(SIGINT, sig_remember);
-
-    oldt = 0;
-
-    if (ftp_curmode == 'i')
-	while ((n=fread(buf, 1, 4096, fin)) > 0) {
-	    if (sig_intr)
-		break;
-	    if (fwrite(buf, 1, n, fout) != n) {
-		break;
-	    }
-	    got += n;
-	    if ((newt=time(NULL)) != oldt) {
-		disp_status(fmt, got);
-		oldt = newt;
-	    }
-	}
-    else
-	while ((c=getc(fin)) != EOF) {
-	    if (sig_intr)
-		break;
-	    got++;
-	    if (c == '\r') {
-		if ((c=getc(fin)) != '\n')
-		    putc('\r', fout);
-		ungetc(c, fin);
-	    }
-	    else {
-		putc(c, fout);
-	    }
-	    if (ferror(fout))
-		break;
-
-	    if (got%512 == 0 && (newt=time(NULL)) != oldt) {
-		disp_status(fmt, got);
-		oldt = newt;
-	    } 
-	}
-
-    signal(SIGINT, sig_end);
-
-    if (ferror(fin) || sig_intr) {
-	errno = 0;
-	sig_intr = 0;
-	ftp_abort(fin);
-	return -1;
-    }
-    else if (ferror(fout)) {
-	err = errno;
-	errno = 0;
-	ftp_abort(fin);
-	disp_status("write error: %s", strerror(err));
-	return -1;
-    }
-
-    return 0;
-}
-
-#endif
-
-
-
-#ifdef ENABLE_TRANSFER_RATE
 static void
 _ftp_update_transfer(struct _ftp_transfer_stats *tr, long got, int secs)
 {
@@ -1239,11 +1140,9 @@ _ftp_transfer_stats_cleanup(struct _ftp_transfer_stats *tr)
     tr->ncur = 0;
 }
 
-#endif /* ENABLE_TRANSFER_RATE */
-
 
 
-int
+static int
 ftp_gethostaddr(int fd)
 {
     int len;
@@ -1458,4 +1357,44 @@ _ftp_host2ascii(char *buf, char *buf2, int n, int *trail_cr)
     *trail_cr = cr;
     
     return t-buf2;
+}
+
+
+
+void
+ftp_remember_user(char *user, char *pass)
+{
+    if (user) {
+	free(_ftp_user);
+	_ftp_user = strdup(user);
+	
+	free(_ftp_pass);
+	if (pass)
+	    _ftp_pass = strdup(pass);
+	else
+	    _ftp_pass = NULL;
+
+	if (strcmp(_ftp_user, "ftp") != 0
+	    && strcmp(_ftp_user, "anonymous") != 0)
+	    _ftp_anon = 0;
+	else
+	    _ftp_anon = 1;
+    }
+}
+
+
+
+void
+ftp_remember_host(char *host, char *port)
+{
+    if (host) {
+	free(_ftp_host);
+	_ftp_host = strdup(host);
+
+	free(_ftp_port);
+	if (port)
+	    _ftp_port = strdup(port);
+	else
+	    _ftp_port = NULL;
+    }
 }

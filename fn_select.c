@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: fn_select.c,v 1.22 2001/12/11 14:37:31 dillo Exp $
 
   fn_select -- bindable functions: selecting
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -77,7 +77,8 @@ int
 aux_download(char *name, long size, int restart)
 {
     int err;
-    FILE *fin, *fout;
+    void *fin;
+    FILE *fout;
     struct stat st;
     char *mode;
     long start, rsize;
@@ -125,7 +126,8 @@ int
 aux_pipe(char *name, long size, int mode, char *cmd, int quietp)
 {
     int err;
-    FILE *fin, *fout;
+    void *fin;
+    FILE *fout;
 	
     if ((fin=ftp_retr(name, (mode ? mode : opt_mode), NULL, NULL)) == NULL)
 	return -2;
@@ -150,7 +152,8 @@ aux_upload(char *name)
     int err;
     long size;
     struct stat st;
-    FILE *fin, *fout;
+    FILE *fin;
+    void *fout;
 
     if ((fin=fopen(name, "r")) == NULL) {
 	disp_status("can't open `%s': %s", name, strerror(errno));

@@ -1,7 +1,7 @@
 dnl  $NiH$
 dnl
-dnl  mkfntab-c.m4 -- create fntable.c from fntable.fn
-dnl  Copyright (C) 1996, 2000, 2001 Dieter Baron
+dnl  mkmethods-c.m4 -- create methods.c from methods.mt
+dnl  Copyright (C) 2001 Dieter Baron
 dnl
 dnl  This file is part of cftp, a fullscreen ftp client
 dnl  The author can be contacted at <dillo@giga.or.at>
@@ -24,35 +24,45 @@ divert(-1)
 
 changequote(<<,>>)
 
-define(function,dnl name, synopsis, function, flags, help-string, description
-<<divert(0)dnl
-  <<$3>> , "<<$1>>", <<$4>>, "<<$5>>" ,
+define(rcsid, dnl id
+<<divert(3)    $1
 divert(-1)>>)
 
-define(section,dnl file, name
-<<divert(0)dnl
-/* <<$2>>: <<$1>> */
+rcsid($NiH$)
+
+define(method, dnl rettype, name, args, docu
+<<divert(1)    rftp_<<$2>>,
+divert(2)    sftp_<<$2>>,
 divert(-1)>>)
 
-define(endsec)
+define(endall, dnl
+<<divert(0)dnl
+/*
+  This file is automatically created from ``methods.mt''; don't make
+  changes to this file, change ``methods.mt'' instead.
 
-divert(0)dnl
-<</*
-   This file is automatically created from ``fntable.fn''; don't change
-   this file, change ``fntable.fn'' instead.
+  Created from:
+undivert(3)dnl
 */
 
-#include "directory.h"
-#include "bindings.h"
-#include "functions.h"
-#include "fntable.h"
+#include <stddef.h>
 
-function functions[] = {
->>divert(-1)
+#include "config.h"
 
-define(endall,
-<<divert(0)dnl
-/* end marker */
-  { 0, 0, 0, 0 }
+#ifdef USE_SFTP
+#include "methods.h"
+
+struct ftp_methods ftp_methods[] = {
+{
+undivert(1)dnl
+},
+{
+undivert(2)dnl
+}
 };
+
+#endif
+
+int ftp_proto;
+
 divert(-1)>>)
