@@ -31,6 +31,8 @@ B fn_basic.cw: (fn_lcd) handle ~, ~user
 B functions.texi: fix bad next pointer in last section (to first command)
 B fn_tag.cw: (fn_gettags) segfault in freeing nodes?!
 ----------------------------------------------- done
+B display.cw: (disp_status,disp_head): update status/head when not in disp.
+C fn_basic.cw: (fn_shell) clear status line after command
 B util.cw: (dirname) terminating nul char was one off
 F functions.texi: automate functions documentation
 B ftp.cw: (ftp_retr) canonicalize file name

@@ -378,9 +378,6 @@ disp_status(char *fmt, ...)
 {
 	va_list argp;
 
-	if (disp_quiet)
-		return;
-
 	va_start(argp, fmt);
 	vsprintf(status, fmt, argp);
 	va_end(argp);
@@ -393,6 +390,9 @@ disp_restat(void)
 {
 	char c;
 	
+	if (disp_quiet)
+		return;
+
 	tty_goto(0, tty_lines-1);
 	tty_clreol();
 
@@ -417,9 +417,6 @@ disp_head(char *fmt, ...)
 {
 	va_list argp;
 
-	if (disp_quiet)
-		return;
-
 	va_start(argp, fmt);
 	vsprintf(head, fmt, argp);
 	va_end(argp);
@@ -432,6 +429,9 @@ disp_rehead(void)
 {
 	char c;
 	
+	if (disp_quiet)
+		return;
+
 	tty_home();
 	tty_clreol();
 
