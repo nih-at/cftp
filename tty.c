@@ -307,7 +307,7 @@ int tty_cbreak(void)
 int
 tty_readkey(void)
 {
-    static char s[128];
+    static unsigned char s[128];
     static l = 0;
     int c, len;
     int vmin = 0;

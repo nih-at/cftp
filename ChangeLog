@@ -1,3 +1,24 @@
+1998-03-12  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* ftp.c (ftp_cwd, ftp_pwd): handle DOS servers with leading '\\'
+	in directory names.
+
+1998-03-02  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* ftp.c (ftp_cat): new parameter start.  callers changed.
+
+1998-02-27  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* ftp.c (ftp_retr): new parameter startp.  callers changed.
+
+	* fn_tag.c (fn_gettags): new option -c: restart.
+
+	* fn_select.c (aux_download): new parameter restart.  callers
+	changed.
+
+	* tty.c (tty_readkey): fixed handling of 8 bit chars (s now
+	unsigned char).
+
 1998-01-24  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* fn_scroll.c (aux_scroll_page): fixed page scrolling when listing

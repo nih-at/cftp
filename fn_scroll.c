@@ -154,7 +154,7 @@ aux_scroll_page(int n)
 		return;
 	}
 	else {
-	    /* XXX: inconsitent with forward scrolling */
+	    /* XXX: inconsistent with forward scrolling */
 	    top = list->top + n;
 	    if (top < 0)
 		top = 0;

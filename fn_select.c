@@ -38,7 +38,7 @@
 #include "list.h"
 
 int aux_enter(char *name);
-int aux_download(char *name, long size);
+int aux_download(char *name, long size, int restart);
 int aux_pipe(char *name, long size, int mode, char *cmd, int quietp);
 #define aux_view(name)	(aux_pipe((name), -1, 'a', opt_pager, 1))
 
@@ -64,21 +64,36 @@ aux_enter(char *name)
 
 
 int
-aux_download(char *name, long size)
+aux_download(char *name, long size, int restart)
 {
     int err;
     FILE *fin, *fout;
+    struct stat st;
+    char *mode;
+    long start;
 
-    if ((fin=ftp_retr(name, opt_mode)) == NULL)
+    start = 0;
+    
+    if (restart) {
+	if (stat(basename(name), &st) == 0)
+	    start = st.st_size;
+    }
+
+    if ((fin=ftp_retr(name, opt_mode, &start)) == NULL)
 	return -2;
-
-    if ((fout=fopen((char *)basename(name), "w")) == NULL) {
-	disp_status("can't create `%s': %s",
+    if (start > 0)
+	mode = "a";
+    else
+	mode = "w";
+    
+    if ((fout=fopen((char *)basename(name), mode)) == NULL) {
+	disp_status("can't %s `%s': %s",
+		    (*mode == 'a' ? "append to" : "create"),
 		    (char *)basename(name), strerror(errno));
 	return -2;
     }
 
-    err = ftp_cat(fin, fout, size);
+    err = ftp_cat(fin, fout, start, size);
 
     err |= ftp_fclose(fin);
     
@@ -99,13 +114,13 @@ aux_pipe(char *name, long size, int mode, char *cmd, int quietp)
     int err;
     FILE *fin, *fout;
 	
-    if ((fin=ftp_retr(name, (mode ? mode : opt_mode))) == NULL)
+    if ((fin=ftp_retr(name, (mode ? mode : opt_mode), NULL)) == NULL)
 	return -2;
 
     if ((fout=disp_open(cmd, quietp)) == NULL)
 	return -2;
 
-    err = ftp_cat(fin, fout, size);
+    err = ftp_cat(fin, fout, 0, size);
 
     err |= ftp_fclose(fin);
     
@@ -137,7 +152,7 @@ aux_upload(char *name)
     else
 	size = -1;
     
-    err = ftp_cat(fin, fout, size);
+    err = ftp_cat(fin, fout, 0, size);
 
     err |= ftp_fclose(fout);
     
@@ -174,11 +189,11 @@ fn_enter_get(char **args)
 	aux_enter(name);
 	break;
     case 'f':
-	aux_download(name, size);
+	aux_download(name, size, 0);
 	break;
     case 'l':
 	if (aux_enter(name) == -1)
-	    aux_download(name, size);
+	    aux_download(name, size, 0);
 	break;
     default:
 	disp_status("Can't download special files.");
@@ -291,7 +306,7 @@ fn_get(char **args)
     switch (type) {
     case 'f':
     case 'l':
-	aux_download(name, size);
+	aux_download(name, size, 0);
 	break;
     default:
 	disp_status("Can only download plain files.");

@@ -153,11 +153,17 @@ fn_gettags(char **args)
     enum state old_state;
     struct tagentry *t;
     int i, c, j;
+    int restart;
 
     if (!tag_anytags()) {
 	disp_status("no tags");
 	return;
     }
+
+    if (args && strcmp(args[0], "-c") == 0)
+	restart = 1;
+    else
+	restart = 0;
 
     old_state = binding_state;
     if (old_state != bs_tag) {
@@ -168,7 +174,7 @@ fn_gettags(char **args)
     for (i=0; i<tags.len;) {
 	t = tags.line+i;
 
-	if (aux_download(t->name, t->size) == 0) {
+	if (aux_download(t->name, t->size, restart) == 0) {
 	    c = t->name[t->dirl];
 	    t->name[t->dirl] = '\0';
 	    if (strcmp(t->name, curdir->path) == 0) {

@@ -87,7 +87,6 @@ int ftp_port(void);
 FILE *ftp_accept(int fd, char *mode);
 int ftp_mode(char m);
 int ftp_cwd(char *path);
-int ftp_cat(FILE *fin, FILE *fout, long size);
 int ftp_gethostaddr(int fd);
 void ftp_histf(char *fmt, ...);
 void ftp_hist(char *line);
@@ -319,33 +318,39 @@ ftp_cd(char *wd, int force)
 
 
 FILE *
-ftp_retr(char *file, int mode)
+ftp_retr(char *file, int mode, long *startp)
 {
-	int fd;
-	char *dir, *name, *can;
-	FILE *fin;
-
-	can = canonical(file, NULL);
-	dir = dirname(can);
-	name = (char *)basename(can);
-	
-	if (ftp_mode(mode) == -1 || ftp_cwd(dir) == -1)
-		return NULL;
-
-	if ((fd=ftp_port()) == -1)
-		return NULL;
-	
-	ftp_put("retr %s", name);
-	if (ftp_resp() != 150) {
-		close(fd);
-		return NULL;
-	}
-	if ((fin=ftp_accept(fd, "r")) == NULL) {
-		close(fd);
-		return NULL;
-	}
-
-	return fin;
+    int fd;
+    char *dir, *name, *can;
+    FILE *fin;
+    
+    can = canonical(file, NULL);
+    dir = dirname(can);
+    name = (char *)basename(can);
+    
+    if (ftp_mode(mode) == -1 || ftp_cwd(dir) == -1)
+	return NULL;
+    
+    if ((fd=ftp_port()) == -1)
+	return NULL;
+    
+    if (startp && *startp > 0) {
+	ftp_put("rest %ld", *startp);
+	if (ftp_resp() != 350)
+	    *startp = 0;
+    }
+    
+    ftp_put("retr %s", name);
+    if (ftp_resp() != 150) {
+	close(fd);
+	return NULL;
+    }
+    if ((fin=ftp_accept(fd, "r")) == NULL) {
+	close(fd);
+	return NULL;
+    }
+    
+    return fin;
 }
 
 
@@ -430,19 +435,23 @@ ftp_pwd(void)
     dir[e-s-1] = '\0';
 
     if (ftp_dosnames == -1) {
-	if (isalpha(dir[0]) && dir[1] == ':' && dir[2] == '\\')
+	if ((isalpha(dir[0]) && dir[1] == ':' && dir[2] == '\\'))
 	    ftp_dosnames = 1;
+	else if (dir[0] == '\\')
+	    ftp_dosnames = 2;
 	else
 	    ftp_dosnames = 0;
     }
 
-    if (ftp_dosnames == 1) {
+    if (ftp_dosnames == 1 || ftp_dosnames == 2) {
+	if (ftp_dosnames == 1) {
 	    strncpy(dir+1, s+1, e-s-1);
 	    dir[e-s] = '\0';
 	    dir[0] = '/';
-	    for (s=dir; *s; s++)
-		if (*s == '\\')
-		    *s = '/';
+	}
+	for (s=dir; *s; s++)
+	    if (*s == '\\')
+		*s = '/';
     }
 
     free(ftp_pcwd);
@@ -740,16 +749,18 @@ int
 ftp_cwd(char *path)
 {
     char *s, *e;
+    int off;
     
     if (ftp_pcwd && strcmp(path, ftp_pcwd) == 0)
 	return 0;
 
-    if (ftp_dosnames == 1) {
-	for (s=path+1; *s; s++)
+    if (ftp_dosnames == 1 || ftp_dosnames == 2) {
+	off = (ftp_dosnames == 1) ? 1 : 0;
+	for (s=path+off; *s; s++)
 	    if (*s == '/')
 		*s = '\\';
-	ftp_put("cwd %s", path+1);
-	for (s=path+1; *s; s++)
+	ftp_put("cwd %s", path+off);
+	for (s=path+off; *s; s++)
 	    if (*s == '\\')
 		*s = '/';
     }
@@ -763,6 +774,8 @@ ftp_cwd(char *path)
 	    && (e=strchr(s+1, '"')) != NULL) {
 	    if (isalpha(s[1]) && s[2] == ':' && s[3] == '\\')
 		ftp_dosnames = 1;
+	    else if (s[1] == '\\')
+		ftp_dosnames = 2;
 	    else
 		ftp_dosnames = 0;
 	}
@@ -779,12 +792,14 @@ ftp_cwd(char *path)
 
 
 int
-ftp_cat(FILE *fin, FILE *fout, long size)
+ftp_cat(FILE *fin, FILE *fout, long start, long size)
 {
     time_t oldt, newt;
     char buf[4096], fmt[4096];
     int c, n, err;
-    long got = 0;
+    long got;
+
+    got = start;
 
     if (size >= 0)
 	sprintf(fmt, "transferred %%ld/%ld", size);

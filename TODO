@@ -1,4 +1,5 @@
-* delete
+* handle 8 bit keys
+* mkdir and direct commands (site, etc.)
 * problems with listing of ftp://ftp.unicode.org/ and 128.223.95.87
 	(file names short)
 * parsing symlinks on DOS servers

@@ -51,6 +51,8 @@ tag_init(void)
 					     *sizeof(struct tagentry)))
 	== NULL)
 	return -1;
+
+    return 0;
 }
 
 
