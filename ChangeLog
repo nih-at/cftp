@@ -1,5 +1,8 @@
 2002-09-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* display.h, functions.h (struct function), list.c: fix missing
+	prototype warnings from IRIX cc.
+
 	* mkbind.c: remove definition of global defined in functions.c.
 
 2002-09-15  Dieter Baron  <dillo@danbala.tuwien.ac.at>

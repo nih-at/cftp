@@ -2,7 +2,7 @@
 #define HAD_DISPLAY_H
 
 /*
-  $NiH: display.h,v 1.16 2001/12/20 05:39:00 dillo Exp $
+  $NiH: display.h,v 1.17 2002/09/16 12:42:30 dillo Exp $
 
   display.h -- display functions
   Copyright (C) 1996-2002 Dieter Baron
@@ -66,7 +66,7 @@ void disp_reline(int line);
 void disp_restat(void);
 void disp_status(int flags, char *fmt, ...);
 void escape_disp(int clearp);
-void exit_disp();
+void exit_disp(void);
 int init_disp(void);
 int read_char(char *prompt);
 char *read_string(char *prompt, int echop);

@@ -2,7 +2,7 @@
 #define HAD_FUNCTIONS_H
 
 /*
-  $NiH: functions.h,v 1.10 2001/12/11 14:37:33 dillo Exp $
+  $NiH: functions.h,v 1.11 2002/09/16 12:42:34 dillo Exp $
 
   functions.h -- auxiliary functions for bindable function handling
   Copyright (C) 1996-2002 Dieter Baron
@@ -28,7 +28,7 @@
 
 
 struct function {
-	void (*fn)();
+	void (*fn)(char **args);
 	char *name;
 	int type;
 	char *help;

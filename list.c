@@ -1,5 +1,5 @@
 /*
-  $NiH: list.c,v 1.18 2001/12/11 14:37:35 dillo Exp $
+  $NiH: list.c,v 1.19 2002/09/16 12:42:36 dillo Exp $
 
   list.c -- display lists
   Copyright (C) 1996-2002 Dieter Baron
@@ -24,6 +24,7 @@
 
 
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "display.h"
