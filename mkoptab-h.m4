@@ -12,7 +12,14 @@ divert(-1)})
 
 
 divert(0)dnl
-{#define OPT_INT 0
+{#ifndef HAD_OPTIONS_H
+#define HAD_OPTIONS_H
+/*
+   This file is automatically created from ``options.op''; don't make
+   changes to this file, change ``options.op'' instead.
+*/
+
+#define OPT_INT 0
 #define OPT_CHR 1
 #define OPT_STR 2
 #define OPT_BOOL 3
@@ -34,5 +41,8 @@ extern struct option option[];}
 
 divert(-1)
 
-define(endall,)
+define(endall,
+{divert(0)
+#endif /* options.h */
+divert(-1)})
 

@@ -57,6 +57,9 @@ undivert(3)dnl
 divert(-1)})
 
 divert(0)dnl
+@c This file is automatically created from ``fntable.fn''; don't change
+@c this file, change ``fntable.fn'' instead.
+
 @c *********************************************************************
 @node	 Functions
 @chapter Functions

@@ -1,6 +1,6 @@
 /*
   direcotry -- handle directory cache
-  Copyright (C) 1996 Dieter Baron
+  Copyright (C) 1996, 1997 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -50,12 +50,12 @@ dir_free(directory *d)
 	if (d == NULL)
 		return;
 	
-	for (i=0; i<d->num; i++) {
-		free(d->list[i].line);
-		free(d->list[i].name);
-		free(d->list[i].link);
+	for (i=0; i<d->len; i++) {
+		free(d->line[i].line);
+		free(d->line[i].name);
+		free(d->line[i].link);
 	}
-	free(d->list);
+	free(d->line);
 	free(d->path);
 	free(d);
 }
@@ -139,11 +139,11 @@ dir_find(directory *dir, char *entry)
 {
     int i;
 
-    for (i=0; (i<dir->num &&
-		 strcmp(dir->list[i].name, entry)); i++)
+    for (i=0; (i<dir->len &&
+		 strcmp(dir->line[i].name, entry)); i++)
 	;
     
-    if (i == dir->num)
+    if (i == dir->len)
 	i = -1;
 
     return i;

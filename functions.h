@@ -23,16 +23,18 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "directory.h"
+#include "bindings.h"
 
 
 
-typedef struct function {
+struct function {
 	void (*fn)();
 	char *name;
 	int type;
 	char *help;
-} function;
+};
+
+typedef struct function function;
 
 extern function functions[];
 
@@ -42,10 +44,6 @@ extern function functions[];
 
 
 
-extern directory *curdir;
-extern int curtop, cursel;
-
-
 
 void void_prefix(void);
 int get_prefix(int deflt);
@@ -54,8 +52,9 @@ void add_prefix(int n);
 void set_prefix(int p);
 void negate_prefix(void);
 void show_prefix(void);
-void change_curdir(directory *dir);
 int find_function(char *f);
+struct binding *get_function(int key, enum state state);
+
 void aux_scroll(int top, int sel, int force);
 
 #endif /* functions.h */

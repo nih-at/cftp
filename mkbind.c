@@ -26,23 +26,51 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+
+#define _MKBIND
 #include "keys.h"
 #include "rc.h"
+#include "functions.h"
+#include "bindings.h"
+#undef _MKBIND
 
 #define FNAME	"bindings"
 #define NAME	"binding"
-#define ARGS	"_args"
-#define POOL	"_pool"
+#define POOL	"pool"
+#define ARGS	"argspool"
 #define TABLE	"fntable.c"
 
 #define MAX_FN	8192
+#define LINELEN 72
 
-int *binding, *binding_off;
-char **binding_pool;
-char *names[MAX_FN];
-int num, maxkey;
+const char header[] = "/*\n\
+   This file is automatically created from ``bindings.desc'' by mkbind;\n\
+   don't make changes to this file, change ``bindings.desc'' instead.\n\
+*/\n\
+\n\
+#include <stddef.h>\n\
+#include \"bindings.h\"\n\n";
+
+char *states[] = {
+    "bs_quit", "bs_none", "bs_remote", "bs_local", "bs_tag"
+};
+
+int nstates = sizeof(states)/sizeof(states[0]);
+
+
+
+function functions[MAX_FN];
+int num;
+
+enum state binding_state;
+struct binding *binding;
+
+char *binding_argpool[1];
+int binding_nargpool = 0;
 
 char *prg;
+
+void print_args(FILE *fout, char **args);
 
 
 
@@ -50,27 +78,34 @@ int
 main(int argc, char **argv)
 {
     FILE *fin, *fout;
-    char line[4069], *p, *tok;
-    int key, ind, off, i, size = 8192;
+    char line[4069], *p, *tok, **args;
+    struct binding *b;
+    int i, j, off, argoff, len, wlen;
+    int maxkey;
 
     prg = argv[0];
+    rc_inrc = 1;
+    rc_lineno = 0;
     maxkey = max_fnkey + 256;
-    binding = (int *)malloc(maxkey*sizeof(int));
-    binding_off = (int *)malloc(maxkey*sizeof(int));
-    binding_pool = (char **)malloc(size*sizeof(char *));
-    if (binding == NULL || binding_off == NULL
-	|| binding_pool == NULL) {
+
+    binding = (struct binding *)malloc(maxkey*sizeof(struct binding));
+    if (binding == NULL) {
 	fprintf(stderr, "%s: malloc failure.\n", prg);
 	exit(1);
     }
     
     initnames();
 
-    for (ind=0; ind<maxkey; ind++) {
-	binding[ind] = -1;
-	binding_off[ind] = -1;
+    for (i=0; i<maxkey; i++) {
+	binding[i].next = NULL;
+	binding[i].state = bs_none;
+	binding[i].fn = -1;
+	binding[i].args = NULL;
     }
     off = 0;
+
+
+    /* processing ``bindings.desc'' */
 
     if ((fin=fopen(FNAME ".desc", "r")) == NULL) {
 	fprintf(stderr, "%s: can't open input file (%s): %s.\n",
@@ -79,6 +114,7 @@ main(int argc, char **argv)
     }
 
     while (fgets(line, 4096, fin) != NULL) {
+	rc_lineno++;
 	p = line;
 	if ((tok=rc_token(&p)) == NULL)
 	    continue;
@@ -88,40 +124,11 @@ main(int argc, char **argv)
 	    continue;
 	}
 	
-	if ((tok=rc_token(&p)) == NULL) {
-	    fprintf(stderr, "%s: key name missing\n",
-		    prg);
-	    continue;
-	}
-	if ((key=parse_key(tok)) == -1) {
-	    fprintf(stderr, "%s: unknown key: `%s'\n",
-		    prg, tok);
-	    continue;
-	}
+	args = rc_list(p);
 
-	if ((tok=rc_token(&p)) == NULL) {
-	    fprintf(stderr, "%s: function name missing\n",
-		    prg);
-	    continue;
-	}
-	if ((ind=getindex(tok)) == -1) {
-	    fprintf(stderr, "%s: unknown function: %s\n",
-		    prg, tok);
-	    continue;
-	}
-	
-	i = 0;
-	while ((tok=rc_token(&p)) != NULL)
-	    binding_pool[off+i++] = strdup(tok);
-		    
-	binding[key] = ind;
-	if (i) {
-	    binding_pool[off+i++] = NULL;
-	    binding_off[key] = off;
-	    off += i;
-	}
+	fn_bind(args);
     }
-
+    
     if (ferror(fin)) {
 	fprintf(stderr, "%s: read error (%s): %s.\n",
 		prg, FNAME ".desc", strerror(errno));
@@ -130,21 +137,47 @@ main(int argc, char **argv)
     }
     fclose(fin);
 
+
+
+    /* writing ``bindings.c'' */
+
     if ((fout=fopen(FNAME ".c", "w")) == NULL) {
 	fprintf(stderr, "%s: can't open output file (%s): %s.\n",
 		prg, FNAME ".c", strerror(errno));
 	exit(1);
     }
 
-    fprintf(fout, "#include <stdio.h>\n\n");
+    fprintf(fout, "%s", header);
 
-    fprintf(fout, "int " NAME "[] = {\n  ");
-    for (key=0; key<maxkey; key++) {
-	fprintf(fout, "%d, ", binding[key]);
-	if (key%16 == 15 && key < maxkey)
-	    fprintf(fout, "\n  ");
+
+    /* output: bindings */
+
+    off = argoff = 0;
+    fprintf(fout, "struct binding " NAME "[] = {\n  ");
+    for (i=0; i<maxkey; i++) {
+	fprintf(fout, "    { ");
+	if (binding[i].next) {
+	    fprintf(fout, "binding_pool+%d, ", off);
+	    for (b=binding[i].next; b; b=b->next)
+		off++;
+	}
+	else
+	    fprintf(fout, "NULL, ");
+	if (binding[i].state+1 < nstates)
+	    fprintf(fout, "%s, ", states[binding[i].state+1]);
+	else
+	    fprintf(fout, "%d, ", binding[i].state);
+	fprintf(fout, "%d, ", binding[i].fn);
+	if (binding[i].args) {
+	    fprintf(fout, "binding_argpool+%d },\n", argoff);
+	    for (j=0; binding[i].args[j]; j++)
+		;
+		argoff += j+1;
+	}
+	else
+	    fprintf(fout, "NULL },\n");
     }
-    fprintf(fout, "\n};\n\n");
+    fprintf(fout, "};\n\n");
 
     if (ferror(fout)) {
 	fprintf(stderr, "%s: write error (%s): %s.\n",
@@ -153,19 +186,34 @@ main(int argc, char **argv)
 	fclose(fout);
     }
 
-    fprintf(fout, "char *" NAME POOL "[] = {\n  ");
-    for (i=0; i<off; i++) {
-	if (binding_pool[i])
-	    fprintf(fout, "\"%s\", ", binding_pool[i]);
-	else
-	    fprintf(fout, "NULL, ");
-	if (i%8 == 7 && i < off)
-	    fprintf(fout, "\n  ");
-    }
+    /* output: bindings_pool */
 
-    fprintf(fout, "\n};\n\n");
-    fprintf(fout,
-	    "int binding_pool_len = sizeof(binding_pool);\n\n");
+    off = 0;
+    fprintf(fout, "struct binding " NAME "_" POOL "[] = {\n  ");
+    for (i=0; i<maxkey; i++)
+	if (binding[i].next) {
+	    for (b=binding[i].next; b; b=b->next) {
+		fprintf(fout, "    { ");
+		if (binding[i].next) {
+		    fprintf(fout, "binding_pool+%d, ", ++off);
+		}
+		else
+		    fprintf(fout, "NULL, ");
+		fprintf(fout, "%s, ", states[binding[i].state+1]);
+		fprintf(fout, "%d, ", binding[i].fn);
+		if (binding[i].args) {
+		    fprintf(fout, "binding_argpool+%d },\n", argoff);
+		    for (j=0; binding[i].args[j]; j++)
+			;
+		    argoff += j+1;
+		}
+		else
+		    fprintf(fout, "NULL },\n");
+	    }
+	}
+    fprintf(fout, "};\n\n");
+    fprintf(fout, "int " NAME "_n" POOL " = sizeof(" NAME "_" POOL ")"
+	    " / sizeof(" NAME "_" POOL "[0]);\n\n");
     
     if (ferror(fout)) {
 	fprintf(stderr, "%s: write error (%s): %s.\n",
@@ -174,16 +222,18 @@ main(int argc, char **argv)
 	fclose(fout);
     }
 
-        fprintf(fout, "char **" NAME ARGS "[] = {\n  ");
-    for (key=0; key<maxkey; key++) {
-	if (binding_off[key] != -1)
-	    fprintf(fout, NAME POOL "+%d, ", binding_off[key]);
-	else
-	    fprintf(fout, "NULL, ");
-	if (key%8 == 7 && key < maxkey)
-	    fprintf(fout, "\n  ");
-    }
+    /* output: binding_argpool */
 
+    len = 3;
+    fprintf(fout, "char *" NAME "_" ARGS "[] = {\n   ");
+    for (i=0; i<maxkey; i++)
+	if (binding[i].args)
+	    print_args(fout, binding[i].args);
+    for (i=0; i<maxkey; i++)
+	if (binding[i].next)
+	    for (b=binding[i].next; b; b=b->next)
+		if (b->args)
+		    print_args(fout, b->args);
     fprintf(fout, "\n};\n\n");
 
     if (ferror(fout)) {
@@ -202,77 +252,113 @@ main(int argc, char **argv)
 int
 initnames()
 {
-	char line[8192], *p, *q;
-	FILE *f;
+    char line[8192], *p, *q;
+    FILE *f;
 
-	num = 0;
+    num = 0;
 	
-	if ((f=fopen(TABLE, "r")) == NULL) {
-		fprintf(stderr, "%s: can't open input file (%s): %s.\n",
-			prg, TABLE, strerror(errno));
-		exit(1);
-	}
+    if ((f=fopen(TABLE, "r")) == NULL) {
+	fprintf(stderr, "%s: can't open input file (%s): %s.\n",
+		prg, TABLE, strerror(errno));
+	exit(1);
+    }
 
-	while (fgets(line, 8192, f) && line[strlen(line)-2] != '{')
-		;
+    while (fgets(line, 8192, f) && line[strlen(line)-2] != '{')
+	;
 
-	if (ferror(f)) {
-		fprintf(stderr, "%s: read error (%s): %s.\n",
-			prg, TABLE, strerror(errno));
-		exit(1);
-	}
-	if (feof(f)) {
-		fprintf(stderr, "%s: beginning of names in table not found.\n",
-			prg);
-		exit(1);
-	}
+    if (ferror(f)) {
+	fprintf(stderr, "%s: read error (%s): %s.\n",
+		prg, TABLE, strerror(errno));
+	exit(1);
+    }
+    if (feof(f)) {
+	fprintf(stderr, "%s: beginning of names in table not found.\n",
+		prg);
+	exit(1);
+    }
 
-	while (fgets(line, 8192, f) && line[0] != '}') {
-	    if (strncmp(line, "  { 0, 0, ", 10) == 0)
-		break;
-	    if (strncmp(line, "/*", 2) == 0)
-		continue;
-	    p = strchr(line, '\"');
-	    if (p == NULL) {
-		fprintf(stderr, "%s: table syntax error: %s\n",
-			prg, line);
-		continue;
+    while (fgets(line, 8192, f) && line[0] != '}') {
+	if (strncmp(line, "  { 0, 0, ", 10) == 0)
+	    break;
+	if (strncmp(line, "/*", 2) == 0)
+	    continue;
+	p = strchr(line, '\"');
+	if (p == NULL) {
+	    fprintf(stderr, "%s: table syntax error: %s\n",
+		    prg, line);
+	    continue;
+	}
+	q = strchr(p+1, '\"');
+	if (q == NULL)
+	    fprintf(stderr, "%s: table syntax error: %s\n",
+		    prg, line);
+	else {
+	    p++;
+	    *q = '\0';
+	    functions[num].name = strdup(p);
+	    functions[num].fn = NULL;
+	    functions[num].type = 0;
+	    functions[num].help = NULL;
+	    
+	    if (++num >= MAX_FN) {
+		fprintf(stderr, "%s: internal function "
+			"table too small\n", prg);
+		exit(1);
 	    }
-	    q = strchr(p+1, '\"');
-	    if (q == NULL)
-		fprintf(stderr, "%s: table syntax error: %s\n",
-			prg, line);
-	    else {
-		p++;
-		*q = '\0';
-		names[num++] = strdup(p);
-		if (num>MAX_FN) {
-		    fprintf(stderr, "%s: internal function "
-			    "table too small\n", prg);
-		    exit(1);
-		}
-	    }
 	}
+    }
 
-	if (ferror(f)) {
-	    fprintf(stderr, "%s: read error (%s): %s.\n",
-		    prg, TABLE, strerror(errno));
-	    exit(1);
-	}
+    if (ferror(f)) {
+	fprintf(stderr, "%s: read error (%s): %s.\n",
+		prg, TABLE, strerror(errno));
+	exit(1);
+    }
 
-	fclose(f);
+    fclose(f);
 }
 
 
 
-int
-getindex(char *name)
+void
+print_args(FILE *fout, char **args)
 {
-	int i;
+    static int len = 0;
 
-	for (i=0; i<num; i++)
-		if (strcmp(name, names[i]) == 0)
-			return i;
+    int wlen, j;
+    
+    for (j=0; args[j]; j++) {
+	wlen = 4+strlen(args[j]);
+	if (len+wlen > LINELEN) {
+	    fprintf(fout, "\n   ");
+	    len = 3;
+	}
+	else
+	    len += wlen;
 
-	return -1;
+	fprintf(fout, " \"%s\",", args[j]);
+    }
+    
+    if (len+6 > LINELEN) {
+	fprintf(fout, "\n   ");
+	len = 3;
+    }
+    else
+	len += 6;
+    
+    fprintf(fout, " NULL,");
 }
+
+
+
+void
+disp_status(char *fmt, ...)
+{
+    return;
+}
+
+char *
+read_string(char *prompt, int echop)
+{
+    return NULL;
+}
+

@@ -1,19 +1,13 @@
-bind	^l	redraw
-bind	^j	enter/get
-bind	^m	enter/get
-bind	V	version
-bind	q	exit
-bind	H	help
-bind	c	lcd
-bind	!	shell
-bind	:	colon
-bind	B	bind
-bind	m	response
-bind	r	reconnect
-
-bind	t	tag
-bind	T	list-tags
-bind	D	get-tags
+bind		^l	redraw
+bind		V	version
+bind		q	exit
+bind		H	help
+bind		c	lcd
+bind		!	shell
+bind		:	colon
+bind		B	bind
+bind		m	response
+bind		r	reconnect
 
 bind	a	set mode a
 bind	i	set mode i
@@ -29,16 +23,24 @@ bind	7	prefix 7
 bind	8	prefix 8
 bind	9	prefix 9
 
+bind	<remote> ^j	enter/get
+bind	<remote> ^m	enter/get
+bind	<remote> t	tag
+bind	<remote> T	list-tags
+bind	<remote> D	get-tags
+bind	<remote> ^f	enter/get
+bind	<remote> l	enter/get
+bind	<remote> right	enter/get
+bind	<remote> v	view
+bind	<remote> d	get
+
 bind	^b	leave
-bind	^f	enter/get
 bind	^p	up
 bind	^n	down
 bind	h	leave
 bind	j	down
 bind	k	up
-bind	l	enter/get
 bind	left	leave
-bind	right	enter/get
 bind	up	up
 bind	down	down
 bind	spc 	page-down
@@ -47,7 +49,6 @@ bind	pgdown	page-down
 bind	pgup	page-up
 bind	G	goto
 bind	^s	isearch
+bind	^r	isearch r
 
 bind	g	cd
-bind	v	view
-bind	d	get

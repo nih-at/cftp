@@ -1,6 +1,6 @@
 /*
   loop -- main loop
-  Copyright (C) 1996 Dieter Baron
+  Copyright (C) 1996, 1997 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -40,7 +40,7 @@ loop()
     int c, ret = 0;
     function *f;
 
-    disp_dir(curdir, curtop, cursel, 1);
+    disp_dir(list, 0, 0, 1);
 	
     while ((c=tty_readkey()) != -1)
 	if (binding[c] != -1) {

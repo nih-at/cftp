@@ -1,0 +1,205 @@
+dnl  fntable.fn -- description of binable functions
+dnl  Copyright (C) 1996, 1997 Dieter Baron
+dnl
+dnl  This file is part of cftp, a fullscreen ftp client
+dnl  The author can be contacted at <dillo@giga.or.at>
+dnl
+dnl  This program is free software; you can redistribute it and/or modify
+dnl  it under the terms of the GNU General Public License as published by
+dnl  the Free Software Foundation; either version 2 of the License, or
+dnl  (at your option) any later version.
+dnl
+dnl  This program is distributed in the hope that it will be useful,
+dnl  but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl  GNU General Public License for more details.
+dnl
+dnl  You should have received a copy of the GNU General Public License
+dnl  along with this program; if not, write to the Free Software
+dnl  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+section(fn_basic, Basic Functions)
+
+function(exit, [-f], 0, FN_EXIT,
+	 {exit cftp},
+{Close connection and exit @sc{cftp}; if you have tagged files, @sc{cftp}
+asks for confirmation (unless the -f option is given).})
+
+
+function(version, , fn_version, 0,
+	 {display version number},
+ {Display @sc{cftp} version string.})
+
+
+function(redraw, , fn_redraw, FN_PRE,
+	 {redraw screen},
+ {Clear and redraw screen.  Use this function if something messed up
+your display.})
+
+
+function(help, [key], fn_help, 0,
+	 {display binding and help string for key},
+ {Describe function bound to @code{key}; @code{key} is prompted for if
+ommitted.})
+
+
+function(lcd, [dir], fn_lcd, FN_RC,
+	 {change directory on local host},
+ {Change directory on localhost; dir is prompted for if ommited.  The
+new current directory is printed.})
+
+
+function(shell, {[cmd arg @dots{}]}, fn_shell, 0,
+	 {shell escape},
+ {Execute shell command; if no command is given, it is prompted for.
+Enter empty string to get an interactive shell.}) 
+
+
+function(colon, {[args @dots{}]}, fn_colon, 0,
+	 {execute cftp command},
+ {Execute an arbitrary @sc{cftp} command.})
+
+
+function(deidle, , fn_deidle, 0,
+	 {deidle connection},
+ {Send a @code{noop} to ftp server, thus resetting idle time on server.})
+
+
+function(reconnect, , fn_reconnect, 0,
+	 {reconnect to server},
+ {Reopen connection to server after timeout.})
+
+
+function(response, , fn_response, 0,
+	 {display last multiline response},
+ {Display last N lines exchanged with ftp server.})
+
+
+function(prefix, , fn_prefix, FN_PRE,
+	 {prefix digit},
+ {Enter digit of prefix argument to other commands.})
+
+
+
+function(bind, {[<state>] key [cmd [args @dots{}]]}, fn_bind, FN_RC,
+	 {bind key},
+ {})
+
+
+function(set, [option [value]], fn_set, FN_RC,
+	 {set option},
+ {Set user option.})
+
+endsec()
+
+
+section(fn_scroll, Scrolling Functions)
+
+function(down, [n], fn_down, 0,
+	 {move N lines down (default: 1)},
+ {Move cursor down N lines, wrapping around at bottom.  (N is the
+prefix argument.)})
+
+
+function(up, [n], fn_up, 0,
+	 {move N lines up (default: 1)},
+ {Move cursor up N lines, wrapping around at top.  (N is the prefix
+argument.)})
+
+
+function(page-down, [n], fn_pg_down, 0,
+	 {move N screenfulls down (default: 1)},
+ {Move cursor down N screenfulls, or to bottom.  (N is the prefix
+argument.)})
+
+
+function(page-up, [n], fn_pg_up, 0,
+	 {move N screenfulls up (default: 1)},
+ {Move cursor up N screenfulls, or to top.  (N is the prefix argument.)})
+
+
+function(goto, [line], fn_goto, 0,
+	 {goto line N (default: last)},
+ {Move cursor to line N.  (N is the prefix argument.)})
+
+
+function(isearch, , fn_isearch, 0,
+	 {incremental search},
+ {Search directory listing incrementally.})
+
+endsec()
+
+
+section(fn_select, Selection Functions)
+
+function(enter/get, [file], fn_enter_get, 0,
+	 {enter directory or get file},
+ {Enter directory or get file; default is file under cursor.})
+
+
+function(enter/view, [file], fn_enter_view, 0,
+	 {enter directory or view file},
+ {Enter directory or view file; default is file under cursor.})
+
+
+function(enter, [file], fn_enter, 0,
+	 {enter directory},
+ {Enter directory; default is directory under cursor.})
+
+
+function(get, [file], fn_get, 0,
+	 {get file},
+ {Get file; default is file under cursor.})
+
+
+function(view, [file], fn_view, 0,
+	 {view file},
+ {View file;  default is file under cursor.})
+
+
+function(leave, , fn_cdup, 0,
+	 {leave current directory},
+ {Leave current directory, positioning cursor over it.})
+
+
+function(cd, [dir], fn_cd, 0,
+	 {change directory},
+ {Change remote directory;  default is to directory under cursor.})
+
+endsec()
+
+
+section(fn_tag, Tagging Functions)
+
+function(tag, [file], fn_tag, 0,
+	 {tag/untag file for later download},
+ {Tag file; default is file under cursor.})
+
+
+function(clear-tags, , fn_cleartags, 0,
+	 {clear all tags},
+ {Clear all tags.})
+
+
+function(list-tags, [file], fn_listtags, 0,
+	 {list tagged files},
+ {List tags or save tag list to file.})
+
+
+function(get-tags, {download tagged files}, fn_gettags, 0,
+	 {get tagged files},
+ {Download tagged files.})
+
+
+function(load-tags, [file], fn_loadtag, 0,
+	 {load tags list from file},
+ {Load tags from file and merge them with current tags.  A tags file
+contains one tag per line, each consisting of up to three whitespace
+separated fields: size (optional), type (`d'irectory, palin `f'ile,
+`l'ink, or `x' for unknown; optional), and name (mandatory).})
+
+endsec()
+
+endall
+

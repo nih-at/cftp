@@ -38,8 +38,13 @@ divert(-1)})
 
 
 divert(0)dnl
+/*
+   This file is automatically created from ``options.op''; don't make
+   changes to this file, change ``options.op'' instead.
+*/
+
 #include <stddef.h>
-#include <options.h>
+#include "options.h"
 
 divert(-1)
 

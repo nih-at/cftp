@@ -1,12 +1,4 @@
-@ tagging files;
 
-@(fn_tag.fn@)
-section(fn_tag, Tagging Functions)
-@<functions@>
-endsec()
-
-
-@u
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
@@ -19,13 +11,7 @@ endsec()
 #include "util.h"
 
 
-@d<functions@>
-function(tag, [file], fn_tag, 0,
-	 {tag/untag file for later download},
- {Tag file; default is file under cursor.})
 
-
-@u
 void
 fn_tag(char **args)
 {
@@ -75,14 +61,7 @@ fn_tag(char **args)
 }
 
 
-@ clear tags.
 
-@d<functions@>
-function(clear-tags, , fn_cleartags, 0,
-	 {clear all tags},
- {Clear all tags.})
-
-@u
 void
 fn_cleartags(char **args)
 {
@@ -106,15 +85,7 @@ fn_cleartags(char **args)
 	}
 }
 
-@ listing tags.
 
-@d<functions@>
-function(list-tags, [file], fn_listtags, 0,
-	 {list tagged files},
- {List tags or save tag list to file.})
-
-
-@u
 void
 fn_listtags(char **args)
 {
@@ -155,15 +126,7 @@ fn_listtags(char **args)
 }
     
 
-@ getting tagged files
 
-@d<functions@>
-function(get-tags, {download tagged files}, fn_gettags, 0,
-	 {get tagged files},
- {Download tagged files.})
-
-
-@u
 void
 fn_gettags(char **args)
 {
@@ -213,18 +176,7 @@ fn_gettags(char **args)
 }
 
 
-@ read in tags list
 
-@d<functions@>
-function(load-tags, [file], fn_loadtag, 0,
-	 {load tags list from file},
- {Load tags from file and merge them with current tags.  A tags file
-contains one tag per line, each consisting of up to three whitespace
-separated fields: size (optional), type (`d'irectory, palin `f'ile,
-`l'ink, or `x' for unknown; optional), and name (mandatory).})
-
-
-@u
 void
 fn_loadtag(char **args)
 {

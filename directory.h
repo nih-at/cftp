@@ -3,7 +3,7 @@
 
 /*
   directory.h -- handle directory cache
-  Copyright (C) 1996 Dieter Baron
+  Copyright (C) 1996, 1997 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -25,18 +25,23 @@
 
 
 
-typedef struct direntry {
-	char *line;
-	char *name, *link;
+struct direntry {
+	char *line, *name;
+	char *link;
 	long size;
 	char type;
-} direntry;
+};
 
-typedef struct directory {
-	char *path;
-	int num;
-	struct direntry *list;
-} directory;
+typedef struct direntry direntry;
+
+struct directory {
+    int len, top, cur;
+    int size;
+    struct direntry *line;
+    char *path;
+};
+
+typedef struct directory directory;
 
 
 

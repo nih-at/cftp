@@ -1,12 +1,27 @@
-@ bindable functions for selecting files and changing directories.
+/*
+  fn_select -- bindable functions: selecting
+  Copyright (C) 1996, 1997 Dieter Baron
 
-@(fn_select.fn@)
-section(fn_select, Selection Functions)
-@<functions@>
-endsec()
+  This file is part of cftp, a fullscreen ftp client
+  The author can be contacted at <dillo@giga.or.at>
 
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
 
-@u
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
+
+
 #include <stdio.h>
 #include <string.h>
 #include "directory.h"
@@ -16,87 +31,65 @@ endsec()
 #include "options.h"
 #include "util.h"
 
-@<local prototypes@>
-
-
-@ entering a directory.
-
-@d<local prototypes@>
 int aux_enter(char *name);
+int aux_download(char *name, long size);
+int aux_view(char *name);
 
-@u
+
+
 int
 aux_enter(char *name)
 {
-	directory *d;
+    directory *d;
 
-	d = ftp_cd(name);
+    d = ftp_cd(name);
 
-	if (d == NULL)
-		return -1;
+    if (d == NULL)
+	return -1;
 
-	change_curdir(d);
-	cursel = curtop = 0;
+    change_curdir(d);
 
-	disp_dir(curdir, curtop, cursel, 1);
+    disp_dir(0, 0, cursel, 1);
 
-	return 0;
+    return 0;
 }
 
+
 
-@ downloading a file.
-
-@d<local prototypes@>
-int aux_download(char *name, long size);
-
-@u
 int
 aux_download(char *name, long size)
 {
-	int err;
-	FILE *f;
+    int err;
+    FILE *f;
 
-	if ((f=fopen(basename(name), "w")) == NULL)
-		return -2;
+    if ((f=fopen(basename(name), "w")) == NULL)
+	return -2;
 	
-	err = ftp_retr(name, f, size, opt_mode);
-	fclose(f);
+    err = ftp_retr(name, f, size, opt_mode);
+    fclose(f);
 
-	return err;
+    return err;
 }
 
+
 
-@ viewing a flie.
-
-@d<local prototypes@>
-int aux_view(char *name);
-
-@u
 int
 aux_view(char *name){
-	int err;
-	FILE *f;
+    int err;
+    FILE *f;
 	
-	if ((f=disp_open(-1)) == NULL)
-		return -2;
+    if ((f=disp_open(-1)) == NULL)
+	return -2;
 
-	err = ftp_retr(name, f, 0, 'a');
+    err = ftp_retr(name, f, 0, 'a');
 
-	err |= disp_close(f);
+    err |= disp_close(f);
 	
-	return err;
+    return err;
 }
 
+
 
-@ selecting an entry: entering (dir) or downloading (file).
-
-@d<functions@>
-function(enter/get, [file], fn_enter_get, 0,
-	 {enter directory or get file},
- {Enter directory or get file; default is file under cursor.})
-
-
-@u
 void
 fn_enter_get(char **args)
 {
@@ -131,16 +124,8 @@ fn_enter_get(char **args)
     }
 }
 
+
 
-@ selecting an entry: entering (dir) or viewing (file)
-
-@d<functions@>
-function(enter/view, [file], fn_enter_view, 0,
-	 {enter directory or view file},
- {Enter directory or view file; default is file under cursor.})
-
-
-@u
 void
 fn_enter_view(char **args)
 {
@@ -172,16 +157,8 @@ fn_enter_view(char **args)
     }
 }
 
+
 
-@ entering a directory.
-
-@d<functions@>
-function(enter, [file], fn_enter, 0,
-	 {enter directory},
- {Enter directory; default is directory under cursor.})
-
-
-@u
 void
 fn_enter(char **args)
 {
@@ -207,16 +184,8 @@ fn_enter(char **args)
     }
 }
 
+
 
-@ downloading a file.
-
-@d<functions@>
-function(get, [file], fn_get, 0,
-	 {get file},
- {Get file; default is file under cursor.})
-
-
-@u
 void
 fn_get(char **args)
 {
@@ -245,15 +214,8 @@ fn_get(char **args)
     }
 }
 
-@ viewing a file.
+
 
-@d<functions@>
-function(view, [file], fn_view, 0,
-	 {view file},
- {View file;  default is file under cursor.})
-
-
-@u
 void
 fn_view(char **args)
 {
@@ -279,53 +241,36 @@ fn_view(char **args)
     }
 }
 
+
 
-@ leaving a directory.
-
-@d<functions@>
-function(leave, , fn_cdup, 0,
-	 {leave current directory},
- {Leave current directory, positioning cursor over it.})
-
-
-@u
 void
 fn_cdup(char **args)
 {
-	char *par;
-	int sel;
+    char *par;
+    int sel;
 	
-	directory *d;
+    directory *d;
 
-	if (strcmp(curdir->path, "/") == 0)
-		return;
+    if (strcmp(list->path, "/") == 0)
+	return;
 
-	d = ftp_cd("..");
+    d = ftp_cd("..");
 
-	if (d == NULL)
-		return;
+    if (d == NULL)
+	return;
 
-	par = strrchr(curdir->path, '/');
-	change_curdir(d);
-	cursel = 0, curtop = 0;
+    par = strrchr(list->path, '/');
+    change_curdir(d);
 
-	if (par && *(par++)!='\0')
-	    if ((sel=dir_find(curdir, par)) < 0)
-		sel = 0;
+    if (par && *(par++)!='\0')
+	if ((sel=dir_find(list, par)) < 0)
+	    sel = 0;
 	    
-	aux_scroll(sel-(win_lines/2), sel, 1);
+    aux_scroll(sel-(win_lines/2), sel, 1);
 }
 
+
 
-@ going to a directory.
-
-@d<functions@>
-function(cd, [dir], fn_cd, 0,
-	 {change directory},
- {Change remote directory;  default is to directory under cursor.})
-
-
-@u
 void
 fn_cd(char **args)
 {
@@ -351,8 +296,7 @@ fn_cd(char **args)
 	return;
 
     change_curdir(d);
-    cursel = curtop = 0;
     
-    disp_dir(curdir, curtop, cursel, 1);
+    disp_dir(list, 0, 0, 1);
 }
 

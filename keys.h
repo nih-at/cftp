@@ -3,7 +3,7 @@
 
 /*
   keys.h -- parse and print key specifications
-  Copyright (C) 1996 Dieter Baron
+  Copyright (C) 1996, 1997 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -26,13 +26,13 @@
 
 
 struct keyname {
-	int key;
-	char *name, *longname;
+    int key;
+    char *name, *longname;
 };
 
 struct fnkey {
-	char *name, *longname;
-	char *cap, *seq;
+    char *name, *longname;
+    char *cap, *seq;
 };
 
 extern struct keyname keyname[];

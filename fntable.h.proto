@@ -1,1 +1,11 @@
+#ifndef HAD_FNTABLE_H
+#define HAD_FNTABLE_H
+
+/*
+   This file is automatically created from ``fntable.fn''; don't change
+   this file, change ``fntable.fn'' instead.
+/*
+
 ----
+
+#endif /* fntable.h */

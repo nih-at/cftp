@@ -35,6 +35,9 @@ Default: {$6}
 divert(-1)})
 
 divert(0)dnl
+@c This file is automatically created from ``options.op''; don't change
+@c this file, change ``options.op'' instead.
+
 @c *********************************************************************
 @node	 Options
 @chapter Options

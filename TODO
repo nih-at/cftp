@@ -35,7 +35,11 @@ C untangle fn_* files
 F (fn_isearch) search backwards
 B (fn_isearch) repeaded search sets start to wrong match
 F readrc: host
+P cc on HPUX: -Aa -D_POSIX_SOURCE, prototypes for LIBOBJS
+C check and update copyright notices
+B version.c: is created before Makefile is updated
 ----------------------------------------------- done
+
 Jan 28 1997 (0.5d)
 F readrc: alias and commands
 F long options

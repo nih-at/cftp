@@ -1,12 +1,27 @@
-@ miscellaneous basic bindable functions.
+/*
+  fn_basic -- bindable functions: basics
+  Copyright (C) 1996, 1997 Dieter Baron
 
-@(fn_basic.fn@)
-section(fn_basic, Basic Functions)
-@<functions@>
-endsec()
+  This file is part of cftp, a fullscreen ftp client
+  The author can be contacted at <dillo@giga.or.at>
 
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
 
-@u
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -23,22 +38,7 @@ endsec()
 extern int binding[];
 extern function functions[];
 
-@ exitting.
 
-@d<functions@>
-function(exit, [-f], 0, FN_EXIT,
-	 {exit cftp},
-{Close connection and exit @@sc{cftp}; if you have tagged files, @@sc{cftp}
-asks for confirmation (unless the -f option is given).})
-
-@ displaying version.
-
-@d<functions@>
-function(version, , fn_version, 0,
-	 {display version number},
- {Display @@sc{cftp} version string.})
-
-@u
 extern char version[];
 
 void fn_version(char **args)
@@ -46,31 +46,15 @@ void fn_version(char **args)
 	disp_status("%s", version);
 }
 
+
 
-@ redraw.
-
-@d<functions@>
-function(redraw, , fn_redraw, FN_PRE,
-	 {redraw screen},
- {Clear and redraw screen.  Use this function if something messed up
-your display.})
-
-@u
 void fn_redraw(char **args)
 {
     disp_redraw();
 }
 
+
 
-@ help.
-
-@d<functions@>
-function(help, [key], fn_help, 0,
-	 {display binding and help string for key},
- {Describe function bound to @@code{key}; @@code{key} is prompted for if
-ommitted.})
-
-@u
 void fn_help(char **args)
 {
 	int c, i;
@@ -89,15 +73,8 @@ void fn_help(char **args)
 		    functions[i].name, functions[i].help);
 }
 
+
 
-@ change local directory.
-
-@d<functions@>
-function(lcd, [dir], fn_lcd, FN_RC,
-	 {change directory on local host},
- {Change directory on localhost; dir is prompted for if ommited.  The new current directory is printed.})
-
-@u
 void fn_lcd(char **args)
 {
 	char *lwd, *exp;
@@ -131,16 +108,8 @@ void fn_lcd(char **args)
 	free(lwd);
 }
 
+
 
-@ shell escape.
-
-@d<functions@>
-function(shell, {[cmd arg @@dots{}]}, fn_shell, 0,
-	 {shell escape},
- {Execute shell command; if no command is given, it is prompted for.
-Enter empty string to get an interactive shell.}) 
-
-@u
 void fn_shell(char **args)
 {
 	char *cmd, b[128];
@@ -163,15 +132,8 @@ void fn_shell(char **args)
 	reenter_disp();
 }
 
+
 
-@ execute cftp command
-
-@d<functions@>
-function(colon, {[args @@dots{}]}, fn_colon, 0,
-	 {execute cftp command},
- {Execute an arbitrary @@sc{cftp} command.})
-
-@u
 void fn_colon(char **args)
 {
 	char *cmd, *tok, *p, *line = NULL;
@@ -216,43 +178,22 @@ void fn_colon(char **args)
 	}
 }
 
+
 
-@ deidling connection
-
-@d<functions@>
-function(deidle, , fn_deidle, 0,
-	 {deidle connection},
- {Send a @@code{noop} to ftp server, thus resetting idle time on server.})
-
-@u
 void fn_deidle(char **args)
 {
     ftp_noop();
 }
 
+
 
-@ reconnecting
-
-@d<functions@>
-function(reconnect, , fn_reconnect, 0,
-	 {reconnect to server},
- {Reopen connection to server after timeout.})
-
-@u
 void fn_reconnect(char **args)
 {
     ftp_reconnect();
 }
 
+
 
-@ displaying last response.
-
-@d<functions@>
-function(response, , fn_response, 0,
-	 {display last multiline response},
- {Display last N lines exchanged with ftp server.})
-
-@u
 void fn_response(char **args)
 {
     struct ftp_hist *h;
@@ -273,16 +214,8 @@ void fn_response(char **args)
     disp_close(f);
 }
 
+
 
-@ functions for entering digits
-
-@d<functions@>
-function(prefix, , fn_prefix, FN_PRE,
-	 {prefix digit},
- {Enter digit of prefix argument to other commands.})
-
-
-@u
 int
 fn_prefix(char **args)
 {
@@ -304,106 +237,8 @@ fn_prefix(char **args)
     }
 }
 
+
 
-@ binding keys
-
-@d<functions@>
-function(bind, {key [cmd [args @@dots{}]]}, fn_bind, FN_RC,
-	 {bind key},
- {})
-
-@u
-int
-fn_bind(char **args)
-{
-    extern int binding[];
-    extern char **binding_args[], *binding_pool[];
-    extern int binding_pool_len;
-
-    int key, fn, i;
-    char *line = NULL;
-    char *cmd, *kname, **list, *p;
-
-    
-    if (args) {
-	kname = args[0];
-	cmd = args[1];
-	    args += 2;
-    }
-    else {
-	if (rc_inrc) {
-	    rc_error("bind: no arguments given");
-	    return;
-	}
-	line = p = read_string("bind ", 1);
-
-	if ((kname=rc_token(&p)) == NULL) {
-	    disp_status("no key");
-	    free(line);
-	    return;
-	}
-	cmd = rc_token(&p);
-    }
-
-    if ((key=parse_key(kname)) < 0) {
-	(rc_inrc ? rc_error : disp_status)("unknown key: %s", kname);
-	if (line)
-	    free(line);
-	return;
-    }
-	
-    if (cmd) {
-	if ((fn=find_function(cmd)) < 0) {
-	    (rc_inrc ? rc_error : disp_status)("unknown function: %s", cmd);
-	    if (line)
-		free(line);
-	    return;
-	}
-    }
-
-    if (!rc_inrc)
-	disp_status("");
-	
-    if (binding[key] > -1) {
-	binding[key] = -1;
-	if (binding_args[key]) {
-	    if (binding_args[key] < binding_pool
-		|| (binding_args[key] >=
-		    binding_pool+binding_pool_len)) {
-		for (i=0; binding_args[key][i]; i++)
-		    free(binding_args[key][i]);
-		free(binding_args);
-	    }
-	    binding_args[key] = NULL;
-	}
-    }
-
-    if (cmd) {
-	if (line)
-	    list = rc_list(p);
-	else {
-	    for (i=0; args[i]; i++) {
-		list = (char **)malloc(sizeof(char *)*(i+1));
-		memcpy(list, args, sizeof(char *)*(i+1));
-	    }
-	}
-
-	binding[key] = fn;
-	binding_args[key] = list;
-    }
-
-    return;
-}
-
-
-@ setting user options.
-
-@d<functions@>
-function(set, [option [value]], fn_set, FN_RC,
-	 {set option},
- {Set user option.})
-
-@u
 void fn_set(char **args)
 {
     char *opt, *value;

@@ -23,14 +23,10 @@
 
 
 #include <stdio.h>
-#include "directory.h"
 #include "display.h"
 #include "functions.h"
-#include "tag.h"
 #include "options.h"
-
-directory *curdir;
-int curtop, cursel;
+#include "bindings.h"
 
 int prefix_arg, prefix_valid = 0;
 
@@ -104,30 +100,6 @@ show_prefix(void)
 
 
 
-void
-change_curdir(directory *dir)
-{
-    extern dirtags *curtags;
-
-    filetags *tags;
-    int i;
-
-    for (i=0; i<curdir->num; i++)
-	curdir->list[i].line[0] = ' ';
-
-    tag_changecurrent(dir->path);
-
-    if (curtags) {
-	for (tags=curtags->tags->next; tags; tags=tags->next)
-	    if ((i=dir_find(dir, tags->name)) >= 0)
-		dir->list[i].line[0] = opt_tagchar;
-    }
-
-    curdir = dir;
-}
-
-
-
 int
 find_function(char *f)
 {
@@ -137,4 +109,42 @@ find_function(char *f)
 	    ;
 
     return (functions[i].name ? i : -1);
+}
+
+
+
+struct binding *
+get_function(int nr, enum state state)
+{
+    struct binding *b;
+    
+    if (state == bs_none)
+	state = binding_state;
+
+    for (b=binding[nr].next; b; b=b->next)
+	if (b->state == state)
+	    return b;
+
+    return &binding[nr].next;
+}
+
+
+
+char *state_names[] = {
+    "<global>", "<remote>", "<local>", "<tag>", NULL
+};
+
+enum state
+parse_state(char *name)
+{
+    int i;
+
+    if (name[0] != '<' || name[strlen(name)-1] != '>')
+	return bs_nostate;
+
+    for (i=0; state_names[i]; i++)
+	if (strcasecmp(name, state_names[i]) == 0)
+	    return i;
+
+    return bs_unknown;
 }

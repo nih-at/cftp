@@ -1,6 +1,6 @@
 /*
   readdir -- read directory listing
-  Copyright (C) 1996 Dieter Baron
+  Copyright (C) 1996, 1997 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -37,42 +37,44 @@ int parse_unix(direntry *de, char *line);
 directory *
 read_dir(FILE *f)
 {
-	directory *dir;
-	direntry *list;
-	int i, n, sz;
-	char *line;
+    directory *dir;
+    direntry *list;
+    int i, n, sz;
+    char *line;
 
-	dir = malloc(sizeof(directory));
-	list = NULL;
-	sz = n = 0;
+    dir = malloc(sizeof(directory));
+    list = NULL;
+    sz = n = 0;
 	
-	while ((line=ftp_gets(f)) != NULL) {
-		if (n >= sz) {
-			sz += DIR_STEP;
-			if (list == NULL)
-				list = malloc(sizeof(direntry)*sz);
-			else
-				list = realloc(list, sizeof(direntry)*sz);
-		}
-		if (parse_unix(list+n, line) == 0)
-			n++;
+    while ((line=ftp_gets(f)) != NULL) {
+	if (n >= sz) {
+	    sz += DIR_STEP;
+	    if (list == NULL)
+		list = malloc(sizeof(direntry)*sz);
+	    else
+		list = realloc(list, sizeof(direntry)*sz);
 	}
+	if (parse_unix(list+n, line) == 0)
+	    n++;
+    }
 
-	if (n == 0) {
-		dir->list = (direntry *)malloc(sizeof(direntry));
-		dir->list->line = strdup("");
-		dir->list->type = 'x';
-		dir->list->name = dir->list->link = NULL;
-		n = 1;
-	}
-	else {
-		dir->list = malloc(sizeof(direntry)*n);
-		for (i=0; i<n; i++)
-			dir->list[i] = list[i];
-	}
-	dir->num = n;
+    if (n == 0) {
+	dir->list = (direntry *)malloc(sizeof(direntry));
+	dir->list->line = strdup("");
+	dir->list->type = 'x';
+	dir->list->name = dir->list->link = NULL;
+	n = 1;
+    }
+    else {
+	dir->list = malloc(sizeof(direntry)*n);
+	for (i=0; i<n; i++)
+	    dir->list[i] = list[i];
+    }
+    dir->len = n;
+    dir->size = sizeof(struct direntry);
+    dir->top = dir->sel = 0;
 
-	return dir;
+    return dir;
 }
 
 

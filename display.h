@@ -26,6 +26,7 @@
 
 
 #include <stdio.h>
+#include "directory.h"
 
 extern int tty_lines;
 #define win_lines	(tty_lines-4)
