@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.4 2001/12/11 16:05:04 dillo Exp $
+  $NiH: sftp.c,v 1.5 2001/12/11 19:52:08 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001 Dieter Baron
@@ -24,9 +24,36 @@
 
 
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "directory.h"
+#include "display.h"
+#include "ftp.h"
+#include "sftp.h"
+
+
+
 #define SFTP_MAX_PACKET_SIZE	4102 /* max read size + SSH_FXP_DATA header */
 
-static int _sftp_get_packet(FILE *f, char *buf, int *lenp)
+int sftp_file_close(char *hnd);
+char *sftp_get_handle(void);
+int sftp_put_str(int type, char *str, int is_path);
+int sftp_readdir(char *hnd, char *buf, int *lenp);
+int sftp_status(void);
+
+static int _sftp_get_packet(FILE *f, char *buf, int *lenp, int log_resp);
+static char *_sftp_get_string(char *buf, char **endp);
+static unsigned int _sftp_get_uint32(unsigned char *p);
+static unsigned long long _sftp_get_uint64(unsigned char *p);
+static void _sftp_log_packet(int dir, int type, char *data, int len);
+static int _sftp_parse_name(unsigned char **pp, direntry *e);
+static int _sftp_parse_status(int type, char *buf, int len);
+static directory *_sftp_read_dir(char *hnd);
 static char *_sftp_strerror(int error);
 
 
@@ -94,7 +121,7 @@ static char *_sftp_strerror(int error);
 
 static unsigned char _sftp_buffer[SFTP_MAX_PACKET_SIZE];
 
-static const char _sftp_errlist[] = {
+static char *_sftp_errlist[] = {
     "No error",
     "End of file",
     "No such file or directory",
@@ -106,16 +133,20 @@ static const char _sftp_errlist[] = {
     "Operation unsupported"
 };
 
-static const int _sftp_nerr = sizeof(_sftp_errlist) / sizeof(_sftp_errlist[0]);
+static int _sftp_nerr = sizeof(_sftp_errlist) / sizeof(_sftp_errlist[0]);
 
 static int _sftp_nextid;
+
+/* XXX: shared with ftp.c */
+
+extern FILE *conin, *conout;
 
 
 
 int
 sftp_mkdir(char *path)
 {
-    sftp_put_str(SSH_FXP_MKDIR, _sftp_make_absolute(path));
+    sftp_put_str(SSH_FXP_MKDIR, path, 1);
     if (sftp_status() != SSH_FX_OK)
 	return -1;
     return 0;
@@ -126,11 +157,85 @@ sftp_mkdir(char *path)
 int
 sftp_rmdir(char *path)
 {
-    sftp_put_str(SSH_FXP_RMDIR, _sftp_make_absolute(path));
+    sftp_put_str(SSH_FXP_RMDIR, path, 1);
     if (sftp_status() != SSH_FX_OK)
 	return -1;
     return 0;
 }
+
+
+
+directory *
+sftp_list(char *path)
+{
+    directory *dir;
+    char *hnd;
+
+    sftp_put_str(SSH_FXP_OPENDIR, path, 1);
+
+    if ((hnd=sftp_get_handle()) == NULL) {
+	/* XXX: why return empty dir here and NULL below? */
+	/* XXX: factor out */
+	dir = (directory *)malloc(sizeof(directory));
+	dir->line = (direntry *)malloc(sizeof(direntry));
+	dir->path = strdup(path);
+	dir->len = 0;
+	dir->cur = dir->top = 0;
+	dir->size = sizeof(struct direntry);
+	dir->line->line = strdup("");
+	dir->line->type = 'x';
+	dir->line->name = strdup("");
+	dir->line->link = NULL;
+	return dir;
+    }
+
+    dir = _sftp_read_dir(hnd);
+    if (dir)
+	dir->path = strdup(path);
+    
+    sftp_file_close(hnd);
+    
+    return dir;
+}
+
+
+
+static directory *
+_sftp_read_dir(char *hnd)
+{
+    directory *dir;
+    direntry entry;
+    unsigned char *p;
+    time_t oldt, newt;
+    int n, pn;
+    int type, len;
+
+    dir = dir_new();
+    oldt = 0;
+
+    n = 0;
+    while ((type=sftp_readdir(hnd, _sftp_buffer, &len))
+	   == SSH_FXP_NAME) {
+	pn = _sftp_get_uint32(_sftp_buffer+4);
+	for (p = _sftp_buffer+8; pn--;) {
+	    if (_sftp_parse_name(&p, &entry)) {
+		dir_add(dir, &entry);
+		n++;
+	    }
+
+	    if ((newt=time(NULL)) != oldt) {
+		disp_status("listed %d", n);
+		oldt = newt;
+	    }
+	}
+    }
+
+    if (_sftp_parse_status(type, _sftp_buffer, len) != SSH_FX_EOF) {
+	/* XXX: error */
+    }
+
+    return dir;
+}    
 
 
 
@@ -176,20 +281,20 @@ _sftp_get_packet(FILE *f, char *buf, int *lenp, int log_resp)
 	*lenp = len;
 
     if (log_resp)
-	_sftp_log_response(1, type, buf, len);
+	_sftp_log_packet(1, type, buf, len);
 
     return type;
 }
 
 
 
-void
+static void
 _sftp_log_packet(int dir, int type, char *data, int len)
 {
     int status;
     char *msg, buf[80];
 
-    sitch (type) {
+    switch (type) {
     case SSH_FXP_STATUS:
 	status = _sftp_get_uint32(data+4);
 	if (status == SSH_FX_OK) {
@@ -216,4 +321,142 @@ _sftp_log_packet(int dir, int type, char *data, int len)
 
     disp_status("%s", buf);
     ftp_hist(strdup(buf));
+}
+
+
+
+static int
+_sftp_parse_name(unsigned char **pp, direntry *e)
+{
+    unsigned int flags;
+    int n;
+    char *p;
+    mode_t mode;
+
+    p = *pp;
+
+    e->name = _sftp_get_string(p, &p);
+    e->line = _sftp_get_string(p, &p);
+
+    flags = _sftp_get_uint32(p);
+    p += 4;
+
+    if (flags & SSH_FILEXFER_ATTR_SIZE) {
+	e->size = _sftp_get_uint64(p);
+	p += 8;
+    }
+    else
+	e->size = -1;
+
+    if (flags & SSH_FILEXFER_ATTR_UIDGID)
+	p += 8;
+
+    if (flags & SSH_FILEXFER_ATTR_PERMISSIONS) {
+	mode = _sftp_get_uint32(p);
+	p += 4;
+	switch (mode & S_IFMT) {
+	case S_IFDIR:
+	    e->type = 'd';
+	    break;
+	case S_IFREG:
+	case S_IFIFO:
+	    e->type = 'f';
+	    break;
+	case S_IFLNK:
+	    e->type = 'l';
+	    break;
+	default:
+	    e->type = 'x';
+	}
+    }
+    else
+	e->type = 'x';
+
+    if (flags & SSH_FILEXFER_ATTR_ACMODTIME) {
+	p += 4; /* skip atime */
+	e->mtime = _sftp_get_uint32(p);
+	p += 4;
+    }
+    else
+	e->mtime = 0;
+
+    if (flags & SSH_FILEXFER_ATTR_EXTENDED) {
+	n = _sftp_get_uint32(p);
+	p += 4;
+
+	while (n--) {
+	    p += _sftp_get_uint32(p) + 4;
+	    p += _sftp_get_uint32(p) + 4;
+	}
+    }
+
+    *pp = p;
+
+    return 0;
+}
+
+
+
+static unsigned int
+_sftp_get_uint32(unsigned char *p)
+{
+    return (p[0]<<24) | (p[1]<<16) | (p[2]<<8) | p[3];
+}
+
+
+
+static unsigned long long
+_sftp_get_uint64(unsigned char *p)
+{
+    return ((unsigned long long)p[0]<<56) | ((unsigned long long)p[1]<<48)
+	| ((unsigned long long)p[2]<<40) | ((unsigned long long)p[3]<<32)
+	| (p[4]<<24) | (p[5]<<16) | (p[6]<<8) | p[7];
+}
+
+
+
+static char *
+_sftp_get_string(char *buf, char **endp)
+{
+    char *s;
+    int len;
+
+    len = _sftp_get_uint32(buf);
+    if (!len)
+	return NULL;
+
+    if ((s=malloc(len+1)) == NULL)
+	return NULL;
+
+    memcpy(s, buf+4, len);
+    s[len] = '\0';
+
+    if (endp)
+	*endp = buf+4+len;
+
+    return s;
+}
+
+
+
+int
+sftp_status(void)
+{
+    int type;
+    int len;
+
+    type = _sftp_get_packet(conin, _sftp_buffer, &len, 1);
+
+    return _sftp_parse_status(type, _sftp_buffer, len);
+}
+
+
+
+static int
+_sftp_parse_status(int type, char *buf, int len)
+{
+    if (type != SSH_FXP_STATUS || len < 8)
+	return -1;
+
+    return _sftp_get_uint32(buf+4);
 }
