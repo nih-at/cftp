@@ -32,7 +32,10 @@ P configure.in: add -posix for NeXTStep
 B propagate errors (conn hung or eof?) up to fn_gettags
 F cftp.texi: introduction, invoking, cftprc
 F user options
+F fn_bind
+P util.cw: (basename) conflicting with unistd.h on linux (const char * arg)
 ----------------------------------------------- done
+B fn_tags.cw: (fn_loadtag) relative names relative to current dir
 B tty.cw: (tty_readkey) don't discard chars by failed multibyte code
 B display.cw: (disp_prompt_char) eat up chars till newline
 F fn_basic.cw: (fn_lcd) handle ~, ~user

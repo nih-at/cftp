@@ -270,7 +270,7 @@ fn_loadtag(char **args)
 	    if (p[len-1] == '\n')
 		p[len-1] = '\0';
 
-	    name = canonical(p, (ftp_anon ? "/" : "~"));
+	    name = canonical(p, NULL);
 	    file = basename(name);
 	    dir = dirname(name);
 	    tag_file(dir, file, size, type, 1);
