@@ -29,7 +29,6 @@ F tag files: tag regexp
 F fn_tag.cw: (fn_gettags) display tags list while downloading
 F fn_basic.cw: (fn_lcd) handle ~, ~user
 B functions.texi: fix bad next pointer in last section (to first command)
-B fn_tag.cw: (fn_gettags) segfault in freeing nodes?!
 B propagate errors (conn hung or eof?) up to fn_gettags
 F use `size' to determine unkown size (of links and tags)
 B display.cw: (disp_prompt_char) only returns after RET is pressed (but only
