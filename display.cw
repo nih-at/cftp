@@ -343,7 +343,7 @@ disp_prompt_char(void)
 	
 	tty_cbreak();
 	c = tty_readkey();
-	escape_disp(0);
+	/*escape_disp(0);*/
 }
 
 
