@@ -1,3 +1,17 @@
+2000-12-07  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* fntable.fn, mkfntab-c.m4, mkfntab-h.m4, mkfntexi.m4,
+	mkoptab-c.m4, mkoptab-h.m4, mkoptexi.m4, options.op: change quotes
+	to << and >>.
+
+	* configure.in: include comment in AC_DEFINE, obsoleting
+	acconfig.h.
+	don't check for hstrerror.
+
+	* getaddrinfo.c: move replacement h_errno declarartion from
+	sockets.c here.
+	(getaddrinfo): map h_errno values to return values.
+
 2000-12-06  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* getaddrinfo.c (getaddrinfo): avoid host name lookup for raw ip
