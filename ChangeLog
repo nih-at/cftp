@@ -1,8 +1,14 @@
 2001-12-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* util.c (set_file_blocking): new function.
+
 	* Makefile.am: don't create files with output redirection
 	directly, use temporary files and mv.
 
+	* ftp.c: (ftp_cat): adapt to be usable with both protocols.
+	* ftp.c (rftp_xfer_start, rftp_xfer_stop, rftp_xfer_read,
+	rftp_xfer_write, rftp_xfer_eof): new method functions.
+	
 2001-12-13  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c: garbage collect code not ENABLE_TRANSFER_RATE.
@@ -15,7 +21,7 @@
 
 	* ftp.c: declare all internal functions static.
 	* ftp.c (ftp_init, ftp_reconnect): make protocol independent.
-	* ftp.c (rftp_cat, rftp_fclose, rftp_retr, rftp_stor): change
+	* ftp.c (ftp_cat, rftp_fclose, rftp_retr, rftp_stor): change
 	server side files to void *.
 
 	* ftp.c (ftp_remember_host, ftp_remember_user): new functions.
