@@ -64,7 +64,7 @@ change_curdir(directory *dir)
 
     cmp = 1;
 
-    for (t=tags_s.next; t != &tags_s && cmp <= 0; t = t->next) {
+    for (t=tags_s.next; t != &tags_s && cmp >= 0; t = t->next) {
 	c = t->name[t->dirl];
 	t->name[t->dirl] = '\0';
 	cmp = strcmp(dir->path, t->name);
