@@ -12,7 +12,7 @@ F save dir listing
 * handle ftp servers unable to cd ~user (NetBSD)
 F show multiline responses
 F get .tar[.gz] files
-F optionally no bytecount at download / don't flood tty on fast connections
+F optionally no bytecount at download 
 F tag files (later download, save/load tags, detached download)
 F support for stor, dele
 F .cftprc 
@@ -24,6 +24,7 @@ F display.cw: (disp_redir) don't clear screen, overwrite
 P configure.in: add -posix for NeXTStep
 B tty.cw: cursor keys on linux console (broken)
 ----------------------------------------------- done
+F ftp.cw: (ftp_cat): update status at most once a second
 B main.cw, display.cw, ftp.cw: init_disp after opening connection
 
 Mar 30 (0.4)

@@ -449,6 +449,7 @@ int ftp_cat(FILE *fin, FILE *fout, long size);
 int
 ftp_cat(FILE *fin, FILE *fout, long size)
 {
+    time_t oldt, newt;
 	char buf[4096], fmt[4096], *l;
 	int n, err = 0;
 	long got = 0;
@@ -463,7 +464,10 @@ ftp_cat(FILE *fin, FILE *fout, long size)
 			if (fwrite(buf, 1, n, fout) != n)
 				err = 1;
 			got += n;
-			disp_status(fmt, got);
+			if ((newt=time(NULL)) != oldt) {
+			    disp_status(fmt, got);
+			    oldt = newt;
+			}
 		}
 	else
 		while ((l=ftp_gets(fin)) != NULL) {
@@ -471,7 +475,10 @@ ftp_cat(FILE *fin, FILE *fout, long size)
 			if (fprintf(fout, "%s\n", l) != n)
 				err = 1;
 			got += n;
-			disp_status(fmt, got);
+			if ((newt=time(NULL)) != oldt) {
+			    disp_status(fmt, got);
+			    oldt = newt;
+			}
 		}
 
 	if (err || ferror(fin) || ferror(fout))
