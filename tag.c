@@ -77,6 +77,8 @@ change_curdir(directory *dir)
     }
     curdir->top = curdir->cur = 0;
 
+    dir_sort(dir, opt_sort);
+
     curdir = dir;
     if (binding_state == bs_remote)
 	list = (struct list *)curdir;

@@ -32,6 +32,7 @@ struct direntry {
     char *link;
     long size;
     time_t mtime;
+    int pos;
     char type;
 };
 
@@ -42,6 +43,7 @@ struct directory {
     int size;
     struct direntry *line;
     char *path;
+    int sorted;
 };
 
 typedef struct directory directory;
@@ -51,6 +53,8 @@ typedef struct directory directory;
 void dir_free(directory *d);
 directory *get_dir(char *path);
 int dir_find(directory *dir, char *entry);
+
+void dir_sort(directory *dir, int sort_type);
 
 
 

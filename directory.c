@@ -25,8 +25,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "directory.h"
 #include "ftp.h"
+#include "bindings.h"
+#include "display.h"
 
 directory *curdir;
 
@@ -153,4 +156,128 @@ dir_find(directory *dir, char *entry)
 	i = -1;
 
     return i;
+}
+
+
+
+static int sort_unsorted(const void *k1, const void *k2);
+static int sort_name(const void *k1, const void *k2);
+static int sort_date(const void *k1, const void *k2);
+static int sort_name_r(const void *k1, const void *k2);
+static int sort_date_r(const void *k1, const void *k2);
+
+void
+dir_sort(directory *dir, int sort_type)
+{
+    static int (*func[])(const void *, const void *) = {
+	sort_unsorted, sort_name, sort_date, sort_name_r, sort_date_r
+    };
+
+    if (dir->sorted == sort_type)
+	return;
+
+    qsort(dir->line, dir->len, sizeof(direntry), func[sort_type]);
+    dir->sorted = sort_type;
+
+    return;
+}
+
+
+
+static int
+sort_unsorted(const void *k1, const void *k2)
+{
+    direntry *d1, *d2;
+
+    d1 = (direntry *)k1;
+    d2 = (direntry *)k2;
+
+    return d1->pos - d2->pos;
+}
+
+
+
+static int
+sort_name(const void *k1, const void *k2)
+{
+    direntry *d1, *d2;
+
+    d1 = (direntry *)k1;
+    d2 = (direntry *)k2;
+
+    return strcmp(d1->name, d2->name);
+}
+
+
+
+static int
+sort_date(const void *k1, const void *k2)
+{
+    time_t c;
+    direntry *d1, *d2;
+
+    d1 = (direntry *)k1;
+    d2 = (direntry *)k2;
+
+    c = d2->mtime - d1->mtime;
+    if (c == 0)
+	return strcmp(d1->name, d2->name);
+    else
+	return c;
+}    
+
+
+
+static int
+sort_name_r(const void *k1, const void *k2)
+{
+    direntry *d1, *d2;
+
+    d1 = (direntry *)k1;
+    d2 = (direntry *)k2;
+
+    return strcmp(d2->name, d1->name);
+}
+
+
+
+static int
+sort_date_r(const void *k1, const void *k2)
+{
+    time_t c;
+    direntry *d1, *d2;
+
+    d1 = (direntry *)k1;
+    d2 = (direntry *)k2;
+
+    c = d1->mtime - d2->mtime;
+    if (c == 0)
+	return strcmp(d2->name, d1->name);
+    else
+	return c;
+}    
+
+
+
+void
+opt_set_sort(int optval, int *optvar)
+{
+    int cur, i;
+    
+    if (optval < 0 || optval > 4)
+	return;
+
+    *optvar = optval;
+
+    if (curdir->sorted != optval) {
+	cur = curdir->line[curdir->cur].pos;
+	dir_sort(curdir, optval);
+	for (i=0; i<curdir->len; i++)
+	    if (curdir->line[i].pos == cur) {
+		cur = i;
+		break;
+	    }
+	if (binding_state == bs_remote)
+	    aux_scroll(cur-(win_lines/2), cur, 1);
+    }
 }

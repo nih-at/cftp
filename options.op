@@ -24,44 +24,46 @@ dnl  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 dnl option(name, short, variable, function, type, default, help, doku)
 
-option(mode, mo, opt_mode, opts_mode, c, 'i',
+option(mode, mo, opt_mode, opts_mode, c, 'i', ,
  {transfer mode for downloads},
  {Transfer mode used for downloads; set to `i' for image (binary), `a'
 for ascii.})
 
-option(tag-char, tc, opt_tagchar, NULL, c, '>',
+option(tag-char, tc, opt_tagchar, NULL, c, '>', ,
  {char to mark tagged files with},
  {Tagged files in the current directory are marked with this character
 in the first column.})
 
-option(hist-size, hs, ftp_hist_size, ftp_set_hist_size, i, 200,
+option(hist-size, hs, ftp_hist_size, ftp_set_hist_size, i, 200, ,
  {size of ftp command/response history},
  {Specifies how many lines of ftp commands and responses exchanged
 with the ftp server to remember.  Remembered lines can be displayed
 with @code{response}.  @xref{response}})
 
-option(beep, bp, opt_beep, NULL, b, 0,
+option(beep, bp, opt_beep, NULL, b, 0, ,
  {beep after some commands},
  {Tells cftp to beep after completing some commands, e. g. downloading
 tagged files.})
 
-option(scroll-limit, sl, opt_scrlimit, NULL, i, 0,
+option(scroll-limit, sl, opt_scrlimit, NULL, i, 0, ,
  {minimum overlap for scrolling lists},
  {Don't scroll lists if overlap of old and new positions is less than
 @code{scroll-limit} lines; make a full redraw instead.})
 
-option(emacs-status, es, opt_emacs_status, opt_set_status, b, 1,
+option(emacs-status, es, opt_emacs_status, opt_set_status, b, 1, ,
  {Emacs like status line},
  {If set, status line appears at the bottom of the screen -- right
 above the message area -- in standout mode.  If unset, it is displayed
 at top of screen, with blank lines surrounding the scrolling region.})
 
-option(pager, pg, opt_pager, NULL, s, "more",
+option(pager, pg, opt_pager, NULL, s, "more", ,
  {pager used to view files},
  {Pager used to view files.  Defaults to the value of the environment
 variable $PAGER if set, to @code{more} otherwise.})
 
-option(sort, so, opt_sort, NULL, b, 0,
+values(sort, {"none", "name", "date", "name-r", "date-r"})
+
+option(sort, so, opt_sort, opt_set_sort, e, 1, sort,
  {sort directory listings chronologically},
  {sort directory listings chronologically})
 dnl will be of type enum (none, name, date, name-reverse, date-reverse).

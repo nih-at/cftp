@@ -2,13 +2,16 @@ divert(-1)
 
 changequote({,})
 
-define(type,dnl t, (i)nt, (c)har, (s)tring, (b)oolean
-{ifelse({$1}, i, {$2}, {$1}, c, {$3}, {$1}, s, {$4}, {$5})})
+define(type,dnl t, (i)nt, (c)har, (s)tring, (b)oolean (e)num
+{ifelse({$1}, i, {$2}, {$1}, c, {$3}, {$1}, s, {$4}, {$1}, b, {$5}, {$6})})
 
-define(option,dnl name, short, variable, function, type, default, help, doku
+define(option,dnl name, short, variable, function, type, default, values, help, doku
 {divert(0)dnl
-extern type({$5}, {int }, {int }, {char *}, {int }){$3};
+extern type({$5}, {int }, {int }, {char *}, {int }, {int }){$3};
 divert(-1)})
+
+define(values,dnl name, values
+)
 
 
 divert(0)dnl
@@ -23,6 +26,7 @@ divert(0)dnl
 #define OPT_CHR 1
 #define OPT_STR 2
 #define OPT_BOOL 3
+#define OPT_ENUM 4
 
 union optvar {
     int *i;
@@ -35,6 +39,7 @@ struct uoption {
     int type;
     union optvar var;
     void (*func)();
+    char **values;
 };
 
 extern struct uoption option[];}

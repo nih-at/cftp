@@ -59,8 +59,10 @@ read_dir(FILE *f)
 	    else
 		list = realloc(list, sizeof(direntry)*sz);
 	}
-	if (parse_unix(list+n, line) == 0)
+	if (parse_unix(list+n, line) == 0) {
+	    list[n].pos = n;
 	    n++;
+	}
     }
 
     if (n == 0) {
@@ -72,13 +74,11 @@ read_dir(FILE *f)
 	n = 1;
     }
     else {
-	if (opt_sort)
-	    qsort(list, n, sizeof(direntry), dir_sort_date);
-
 	dir->line = malloc(sizeof(direntry)*n);
 	for (i=0; i<n; i++)
 	    dir->line[i] = list[i];
     }
+    dir->sorted = 0;
     dir->len = n;
     dir->size = sizeof(struct direntry);
     dir->top = dir->cur = 0;
@@ -208,22 +208,3 @@ parse_time(char *date)
 
     return mktime(&tm);
 }
-
-
-
-static int
-dir_sort_date(const void *k1, const void *k2)
-{
-    time_t c;
-    direntry *d1, *d2;
-
-    d1 = (direntry *)k1;
-    d2 = (direntry *)k2;
-
-    c = d2->mtime - d1->mtime;
-    if (c == 0)
-	return strcmp(d1->name, d2->name);
-    else
-	return c;
-}    
-

@@ -12,13 +12,13 @@ ifelse(eval(len({$1})<4), 1, {	})dnl
 ifelse(eval(len({$1})<12), 1, {	})dnl
 	{$2}})
 
-define(option,dnl name, short, variable, function, type, default, help, doku
+define(option,dnl name, short, variable, function, type, default, values, help, doku
 {divert(0)dnl
-menuentry({$1}, {$7})
+menuentry({$1}, {$8})
 divert(1)dnl
 @c ---------------------------------------------------------------------
 @node {$1}
-@section {$1} -- {$7}
+@section {$1} -- {$8}
 @cindex {$1}
 
 @itemize @bullet
@@ -30,7 +30,7 @@ Short: {$2}
 Default: {$6}
 @end itemize
 
-{$8}
+{$9}
 
 divert(-1)})
 

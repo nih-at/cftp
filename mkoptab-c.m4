@@ -23,19 +23,31 @@ struct uoption {
     void (*func)();
 };
 
-define(type,dnl t, (i)nt, (c)har, (s)tring, (b)oolean
-{ifelse({$1}, i, {$2}, {$1}, c, {$3}, {$1}, s, {$4}, {$5})})
+define(type,dnl t, (i)nt, (c)har, (s)tring, (b)oolean, (e)num
+{ifelse({$1}, i, {$2}, {$1}, c, {$3}, {$1}, s, {$4}, {$1}, b, {$5}, {$6})})
 
-define(option,dnl name, short, variable, function, type, default, help, doku
+define(option,dnl name, short, variable, function, type, default, values, help, doku
 {divert(1)dnl
-  "{$1}" , "{$2}", "{$7}",
-    type({$5}, OPT_INT, OPT_CHR, OPT_STR, OPT_BOOL), (void *)&{$3}, {$4},
+changequote(,)  { changequote({,})dnl
+"{$1}" , "{$2}", "{$8}",
+    type({$5}, OPT_INT, OPT_CHR, OPT_STR, OPT_BOOL, OPT_ENUM), dnl
+(void *)&{$3}, {$4}, ifelse({$5}, e, openum_{$7}, NULL) dnl
+changequote(,)},
+changequote({,})dnl
 divert(0)dnl
 type({$5}, {int }, {int }, {char *}, {int }){$3} = {$6};
 ifelse({$4}, NULL, , extern void {$4}{()};
 )
 divert(-1)})
 
+define(values,dnl name, values
+{divert(0)dnl
+char *openum_{$1}[] = dnl
+changequote(,){ changequote({,})dnl
+{$2}, dnl
+changequote(,)NULL };
+changequote({,})dnl
+divert(-1)})
 
 divert(0)dnl
 /*

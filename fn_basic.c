@@ -461,8 +461,31 @@ void fn_set(char **args)
 	    disp_status("%s set to %s", option[i].name,
 			(*(option[i].var.i) ? "on" : "off"));
 	break;
-    }
 
+    case OPT_ENUM:
+	if (value) {
+	    for (ival=0; option[i].values[ival]; ival++) {
+		if (strcasecmp(value, option[i].values[ival]) == 0)
+		    break;
+	    }
+	    if (option[i].values[ival] == NULL && !rc_inrc) {
+		disp_status("unknown value %s for option %s",
+			    value, option[i].name);
+		break;
+	    }
+
+	    if (option[i].func)
+		option[i].func(ival, option[i].var.i);
+	    else
+		*(option[i].var.i) = ival;
+	}
+
+	if (!rc_inrc)
+	    disp_status("%s set to %s", option[i].name,
+			option[i].values[(*(option[i].var.i))]);
+	break;
+    }
+    
     if (line)
 	free(line);
 
