@@ -75,7 +75,7 @@ aux_view(char *name){
 	int err;
 	FILE *f;
 	
-	if ((f=disp_open(0)) == NULL)
+	if ((f=disp_open(-1)) == NULL)
 		return -2;
 
 	err = ftp_retr(name, f, 0, 'a');
