@@ -52,7 +52,9 @@ main(int argc, char **argv)
 	
 	@<process command line arguments@>
 	
-	init_disp();
+	if (init_disp() < 0)
+	    exit(1);
+	    
 	signal(SIGINT, sig_end);
 	signal(SIGHUP, sig_end);
 	signal(SIGTERM, sig_end);

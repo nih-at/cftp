@@ -22,6 +22,7 @@ P display.cw: check for missing capabilities
 B tty.cw: (tty_readkey) don't discard chars by failed multibyte code
 F display.cw: (disp_redir) don't clear screen, overwrite
 ----------------------------------------------- done
+B main.cw: (main) crashes when TERM is unknown -- fixed
 B tty.cw: check for window size & size change
 B display.cw (escape_disp, reenter_disp) don't redraw if disp_quiet
 B main.cw: doesn't suspend on SIG_TSTP
