@@ -87,4 +87,10 @@ option(wrap, wa, opt_wrap, NULL, b, 1, ,
  <<wrap around bottom/top when scrolling>>,
  <<If set, scrolling wraps around bottom/top when scrolling.>>)
 
+option(user-anon-passwd, ua, opt_user_anon_passwd, NULL, b, 0,
+ <<whether to send user name as anonymous password>>,
+ <<If set, the username (and, if available, FQDN) is sent as password
+for anonymous.  If unset, ``anonymous@'' is sent instead.  Default is
+unset.>>)
+
 endall

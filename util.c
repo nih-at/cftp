@@ -31,6 +31,7 @@
 
 #include "directory.h"
 #include "ftp.h"
+#include "options.h"
 #include "util.h"
 #include "url.h"
 
@@ -178,30 +179,34 @@ get_anon_passwd(void)
     char pass[8192], host[1024], domain[1024];
     struct passwd *pwd;
 
-    pwd = getpwuid(getuid());
+    if (!opt_user_anon_passwd)
+	return strdup("anonymous@");
+    else {
+	pwd = getpwuid(getuid());
 
-    if (pwd)
-	sprintf(pass, "%s@", pwd->pw_name);
-    else
-	strcpy(pass, "unknown@");
-
-    gethostname(host, 1023);
-#ifdef HAVE_GETDOMAINNAME
-    getdomainname(domain, 1023);
-#else
-    domain[0] = '\0';
-#endif
-
-    if (strcmp(domain, "(none)") != 0 && domain[0] != '\0') {
-	if (domain[0] != '.')
-	    sprintf(pass+strlen(pass), "%s.%s", host, domain);
+	if (pwd)
+	    sprintf(pass, "%s@", pwd->pw_name);
 	else
-	    sprintf(pass+strlen(pass), "%s%s", host, domain);
+	    strcpy(pass, "unknown@");
+	
+	gethostname(host, 1023);
+#ifdef HAVE_GETDOMAINNAME
+	getdomainname(domain, 1023);
+#else
+	domain[0] = '\0';
+#endif
+	
+	if (strcmp(domain, "(none)") != 0 && domain[0] != '\0') {
+	    if (domain[0] != '.')
+		sprintf(pass+strlen(pass), "%s.%s", host, domain);
+	    else
+		sprintf(pass+strlen(pass), "%s%s", host, domain);
+	}
+	else if (strchr(host, '.'))
+	    strcat(pass, host);
+	
+	return strdup(pass);
     }
-    else if (strchr(host, '.'))
-	strcat(pass, host);
-    
-    return strdup(pass);
 }
 
 

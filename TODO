@@ -1,4 +1,3 @@
-* fix detection of ospeed declaration in <termcap.h>
 * declare replacement functions (to avoid warnings)
 * find bug when viewing or piping rfc-index.txt
 * host specific rc file sections
@@ -6,7 +5,7 @@
 * use mkhoststr in show-url
 * rewrite parse_url
 * fix REFERENCES and include in dist
-* Makfile.am: fix rules that create files with > (use tmp file)
+* Makefile.am: fix rules that create files with > (use tmp file)
 * fix -Wall warnings (option and function array, termcap functions, getopt.c)
 * fix compile on HPUX (struct sockaddr)
 * get-tags: recoginze global failure (e. g. connection lost) and abort

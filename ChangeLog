@@ -1,3 +1,10 @@
+2001-11-18  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* options.op: new option ``user_anon_passwd''.
+	* util.c (get_anon_passwd): handle new option.
+
+	* getdomainname.c: removed.
+
 2001-10-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ftp.c (ftp_cat): rewrite error detection/reporting:
