@@ -37,6 +37,8 @@ F fn_basic.cw (fn_help) help for `f'unktions, `k'eys, and `o'ptions
 B all output in first line outside screen
 B report resolv error, not errno
 ----------------------------------------------- done
+P configure.in: check for ncurses
+B configure.in: abort if no termcap can be found
 B ftp.cw: (ftp_cat) stop writing when write error
 
 Jul 30 (0.5b)

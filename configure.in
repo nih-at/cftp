@@ -38,6 +38,14 @@ if test "$TERMCAP" = none
 then
 	AC_CHECK_LIB(curses, tgetent, [TERMCAP=curses])
 fi
+if test "$TERMCAP" = none
+then
+	AC_CHECK_LIB(ncurses, tgetent, [TERMCAP=ncurses])
+fi
+if test "$TERMCAP" = none
+then
+	AC_MSG_ERROR([can't find termcap (emulation) library])
+fi
 LIBS="$LIBS -l$TERMCAP"
 
 AC_CHECK_LIB(socket, main)
