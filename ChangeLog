@@ -1,3 +1,7 @@
+2000-01-13  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* fn_guile.c (catcher): display error instead of evaled string.
+
 2000-01-11  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* fn_guile.c (fn_guile, execute_guile, wrapper, catcher):  use

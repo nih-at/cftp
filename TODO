@@ -1,4 +1,4 @@
-b catch guile exceptions
+b guile: format error in catcher
 b automake: cftp depends on SCRIPTING_OBJS
 
 * ^[[O triggers bindings for left and O

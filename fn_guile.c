@@ -66,9 +66,15 @@ static SCM wrapper(void *data, SCM jmpbuf)
 
 static SCM catcher(void *data, SCM tag, SCM throw_args)
 {
-    strcpy(guile_errstr, "ERROR: ");
-    strncat(guile_errstr, (char *)data, 8180);
+    char *s;
+    int len;
+    
     guile_error = 1;
+    strcpy(guile_errstr, "ERROR: ");
+    /* strncat(guile_errstr, (char *)data, 8180);*/
+    s = scm2cstring(throw_args, &len);
+    strncat(guile_errstr, s, 8180);
+    free(s);
     
     return SCM_BOOL_F;
 }
