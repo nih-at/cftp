@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.11 2001/12/17 05:46:28 dillo Exp $
+  $NiH: sftp.c,v 1.12 2001/12/17 20:52:30 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001 Dieter Baron
@@ -32,6 +32,7 @@
 #include <sys/wait.h>
 
 #include <errno.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -774,7 +775,15 @@ _sftp_start_ssh(int fdin, int fdout)
 {
     char *args[20];
     int n;
-    
+
+    signal(SIGPIPE, SIG_DFL);
+#if 0
+    if (setpgid(0, getpid()) == -1) {
+	fprintf(stderr, "%s<child>: warning: cannot setpgid: %s\n",
+		prg, strerror(errno));
+    }
+#endif
+
     close(0);
     close(1);
 
@@ -791,7 +800,7 @@ _sftp_start_ssh(int fdin, int fdout)
     args[n++] = "-2";
     args[n++] = "-s";
     if (ftp_prt()) {
-	args[n++] = "-P";
+	args[n++] = "-p";
 	args[n++] = ftp_prt();
     }
     if (ftp_user()) {
