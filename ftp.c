@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.79 2003/05/13 15:46:08 dillo Exp $
+  $NiH: ftp.c,v 1.80 2003/05/13 16:10:24 dillo Exp $
 
   ftp.c -- ftp protocol functions
   Copyright (C) 1996-2002 Dieter Baron
@@ -1108,7 +1108,9 @@ _ftp_update_transfer(struct _ftp_transfer_stats *tr, long got, int secs)
 
     stsec = secs - tr->stall_sec;
     if (stsec > opt_stall) {
-	disp_status(DISP_ERROR, "stalled for more than %d seconds, aborting.");
+	disp_status(DISP_ERROR,
+		    "stalled for more than %d seconds, aborting.",
+		    opt_stall);
 	sig_intr = 1;
     }
     else {
