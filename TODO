@@ -25,6 +25,7 @@ F readdir.cw: support other dir listing formats (vms, dos, descritpive, ...)
 F tag files: edit/clear tags, detached download
 F tag: if tagged is directory, try .tar.gz, .tar.Z, .tar
 F remember home dir, use in disp_header
+F tag files: tag regexp
 ----------------------------------------------- done
 May 6 (0.5)
 F tag files: save/load tags
