@@ -1,5 +1,5 @@
 /*
-  $NiH: main.c,v 1.44 2001/12/11 14:45:33 dillo Exp $
+  $NiH: main.c,v 1.45 2001/12/13 21:14:51 dillo Exp $
 
   main -- main function
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -58,7 +58,11 @@ int readrc(char **userp, char **passp, char **hostp, char **portp,
 
 char *usage[] = {
 	"{-h|-V}",
-	"[-p port] [-u user] [-s] {host|alias} [directory]",
+	"[-p port] [-u user] "
+#ifdef USE_SFTP
+	 "[-s] "
+#endif
+	 "{host|alias} [directory]",
 	"url",
 	NULL };
 
@@ -68,9 +72,11 @@ char help[] = "\
   -h, --help        display this help message\n\
   -V, --version     display version number\n\
   -p, --port PORT   specify port\n\
-  -u, --user USER   specify user\n\
-  -s, --sftp        use sftp\n\
-\n\
+  -u, --user USER   specify user\n"
+#ifdef USE_SFTP
+"  -s, --sftp        use sftp\n"
+#endif
+"\n\
 Report bugs to <dillo@giga.or.at>.\n";
 
 char version_tail[] = "\
@@ -80,14 +86,20 @@ You may redistribute copies of\n\
 cftp under the terms of the GNU General Public License.\n\
 For more information about these matters, see the files named COPYING.\n";
 
+#ifdef USE_SFTP
 #define OPTIONS	"hVp:u:s"
+#else
+#define OPTIONS	"hVp:u:"
+#endif
 
 struct option options[] = {
     { "help",      0, 0, 'h' },
     { "version",   0, 0, 'V' },
     { "port",      1, 0, 'p' },
     { "user",      1, 0, 'u' },
+#ifdef USE_SFTP
     { "sftp",      1, 0, 's' },
+#endif
     { NULL,        0, 0, 0   }
 };
 
@@ -145,9 +157,11 @@ main(int argc, char **argv)
 	case 'u':
 	    user = strdup(optarg);
 	    break;
+#ifdef USE_SFTP
 	case 's':
 	    ftp_proto = 1;
 	    break;
+#endif
 	case 'V':
 	    printf("%s\n", version);
 	    fputs(version_tail, stdout);
