@@ -139,3 +139,70 @@ tag_do(filetags *root, char *name, int flag, filetags (*mem)())
     }
     return n;
 }
+
+
+@ alloc/dealloc functions.
+
+@d<local prototypes@>
+filetags *tag_newdir(filetags *dummy);
+filetags *tag_freedir(filetags *d);
+filetags *tag_newfile(filetags *dummy);
+filetags *tag_freefile(filetags *f);
+
+@u
+filetags *
+tag_newdir(filetags *dummy)
+{
+    dirtags *d = (dirtags *)malloc(sizeof(dirtags));
+
+    if (d) {
+	d->next = NULL;
+	d->tags = tag_newfile(NULL);
+	d->name = NULL;
+    }
+    
+    return (filetags *)d;
+}
+
+filetags *
+tag_freedir(filetags *f)
+{
+    dirtags *d = (dirtags *)f;
+    filetags *g;
+
+    f=d->tags;
+    while (f) {
+	g=f;
+	f=f->next;
+	free(g->name);
+	free(g);
+    }
+    free(d->dir);
+    free(d);
+
+    return NULL;
+}
+
+filetags *
+tag_newfile(filetags *dummy)
+{
+    filetags *f = (filetags *)malloc(sizeof(filetags));
+
+    if (f) {
+	f->name = NULL;
+	f->next = NULL;
+    }
+
+    return f;
+}
+
+filetags *
+tag_freefile(filetags *f)
+{
+    if (f) {
+	free(f->name);
+	free(f);
+    }
+
+    return NULL;
+}
