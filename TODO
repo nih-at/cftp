@@ -2,7 +2,7 @@
 ! sftp: lost connection not reported
 ! sftp: ^c kills ssh subprocess (how to avoid?!)
 ! test ftp_cat error cases
-! allow reading response if initial connect/login failes
+! allow reading response if initial connect/login fails
 ! stop when local disk is full during download
 - move ftp_gets to util.c and rename
 - move history from ftp.c
@@ -37,4 +37,4 @@
 * <local> mode
 * decent documentation
 * segfault while tagging on GNU/Linux
-* try again if connect/login failes
+* try again if connect/login fails
