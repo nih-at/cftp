@@ -1073,49 +1073,17 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size, int upload)
     char buf[4096], fmt[4096];
     int c, n, err;
     long got;
-#ifdef ENABLE_TRANSFER_RATE
-    struct itimerval itv;
-    long cur[4];
-    int old_alarm;
-#else
     time_t oldt, newt;
-#endif
 
-    if (size >= 0) {
-#ifdef ENABLE_TRANSFER_RATE
-	sprintf(fmt, "transferred %%ld/%ld "
-		"(total: %%.2fkb/s, current: %%.2fkb/s)",
-		size);
-#else
+    if (size >= 0)
 	sprintf(fmt, "transferred %%ld/%ld", size);
-#endif
-    }
-    else {
-#ifdef ENABLE_TRANSFER_RATE
-	strcpy(fmt, "transferred %ld (total: %%.2fkb/s, current: %%.2fkb/s)");
-#else
+    else
 	strcpy(fmt, "transferred %ld");
-#endif
-    }
 
     got = start;
     signal(SIGINT, sig_remember);
 
-#ifdef ENABLE_TRANSFER_RATE
-    cur[0] = cur[1] = cur[2] = cur[3] = 0;
-    old_alarm = sig_alarm = sig_intr = 0;
-    itv.it_value.tv_sec = itv.it_interval.tv_sec = 1;
-    itv.it_value.tv_usec = itv.it_interval.tv_usec = 0;
-    setitimer(ITIMER_REAL, &itv, NULL);
-#if 0
-    if ((flags=fcntl(fileno(fin), F_GETFL, 0)) != -1) {
-	flags |= O_NONBLOCK;
-	fcntl(fileno(fin), F_SETFL, flags);
-    }
-#endif
-#else
     oldt = 0;
-#endif
 
     if (ftp_curmode == 'i')
 	while ((n=fread(buf, 1, 4096, fin)) > 0) {
@@ -1125,18 +1093,10 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size, int upload)
 		break;
 	    }
 	    got += n;
-#ifdef ENABLE_TRANSFER_RATE
-	    if (old_alarm != sig_alarm) {
-		_ftp_update_transfer(fmt, got-start, cur,
-				     old_alarm, sig_alarm);
-		old_alarm = sig_alarm;
-	    }
-#else
 	    if ((newt=time(NULL)) != oldt) {
 		disp_status(fmt, got);
 		oldt = newt;
 	    }
-#endif
 	}
     else
 	while ((c=getc(fin)) != EOF) {
@@ -1154,26 +1114,13 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size, int upload)
 	    if (ferror(fout))
 		break;
 
-#ifdef ENABLE_TRANSFER_RATE
-	    if (old_alarm != sig_alarm) {
-		_ftp_update_transfer(fmt, got-start, cur,
-				     old_alarm, sig_alarm);
-		old_alarm = sig_alarm;
-	    }
-#else
 	    if (got%512 == 0 && (newt=time(NULL)) != oldt) {
 		disp_status(fmt, got);
 		oldt = newt;
 	    } 
-#endif
 	}
 
     signal(SIGINT, sig_end);
-#ifdef ENABLE_TRANSFER_RATE
-    itv.it_value.tv_sec = itv.it_interval.tv_sec = 0;
-    itv.it_value.tv_usec = itv.it_interval.tv_usec = 0;
-    setitimer(ITIMER_REAL, &itv, NULL);
-#endif
 
     if (ferror(fin) || sig_intr) {
 	errno = 0;
