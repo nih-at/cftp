@@ -1,5 +1,8 @@
 1998-10-07  Wiz  <wiz@danbala.tuwien.ac.at>
 
+	* fn_select.c (fn_reload): reload logically current dir, not
+	physically current.
+
 	* bindings.desc, fn_basic.c (fn_showname): new option -l: show
 	link target.
 

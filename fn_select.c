@@ -268,7 +268,7 @@ fn_reload(char **args)
 
     name = strdup(curdir->line[curdir->cur].name);
 
-    d = ftp_cd(ftp_pcwd, 1);
+    d = ftp_cd(curdir->path, 1);
     if (d == NULL) {
 	free(name);
 	return;
