@@ -12,7 +12,7 @@ noinst_PROGRAMS=mkbind
 cftp_SOURCES=	bindings.c directory.c display.c fn_basic.c fn_bind.c \
 	fn_scroll.c fn_select.c fn_tag.c fntable.c ftp.c functions.c \
 	keys.c list.c loop.c main.c options.c rc.c readdir.c readrc.c \
-	signals.c sockets.c status.c tag.c tty.c url.c util.c version.c
+	signals.c sockets.c status.c tag.c tty.c url.c util.c
 
 mkbind_SOURCES=	fn_bind.c functions.c mkbind.c keys.c rc.c
 

@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: main.c,v 1.43 2001/12/11 14:37:37 dillo Exp $
 
   main -- main function
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -34,7 +34,7 @@
 #include <getopt.h>
 #include <unistd.h>
 
-
+#include "config.h"
 #include "directory.h"
 #include "display.h"
 #include "loop.h"
@@ -90,7 +90,7 @@ struct option options[] = {
 };
 
 char *prg;
-extern char version[];
+char version[] = PACKAGE " " VERSION;
 
 
 
