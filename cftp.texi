@@ -143,7 +143,7 @@ as well as cursor keys.
 @item @kbd{cursor up}    @tab @kbd{k}   @tab @kbd{^p}  @tab @code{up}
 @item @kbd{cursor down}  @tab @kbd{j}   @tab @kbd{^n}  @tab @code{down}
 @item @kbd{cursor left}  @tab @kbd{h}   @tab @kbd{^b}  @tab @code{leave}
-@item @kbd{curosr right} @tab @kbd{l}   @tab @kbd{^f}  @tab @code{enter/get}
+@item @kbd{cursor right} @tab @kbd{l}   @tab @kbd{^f}  @tab @code{enter/get}
 @item @kbd{page up}      @tab @kbd{b}   @tab           @tab @code{page-up}
 @item @kbd{page down}    @tab @kbd{spc} @tab           @tab @code{page-down}
 @end multitable
