@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS=	no-dependencies foreign
 
+MAKEINFO = makeinfo --no-validate
+
 LDADD=	@LIBOBJS@
 
 bin_PROGRAMS=	cftp

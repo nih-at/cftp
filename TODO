@@ -15,6 +15,7 @@ F fn_tag.cw: (fn_gettags) display tags list while downloading
 F use `size' to determine unkown size (of links and tags)
 F quiet if in background
 F automatically deidle connection
+B functions.texi: fix bad next pointer in last section (to first command)
 ---------------------------------------------------------------- till beta
 F fn_search
 * handle closed connections due to timeout
@@ -28,12 +29,12 @@ F display.cw: (disp_redir) don't clear screen, overwrite
 P configure.in: add -posix for NeXTStep
 F tag files: tag regexp
 F fn_basic.cw: (fn_lcd) handle ~, ~user
-B functions.texi: fix bad next pointer in last section (to first command)
 B propagate errors (conn hung or eof?) up to fn_gettags
 B display.cw: (disp_prompt_char) only returns after RET is pressed (but only
 	reads first char)
 F cftp.texi: introduction, invoking, cftprc
 ----------------------------------------------- done
+B Makefile.am: call makeinfo with --no-validate
 F fn_basic.cw: (fn_deidle) new function
 F ftp.cw: (ftp_noop) new function
 B ftp.cw: (ftp_list) don't call read_dir when ftp_accept failed
