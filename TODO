@@ -7,10 +7,14 @@
 ! sftp: lost connection not reported
 ! fix --disable-sftp
 ! test ftp_cat error cases
+! sftp: log error packets
+- avoid magic numbers in sftp xfer
 - finish _sftp_log_packet
 - move ftp_gets to util.c and rename
 - move history from ftp.c
 - add rcsid to m4 created files
+- display stalled time in m:s
+- rewrite sftp not to use stdio (non-blocking i/o using stdio is a PitA)
 
 * ftp.univie.ac.at: abort hoses connection state
 * sftp options: ssh command & flags, sftp server filename
