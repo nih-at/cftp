@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.10 2001/12/14 08:11:00 dillo Exp $
+  $NiH: sftp.c,v 1.11 2001/12/17 05:46:28 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001 Dieter Baron
@@ -47,8 +47,9 @@
 
 
 #define SFTP_MAX_PACKET_SIZE	32*1024
-#define SFTP_HEADER_LEN		13	/* no of bytes befor data in a
+#define SFTP_HEADER_LEN		13	/* no of bytes before data in a
 					   SSH_FXP_DATA packet */
+#define SFTP_DATA_LEN		4096	/* data length used for read/write */
 
 #define SFTP_FL_LOG		0x1
 #define SFTP_FL_IS_PATH		0x2
@@ -75,6 +76,7 @@ struct sftp_file {
     int poff;		/* offset within current packet */
     int doff;		/* offset to unreturned data */
     int dend;		/* end of data within current packet */
+    int woff;		/* offset to length in write packet */
 };
 
 
@@ -112,6 +114,7 @@ static void _sftp_put_uint32(unsigned char *p, unsigned int i);
 static void _sftp_put_uint64(unsigned char *p, unsigned long long i);
 static directory *_sftp_read_dir(struct handle *hnd);
 static void _sftp_start_ssh(int fdin, int fdout);
+int _sftp_start_write(struct sftp_file *f, int len);
 static char *_sftp_strerror(int error);
 
 
@@ -201,6 +204,10 @@ extern char *prg;
 /* XXX: shared with ftp.c */
 
 extern FILE *conin, *conout;
+
+#ifdef DEBUG_XFER
+static FILE *flog;
+#endif
 
 
 
@@ -822,7 +829,7 @@ sftp_close(void)
 		disp_status("cannot wait on ssh (pid %d): %s",
 			    (int)_sftp_ssh_pid, strerror(errno));
 	    else
-		fprintf(stderr, "%s: cannot wait on ssh (pid %d): %s",
+		fprintf(stderr, "%s: cannot wait on ssh (pid %d): %s\n",
 			prg, (int)_sftp_ssh_pid, strerror(errno));
 	    return -1;
 	}
@@ -830,7 +837,7 @@ sftp_close(void)
 	    if (disp_active)
 		disp_status("ssh exited with %d", WEXITSTATUS(status));
 	    else
-		fprintf(stderr, "%s: ssh exited with %d",
+		fprintf(stderr, "%s: ssh exited with %d\n",
 			prg, WEXITSTATUS(status));
 	    return -1;
 	}
@@ -839,7 +846,7 @@ sftp_close(void)
 		disp_status("ssh exited due to signal %d",
 			    WTERMSIG(status));
 	    else
-		fprintf(stderr, "%s: ssh exited due to signal %d",
+		fprintf(stderr, "%s: ssh exited due to signal %d\n",
 			prg, WTERMSIG(status));
 	    return -1;
 	}
@@ -855,6 +862,11 @@ sftp_send_init(int proto_version)
 {
     int len;
     
+#ifdef DEBUG_XFER
+    flog = fopen("cftp.log", "w");
+    setvbuf(flog, NULL, _IOLBF, 0);
+#endif
+
     _sftp_put_uint32(_sftp_buffer, proto_version);
 
     if (_sftp_put_packet(conout, SSH_FXP_INIT, _sftp_buffer, 4,
@@ -970,13 +982,17 @@ sftp_stor(char *file, int mode)
     struct handle *hnd;
     struct sftp_file *f;
 
-    if ((hnd=sftp_file_open(file, SSH_FXF_CREAT|SSH_FXF_TRUNC)) == NULL)
-	return NULL;
     if ((f=malloc(sizeof(*f))) == NULL)
 	return NULL;
 
+    if ((hnd=sftp_file_open(file, SSH_FXF_WRITE|SSH_FXF_CREAT|SSH_FXF_TRUNC))
+	== NULL) {
+	free(f);
+	return NULL;
+    }
+
     f->hnd = hnd;
-    f->flags = SFTP_FFL_READ;
+    f->flags = SFTP_FFL_WRITE;
     f->off = 0;
 
     return f;
@@ -1143,8 +1159,10 @@ sftp_xfer_read(void *buf, size_t nbytes, void *file)
 		if (type == SSH_FXP_STATUS
 		    && _sftp_get_uint32(_sftp_buffer+9) == SSH_FX_EOF)
 		    f->state = SFTP_FS_EOF;
-		else
+		else {
+		    _sftp_log_packet(1, type, _sftp_buffer+5, f->pend-5);
 		    f->state = SFTP_FS_ERROR;
+		}
 		break;
 	    }
 
@@ -1157,7 +1175,7 @@ sftp_xfer_read(void *buf, size_t nbytes, void *file)
 	    nret += n;
 
 	    if (f->doff >= f->dend)
-		sftp_send_read(f, 4096);
+		sftp_send_read(f, SFTP_DATA_LEN);
 	}
     }
 
@@ -1173,21 +1191,17 @@ sftp_xfer_start(void *file)
 
     f = file;
 
-    if (f->flags & SFTP_FFL_WRITE) {
-	/* XXX: implement */
-	return -1;
-    }
+    if (f->flags & SFTP_FFL_WRITE)
+	_sftp_start_write(f, SFTP_DATA_LEN);
     else {
-	/* reading */
-
-	if (sftp_send_read(f, 4096) < 0)
+	if (sftp_send_read(f, SFTP_DATA_LEN) < 0)
 	    return -1;
-
-	set_file_blocking(fileno(conin), 0);
-	set_file_blocking(fileno(conout), 0);
-
-	return 0;
     }
+    
+    set_file_blocking(fileno(conin), 0);
+    set_file_blocking(fileno(conout), 0);
+
+    return 0;
 }
 
 
@@ -1195,11 +1209,55 @@ sftp_xfer_start(void *file)
 int
 sftp_xfer_stop(void *file, int aborting)
 {
+    struct sftp_file *f;
+    int n, type;
+
     set_file_blocking(fileno(conin), 1);
     set_file_blocking(fileno(conout), 1);
 
+    f = file;
+
     if (aborting) {
-	/* XXX: finish request/response cycle */
+	/* don't send packet unless already begun */
+	if (f->state == SFTP_FS_SEND && f->poff == 0)
+	    f->state == SFTP_FS_EOF;
+    }
+    
+    if ((f->flags & SFTP_FFL_WRITE
+	 && f->state == SFTP_FS_SEND
+	 && f->doff < f->dend)) {
+	/* fix up incomplete write packet */
+	n = f->doff - (f->woff+4);
+	if (n == 0)
+	    f->state = SFTP_FS_EOF;
+	else {
+	    f->pend = f->doff;
+	    _sftp_put_uint32(_sftp_buffer, f->pend-4);
+	    _sftp_put_uint32(_sftp_buffer+f->woff, n);
+	}
+    }
+
+    while (f->state == SFTP_FS_SEND) {
+	n = _sftp_fwrite(f);
+
+	if (n < 0)
+	    return -1;
+    }
+    while (f->state == SFTP_FS_RECEIVE) {
+	n = _sftp_fread(f);
+
+	if (n < 0)
+	    return -1;
+
+	if (f->pend != 0 && f->poff >= f->pend) {
+	    f->state = SFTP_FS_EOF;
+	    type = _sftp_buffer[4];
+	    if (type == SSH_FXP_STATUS
+		&& _sftp_get_uint32(_sftp_buffer+9) != SSH_FX_OK) {
+		_sftp_log_packet(1, type, _sftp_buffer+5, f->pend-5);
+		return -1;
+	    }
+	}
     }
     
     return 0;
@@ -1210,8 +1268,121 @@ sftp_xfer_stop(void *file, int aborting)
 int
 sftp_xfer_write(void *buf, size_t nbytes, void *file)
 {
-    /* XXX: implement */
-    return -1;
+    struct sftp_file *f;
+    int n, type, nret;
+
+    f = file;
+    nret = 0;
+
+#ifdef DEBUG_XFER
+    fprintf(flog, "xfer_write entered\n");
+#endif
+
+    while (nret < nbytes) {
+#ifdef DEBUG_XFER
+    fprintf(flog, "xfer_write top: state: %d, nret %d\n",
+		f->state, nret);
+#endif
+	switch (f->state) {
+	case SFTP_FS_EOF:
+	case SFTP_FS_ERROR:
+	    if (nret) {
+#ifdef DEBUG_XFER
+		fprintf(flog, "xfer_write returned %d: state: %d\n",
+			nret, f->state);
+		return nret;
+#endif
+	    }
+	    else {
+#ifdef DEBUG_XFER
+		fprintf(flog, "xfer_write returned -1: state: %d\n",
+			f->state);
+#endif
+		return -1;
+	    }
+	    
+	case SFTP_FS_SEND:
+	    n = f->dend - f->doff;
+	    if (n > nbytes-nret)
+		n = nbytes-nret;
+
+	    memcpy(_sftp_buffer+f->doff, buf, n);
+	    f->doff += n;
+	    nret += n;
+
+#ifdef DEBUG_XFER
+	    fprintf(flog, "xfer_write: copied %d bytes, nret: %d\n", n, nret);
+#endif
+
+	    if (f->doff >= f->dend) {
+#ifdef DEBUG_XFER
+		fprintf(flog, "xfer_write: sending packet: "
+			"poff: %d, pend: %d\n",
+			f->poff, f->pend);
+#endif
+		
+		n = _sftp_fwrite(f);
+
+#ifdef DEBUG_XFER
+		fprintf(flog, "xfer_write: %d bytes sent\n", n);
+#endif
+
+		if (n < 0) {
+		    f->state = SFTP_FS_ERROR;
+		    break;
+		}
+		else if (f->state == SFTP_FS_SEND) {
+#ifdef DEBUG_XFER
+		    fprintf(flog, "xfer_write: returned %d\n", nret);
+#endif
+		    return nret;
+		}
+
+		f->off += _sftp_get_uint32(_sftp_buffer+f->woff);
+	    }
+
+	    break;
+	    
+	case SFTP_FS_RECEIVE:
+#ifdef DEBUG_XFER
+	    fprintf(flog, "xfer_write: receiving packet\n");
+#endif
+	    n = _sftp_fread(f);
+#ifdef DEBUG_XFER
+	    fprintf(flog, "xfer_write: %d bytes received\n", n);
+#endif
+	    
+	    if (n < 0) {
+		f->state = SFTP_FS_ERROR;
+		break;
+	    }
+	    else if (f->pend == 0 || f->poff < f->pend) {
+#ifdef DEBUG_XFER
+		fprintf(flog, "xfer_write: returned %d\n", nret);
+#endif
+		return nret;
+	    }
+	    
+	    type = _sftp_buffer[4];
+	    
+	    if (type != SSH_FXP_STATUS
+		|| _sftp_get_uint32(_sftp_buffer+9) != SSH_FX_OK) {
+		_sftp_log_packet(1, type, _sftp_buffer+5, f->pend-5);
+		f->state = SFTP_FS_ERROR;
+	    }
+
+#ifdef DEBUG_XFER
+	    fprintf(flog, "xfer_write: starting write\n");
+#endif
+	    _sftp_start_write(f, SFTP_DATA_LEN);
+	    break;
+	}
+    }
+
+#ifdef DEBUG_XFER
+    fprintf(flog, "xfer_write: returned %d\n", nret);
+#endif
+    return nret;
 }
 
 
@@ -1270,8 +1441,17 @@ _sftp_fread(struct sftp_file *f)
     int early, n, nret;
     fd_set fdset;
 
+#ifdef DEBUG_XFER
+    fprintf(flog, "fread entered\n");
+#endif
+
     nret = 0;
     for (;;) {
+#ifdef DEBUG_XFER
+	fprintf(flog, "fread top: nret %d, poff: %d, pend %d\n",
+		nret, f->poff, f->pend);
+#endif
+	
 	early = (f->poff < 4);
 	if (early)
 	    n = 4 - f->poff;
@@ -1280,10 +1460,17 @@ _sftp_fread(struct sftp_file *f)
 
 	n = fread(_sftp_buffer+f->poff, 1, n, conin);
 
+#ifdef DEBUG_XFER
+	fprintf(flog, "%d bytes read\n", n);
+#endif
+
 	if (n == 0) {
 	    if (ferror(conin) && (errno == EINTR || errno == EAGAIN)) {
 		clearerr(conin);
 		if (errno == EAGAIN) {
+#ifdef DEBUG_XFER
+		    fprintf(flog, "fread: selecting\n");
+#endif
 		    FD_ZERO(&fdset);
 		    FD_SET(fileno(conin), &fdset);
 		    
@@ -1291,6 +1478,9 @@ _sftp_fread(struct sftp_file *f)
 			       NULL, NULL) == -1
 			|| !FD_ISSET(fileno(conin), &fdset)) {
 			/* XXX: ignore nret? */
+#ifdef DEBUG_XFER
+			fprintf(flog, "fread: select timeout\n");
+#endif
 			return 0;
 		    }
 		    continue;
@@ -1308,6 +1498,9 @@ _sftp_fread(struct sftp_file *f)
 
 	if (early && f->poff >= 4) {
 	    f->pend = _sftp_get_uint32(_sftp_buffer) + 4;
+#ifdef DEBUG_XFER
+	    fprintf(flog, "fread: packet length: %d\n", f->pend);
+#endif
 	    continue;
 	}
 
@@ -1320,51 +1513,134 @@ _sftp_fread(struct sftp_file *f)
 static int
 _sftp_fwrite(struct sftp_file *f)
 {
-    int n;
+    int n, do_select;
     fd_set fdset;
 
+#ifdef DEBUG_XFER
+    fprintf(flog, "fwrite entered\n");
+#endif
+
+    n = do_select = 0;
     for (;;) {
-	n = fwrite(_sftp_buffer+f->poff, 1, f->pend-f->poff, conout);
+#ifdef DEBUG_XFER
+	fprintf(flog, "fwrite top: do_select: %d, poff %d, pend: %d\n",
+		do_select, f->poff, f->pend);
+#endif
 
-	if (n == 0) {
-	    if (ferror(conout) && (errno == EINTR || errno == EAGAIN)) {
-		clearerr(conout);
-		if (errno == EAGAIN) {
-		    FD_ZERO(&fdset);
-		    FD_SET(fileno(conout), &fdset);
-		    
-		    if (select(fileno(conout)+1, NULL, &fdset,
-			       NULL, NULL) == -1
-			|| !FD_ISSET(fileno(conout), &fdset))
-			return 0;
-		    continue;
-		}
-		return 0;
-	    }
-	    else
-		return -1;
-	}
-	f->poff += n;
+	if (!do_select) {
+	    n = fwrite(_sftp_buffer+f->poff, 1, f->pend-f->poff, conout);
+	
+#ifdef DEBUG_XFER
+	    fprintf(flog, "fwrite: %d bytes written\n", n);
+#endif
 
-	if (f->poff >= f->pend) {
-	    if (fflush(conout) == EOF) {
-		if (errno == EINTR || errno == EAGAIN) {
+	    if (n == 0 && f->poff < f->pend) {
+		if (ferror(conout) && (errno == EINTR || errno == EAGAIN)) {
 		    clearerr(conout);
-		    /* XXX: ignore n? */
+		    if (errno == EAGAIN || f->poff >= f->pend) {
+			do_select = 1;
+			continue;
+		    }
 		    return 0;
 		}
+		else
+		    return -1;
+	    }
+	    f->poff += n;
+
+	    if (f->poff < f->pend)
+		return n;
+	}
+
+	if (!do_select && f->poff >= f->pend) {
+#ifdef DEBUG_XFER
+	    fprintf(flog, "fwrite: flusing packet\n");
+#endif
+
+	    /* XXX: this may block.  however, fflush is too braindead
+               to deal with nonblocking i/o */
+	    set_file_blocking(fileno(conout), 1);
+	    if (fflush(conout) == EOF) {
+		if (errno == EAGAIN) {
+		    clearerr(conout);
+		    do_select = 1;
+		    continue;
+		}
+		else if (errno == EINTR)
+		    return 0;
 		else {
-		    /* XXX: ignore n? */
+#ifdef DEBUG_XFER
+		    fprintf(flog, "fwrite: fflush error: %s", strerror(errno));
+#endif
 		    return -1;
 		}
 	    }
+	    set_file_blocking(fileno(conout), 0);
 
+#ifdef DEBUG_XFER
+	    fprintf(flog, "fwrite: packet flushed, switching to receive\n");
+#endif
 	    f->state = SFTP_FS_RECEIVE;
 	    f->poff = f->pend = f->doff = f->dend = 0;
 	}
 
+	if (do_select) {
+#ifdef DEBUG_XFER
+	    fprintf(flog, "fwrite: selecting\n");
+#endif
+	    FD_ZERO(&fdset);
+	    FD_SET(fileno(conout), &fdset);
+	    
+	    if (select(fileno(conout)+1, NULL, &fdset,
+		       NULL, NULL) == -1
+		|| !FD_ISSET(fileno(conout), &fdset)) {
+#ifdef DEBUG_XFER
+		fprintf(flog, "fwrite: select timeout\n");
+#endif
+		return 0;
+	    }
+	    do_select = 0;
+	    continue;
+	}
+	
+#ifdef DEBUG_XFER
+	fprintf(flog, "fwrite returned: %d\n", n);
+#endif
 	return n;
     }
+}
+
+
+
+int
+_sftp_start_write(struct sftp_file *f, int len)
+{
+    unsigned char *p;
+    
+    f->state = SFTP_FS_SEND;
+
+    p = _sftp_buffer + 4;
+
+    *(p++) = SSH_FXP_WRITE;
+    _sftp_put_uint32(p, _sftp_nextid++);
+    p += 4;
+    _sftp_put_handle(p, &p, f->hnd);
+    _sftp_put_uint64(p, f->off);
+    p += 8;
+    f->woff = p-_sftp_buffer;
+    _sftp_put_uint32(p, len);
+    p += 4;
+
+    f->doff = p-_sftp_buffer;
+    p += len;
+    f->dend = p-_sftp_buffer;
+
+    _sftp_put_uint32(_sftp_buffer, p-_sftp_buffer-4);
+    
+    f->poff = 0;
+    f->pend = f->dend;
+
+    return 0;
 }
 
 #endif /* USE_SFTP */
