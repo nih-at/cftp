@@ -232,7 +232,7 @@ _tag_insert(int n, struct tagentry *t, char *file, long size, char type)
 
     u->line = line;
     u->name = file;
-    u->file = (char *)basename(file);
+    u->file = basename(file);
     u->dirl = tags.line[n].file - file;
     if (u->dirl > 1)
 	--u->dirl;

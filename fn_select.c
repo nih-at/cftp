@@ -94,10 +94,10 @@ aux_download(char *name, long size, int restart)
     else
 	mode = "w";
     
-    if ((fout=fopen((char *)basename(name), mode)) == NULL) {
+    if ((fout=fopen(basename(name), mode)) == NULL) {
 	disp_status("can't %s `%s': %s",
 		    (*mode == 'a' ? "append to" : "create"),
-		    (char *)basename(name), strerror(errno));
+		    basename(name), strerror(errno));
 	return -2;
     }
 
@@ -155,7 +155,7 @@ aux_upload(char *name)
 	return -2;
     }
 
-    if ((fout=ftp_stor((char *)basename(name), opt_mode)) == NULL)
+    if ((fout=ftp_stor(basename(name), opt_mode)) == NULL)
 	return -2;
 
     if (stat(name, &st) >= 0)

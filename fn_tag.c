@@ -96,7 +96,7 @@ fn_tag(char **args)
 	    size = -1;
 	    type = 'l';
 
-	    base = (char *)basename(file);
+	    base = basename(file);
 	    
 	    i = strlen(curdir->path);
 	    if ((base-file == 1 && i == 1)

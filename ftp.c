@@ -358,7 +358,7 @@ ftp_retr(char *file, int mode, long *startp, long *sizep)
     
     can = canonical(file, NULL);
     dir = dirname(can);
-    name = (char *)basename(can);
+    name = basename(can);
     
     if (ftp_mode(mode) == -1 || ftp_cwd(dir) == -1)
 	return NULL;
@@ -403,7 +403,7 @@ ftp_stor(char *file, int mode)
     
     can = canonical(file, NULL);
     dir = dirname(can);
-    name = (char *)basename(can);
+    name = basename(can);
     
     if (ftp_mode(mode) == -1 || ftp_cwd(dir) == -1)
 	return NULL;
