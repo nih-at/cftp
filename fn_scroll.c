@@ -188,7 +188,7 @@ aux_isread(int state, char *s)
 
     sprintf(b, "%s%s%sI-search%s: %s",
 	   (state & FN_IS_FAIL ? "Failing " : ""),
-	   (state & FN_IS_WRAP ? (state & FN_IS_FAIL ? "W" : "w") : ""),
+	   (state & FN_IS_WRAP ? (state & FN_IS_FAIL ? "w" : "W") : ""),
 	   (state & FN_IS_WRAP ? "rapped " : ""),
 	   (state & FN_IS_BACK ? " backward" : ""),
 	   s);
@@ -218,9 +218,13 @@ fn_isearch(char **args)
     while ((c=aux_isread(state, b)) != '\n' && c != 7 /* ^G */) {
 	research = 1;
 	if (c == tty_verase) {
-	    *(--p) = '\0';
-	    current = start;
-	    state &= ~FN_IS_WRAP;
+	    if (p > b) {
+		*(--p) = '\0';
+		current = start;
+		state &= ~FN_IS_WRAP;
+	    }
+	    else
+		research = 0;
 	}
 	else if (c == tty_vwerase) {
 	    while (p>b && *(--p) == ' ')
@@ -256,6 +260,8 @@ fn_isearch(char **args)
 	    *(p++) = c;
 	    *p = '\0';
 	}
+	else
+	    research = 0;
 
 	if (research) {
 	    n = current;
@@ -266,16 +272,20 @@ fn_isearch(char **args)
 		    n++;
 
 		while (!(state & FN_IS_FAIL)) {
-		    if (strstr(LIST_LINE(list, n)->name, b+9) == NULL)
-			break;
-		    if (++n == list->len) {
+		    if (n >= list->len) {
 			if (state & FN_IS_WRAP)
-			    n == 0;
-			else
+			    n = 0;
+			else {
 			    state |= FN_IS_FAIL;
+			    break;
+			}
 		    }
-		    if (n == current)
+		    if (strstr(LIST_LINE(list, n)->name, b) != NULL)
+			break;
+		    if (++n == current) {
 			state |= FN_IS_FAIL;
+			break;
+		    }
 		}
 	    }
 	    else {
@@ -283,26 +293,29 @@ fn_isearch(char **args)
 		    --n;
 
 		while (!(state & FN_IS_FAIL)) {
-		    if (strstr(LIST_LINE(list, n)->name, b+9) == NULL)
-			break;
-		    if (--n < 0) {
+		    if (n < 0) {
 			if (state & FN_IS_WRAP)
-			    n == list->len-1;
-			else
+			    n = list->len-1;
+			else {
 			    state |= FN_IS_FAIL;
+			    break;
+			}
 		    }
-		    if (n == current)
+		    if (strstr(LIST_LINE(list, n)->name, b) != NULL)
+			break;
+		    if (--n == current) {
 			state |= FN_IS_FAIL;
+			break;
+		    }
 		}
 	    }
-
-	    if (!(state & FN_IS_FAIL)) {
-		current = n;
-		if (current >= list->top && current < list->top+win_lines)
-		    aux_scroll(list->top, current, 0);
-		else
-		    aux_scroll(current-(win_lines/2), current, 0);
-	    }
+	}
+	if (!(state & FN_IS_FAIL)) {
+	    current = n;
+	    if (current >= list->top && current < list->top+win_lines)
+		aux_scroll(list->top, current, 0);
+	    else
+		aux_scroll(current-(win_lines/2), current, 0);
 	}
     }
     if (c == 7 /* ^G */) {
