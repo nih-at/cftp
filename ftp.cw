@@ -523,24 +523,30 @@ ftp_cat(FILE *fin, FILE *fout, long size)
 	
 	if (ftp_curmode == 'i')
 		while ((n=fread(buf, 1, 4096, fin)) > 0) {
+		    /* XXX: abort on error */
+		    if (!err) {
 			if (fwrite(buf, 1, n, fout) != n)
 				err = 1;
-			got += n;
-			if ((newt=time(NULL)) != oldt) {
-			    disp_status(fmt, got);
-			    oldt = newt;
-			}
+		    }
+		    got += n;
+		    if ((newt=time(NULL)) != oldt) {
+			disp_status(fmt, got);
+			oldt = newt;
+		    }
 		}
 	else
 		while ((l=ftp_gets(fin)) != NULL) {
-			n = strlen(l)+1;
+		    /* XXX: abort on error */
+		    n = strlen(l)+1;
+		    if (!err) {
 			if (fprintf(fout, "%s\n", l) != n)
 				err = 1;
-			got += n;
-			if ((newt=time(NULL)) != oldt) {
-			    disp_status(fmt, got);
-			    oldt = newt;
-			}
+		    }
+		    got += n;
+		    if ((newt=time(NULL)) != oldt) {
+			disp_status(fmt, got);
+			oldt = newt;
+		    }
 		}
 
 	if (err || ferror(fin) || ferror(fout))
