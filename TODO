@@ -34,13 +34,13 @@ F cftp.texi: introduction, invoking, cftprc
 C fn_basic.cw: docu for bind
 B show cursor on linux console
 F fn_basic.cw (fn_help) help for `f'unktions, `k'eys, and `o'ptions
-C fn_tags.cw (fn_listtag) display `no tagged files'
 ----------------------------------------------- done
+C fn_tag.cw (fn_listtag) display `no tagged files'
 F user options
 
 Jun 25 (0.5a)
 F fn_basic.cw: (fn_bind) new function
-B fn_tags.cw: (fn_loadtag) relative names relative to current dir
+B fn_tag.cw: (fn_loadtag) relative names relative to current dir
 B tty.cw: (tty_readkey) don't discard chars by failed multibyte code
 B display.cw: (disp_prompt_char) eat up chars till newline
 F fn_basic.cw: (fn_lcd) handle ~, ~user

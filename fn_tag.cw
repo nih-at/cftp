@@ -122,6 +122,11 @@ fn_listtags(char **args)
     dirtags *d;
     filetags *t;
 
+    if (!tag_anytags()) {
+	disp_status("no tags.");
+	return;
+    }
+
     if (args)
 	if ((f=fopen(args[0], "w")) == NULL) {
 	    disp_status("can't open `%s': %s", args[0], strerror(errno));
