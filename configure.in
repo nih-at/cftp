@@ -55,8 +55,11 @@ dnl library functions
 
 AC_REPLACE_FUNCS(strdup getcwd getdomainname strerror hstrerror basename fputchar)
 
-AC_CHECK_FUNCS(tparam, , AC_CHECK_FUNCS(tparm, , [LIBOBJS="$LIBOBJS tparam.o"]))
-
+AC_CHECK_FUNCS(tparam, [tparam=1], [tparam=0])
+if test "$tparam" -ne 1
+then
+	AC_CHECK_FUNCS(tparm, , [LIBOBJS="$LIBOBJS tparam.o"])
+fi
 
 AC_CHECK_FUNCS(getopt_long, , [LIBOBJS="$LIBOBJS getopt1.o getopt.o"])
 
