@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.8 2001/12/13 21:14:55 dillo Exp $
+  $NiH: sftp.c,v 1.9 2001/12/14 02:11:37 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001 Dieter Baron
@@ -56,9 +56,18 @@ struct handle {
     char *str;
 };
 
+enum sftp_file_state {
+    SFTP_FS_HEADER, SFTP_FS_EOF, SFTP_FS_DATA
+};
+
 struct sftp_file {
     struct handle *hnd;	/* sftp handle */
     size_t off;		/* current offset within file */
+    enum sftp_file_state state;
+    			/* current state */
+    int dstart;		/* start of unprocessed data */
+    int dend;		/* end of unprocessed data */
+    int len;		/* length of current transfer */
 };
 
 
@@ -70,8 +79,10 @@ int sftp_put_handle(int type, struct handle *hnd, int flags);
 int sftp_put_str(int type, char *str, int len, int flags);
 int sftp_readdir(struct handle *hnd, char *buf, int *lenp);
 int sftp_send_init(int proto_version);
+int sftp_send_read(struct sftp_file *f, int nbytes);
 int sftp_status(void);
 
+static int _sftp_fread(struct sftp_file *f);
 static int _sftp_get_packet(FILE *f, char *buf, int *lenp, int flags);
 static char *_sftp_get_string(char *buf, char **endp);
 static unsigned int _sftp_get_uint32(unsigned char *p);
@@ -83,11 +94,14 @@ static void _sftp_log_str(char *buf, char *pre, char *cmd,
 			  unsigned char *data);
 static int _sftp_parse_name(unsigned char **pp, direntry *e);
 static int _sftp_parse_status(int type, char *buf, int len);
+static void _sftp_put_handle(unsigned char *buf, unsigned char **endp,
+			     struct handle *hnd);
 static int _sftp_put_packet(FILE *f, int type, char *buf, int len,
 			    int log_req);
 static void _sftp_put_string(unsigned char *buf, unsigned char **endp,
 			     char *str, int slen, int flags);
 static void _sftp_put_uint32(unsigned char *p, unsigned int i);
+static void _sftp_put_uint64(unsigned char *p, unsigned long long i);
 static directory *_sftp_read_dir(struct handle *hnd);
 static void _sftp_start_ssh(int fdin, int fdout);
 static char *_sftp_strerror(int error);
@@ -620,6 +634,21 @@ _sftp_put_uint32(unsigned char *p, unsigned int i)
 
 
 
+static void
+_sftp_put_uint64(unsigned char *p, unsigned long long i)
+{
+    p[0] = (i>>56) & 0xff;
+    p[1] = (i>>48) & 0xff;
+    p[2] = (i>>40) & 0xff;
+    p[3] = (i>>32) & 0xff;
+    p[4] = (i>>24) & 0xff;
+    p[5] = (i>>16) & 0xff;
+    p[6] = (i>>8) & 0xff;
+    p[7] = i & 0xff;
+}
+
+
+
 static int
 _sftp_put_packet(FILE *f, int type, char *buf, int len, int flags)
 {
@@ -946,15 +975,6 @@ sftp_stor(char *file, int mode)
 
 
 int
-sftp_cat(void *fin, void *fout, long start, long size, int upload)
-{
-    /* XXX: implement */
-    return 0;
-}
-
-
-
-int
 sftp_fclose(void *f)
 {
     int ret;
@@ -1056,6 +1076,176 @@ _sftp_put_string(unsigned char *buf, unsigned char **endp,
 
     if (endp)
 	*endp = buf+len;
+}
+
+
+
+int
+sftp_xfer_read(void *buf, size_t nbytes, void *file)
+{
+    struct sftp_file *f;
+    int n, type;
+
+    f = file;
+
+    if (f->state == SFTP_FS_EOF)
+	return -1;
+	
+    if ((n=_sftp_fread(f)) <= 0)
+	return n;
+
+    if (f->state == SFTP_FS_HEADER) {
+	if (f->dend < f->len)
+	    return 0;
+	
+	f->len = _sftp_get_uint32(_sftp_buffer) + 4;
+	type = _sftp_buffer[4];
+
+	if (f->dend < f->len) {
+	    if ((n=_sftp_fread(f) < 0))
+		return n;
+	}
+
+	if (type == SSH_FXP_DATA) {
+	    f->state = SFTP_FS_DATA;
+	    f->dstart = 13;
+	}
+	else {
+	    if (f->dend < f->len)
+		return 0;
+	    
+	    if (type == SSH_FXP_STATUS
+		&& _sftp_get_uint32(_sftp_buffer+9) == SSH_FX_EOF)
+		f->state = SFTP_FS_EOF;
+	    return -1;
+	}
+    }
+
+    n = f->dend - f->dstart;
+    memcpy(buf, _sftp_buffer+f->dstart, n);
+	
+    f->dstart = f->dend;
+    if (f->dend >= f->len)
+	sftp_send_read(f, 4096);
+    
+    return n;
+}
+
+
+
+int
+sftp_xfer_start(void *file, int writing)
+{
+    struct sftp_file *f;
+
+    f = file;
+
+    if (writing) {
+	/* XXX: implement */
+	return -1;
+    }
+    else {
+	/* reading */
+
+	if (sftp_send_read(f, 4096) < 0)
+	    return -1;
+
+	set_file_blocking(fileno(conin), 0);
+
+	return fileno(conin);
+    }
+}
+
+
+
+int
+sftp_xfer_stop(void *file, int aborting)
+{
+    set_file_blocking(fileno(conin), 1);
+    set_file_blocking(fileno(conout), 1);
+
+    if (aborting) {
+	/* XXX: finish request/response cycle */
+    }
+    
+    return 0;
+}
+
+
+
+int
+sftp_xfer_write(void *buf, size_t nbytes, void *file)
+{
+    /* XXX: implement */
+    return -1;
+}
+
+
+
+int
+sftp_xfer_eof(void *file)
+{
+    struct sftp_file *f;
+
+    f = file;
+
+    return f->state == SFTP_FS_EOF;
+}
+
+
+
+int
+sftp_send_read(struct sftp_file *f, int nbytes)
+{
+    unsigned char *p;
+
+    p = _sftp_buffer;
+    _sftp_put_uint32(p, _sftp_nextid++);
+    p += 4;
+    _sftp_put_handle(p, &p, f->hnd);
+    _sftp_put_uint64(p, f->off);
+    p += 8;
+    _sftp_put_uint32(p, nbytes);
+    p += 4;
+
+    if (_sftp_put_packet(conout, SSH_FXP_READ, _sftp_buffer,
+			 p-_sftp_buffer, 0) < 0)
+	return -1;
+
+    f->off += nbytes;
+    f->state = SFTP_FS_HEADER;
+    f->dstart = f->dend = 0;
+    f->len = 13;
+
+    return 0;
+}
+
+
+
+static void
+_sftp_put_handle(unsigned char *buf, unsigned char **endp,
+		 struct handle *hnd)
+{
+    _sftp_put_string(buf, endp, hnd->str, hnd->len, 0);
+}
+
+
+
+static int
+_sftp_fread(struct sftp_file *f)
+{
+    int n;
+    
+    n = fread(_sftp_buffer+f->dend, 1, f->len-f->dend, conin);
+    f->dend += n;
+
+    if (n == 0) {
+	if (ferror(conin) && (errno == EINTR || errno == EAGAIN))
+	    clearerr(conin);
+	else
+	    return -1;
+    }
+    return n;
 }
 
 #endif /* USE_SFTP */
