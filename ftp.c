@@ -31,6 +31,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
+#include <sys/select.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <netinet/in.h>
@@ -403,6 +404,11 @@ ftp_put(char *fmt, ...)
 {
 	char buf[8192];
 	va_list argp;
+
+	if (conout == NULL) {
+	    disp_status("not connected");
+	    return -1;
+	}
 
 	va_start(argp, fmt);
 	vsprintf(buf, fmt, argp);

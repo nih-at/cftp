@@ -23,7 +23,6 @@ P cc on HPUX: -Aa -D_POSIX_SOURCE, prototypes for LIBOBJS
 P tparm on HPUX doesn't work
 F fn_basic.c: (fn_help) display type and value for options
 C rename disp_stat to disp_mesg (status line is what used to be head)
-B fn_tag.c: (fn_tag) line[0] isn't updated if arg is given (also w/ load-tags)
 F main.c: scan .netrc for type commands
 C fn_basic.c: (fn_exit) implement as function, -f option.
 B bindable functions: abort on empty input
@@ -35,6 +34,10 @@ C fn_select.c: use :-syntax throughout
 B fn_basic.c: (fn_shell) command with args doesn't work when given via args
 C consistent error handling
 ----------------------------------------------- done
+Jul 31 1997 (0.6c)
+B fn_tag.c: (fn_tag) set size and type if found in curdir
+B tag.c: (_tag_update_curdir) new function: update line[0] in curdir
+B ftp.c (ftp_put) return if no connection
 C status.c: rewrote status line code (a little cleaner and smarter)
 B readrc.c: (readrc) fixed missing argument to parse_url
 F main.c: (parse_url) if multiple @s in login part, rightmost separates host

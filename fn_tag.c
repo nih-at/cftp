@@ -55,9 +55,11 @@ fn_tag(char **args)
 	if ((base-file == 1 && i == 1)
 	    || i == base-file-1 && strncmp(curdir->path, file, i) == 0) {
 	    i = dir_find(curdir, base);
+	    if (i >= 0) {
+		size = curdir->line[i].size;
+		type = curdir->line[i].type;
+	    }
 	}
-	else
-	    i = -1;
     }
     else {
 	/* works in <remote> only */
@@ -66,18 +68,9 @@ fn_tag(char **args)
 	file = curdir->line[curdir->cur].name;
 	size = curdir->line[curdir->cur].size;
 	type = curdir->line[curdir->cur].type;
-
-	i = curdir->cur;
     }
 	
     tagged = tag_file(dir, file, size, type, TAG_TOGGLE);
-
-    if (tagged && i >= 0) {
-	curdir->line[curdir->cur].line[0] =
-	    (tagged < 0 ? ' ' : opt_tagchar);
-	if (binding_state == bs_remote)
-	    list_reline(i);
-    }
 
     if (tagged < -1)
 	disp_status("%d files untagged", -tagged);
@@ -290,7 +283,9 @@ fn_loadtag(char **args)
 		p[len-1] = '\0';
 
 	    name = canonical(p, NULL);
+
 	    count += tag_file(NULL, name, size, type, TAG_ON);
+		
 	    free(name);
 	}
     }

@@ -34,7 +34,9 @@
 struct taglist tags;
 struct tagentry tags_s;
 
-int _tag_insert(int n, struct tagentry *t, char *file, long size, char type);
+static int _tag_insert(int n, struct tagentry *t, char *file,
+		       long size, char type);
+static int _tag_update_curdir(struct tagentry *u, enum tagopt what);
 
 
 
@@ -149,6 +151,7 @@ tag_clear(void)
     tags_s.next = tags_s.prev = &tags_s;
     
     for (i=0; i<tags.len; i++) {
+	_tag_update_curdir(&tags.line[i], TAG_OFF);
 	free(tags.line[i].line);
 	free(tags.line[i].name);
     }
@@ -165,6 +168,8 @@ tag_delete(int n)
     struct tagentry *t;
 
     t = tags.line+n;
+
+    _tag_update_curdir(t, TAG_OFF);
 
     free(t->line);
     free(t->name);
@@ -183,7 +188,7 @@ tag_delete(int n)
 
 
 
-int
+static int
 _tag_insert(int n, struct tagentry *t, char *file, long size, char type)
 {
     int i;
@@ -219,9 +224,33 @@ _tag_insert(int n, struct tagentry *t, char *file, long size, char type)
     t->next = u;
     u->next->prev = u;
 
+    _tag_update_curdir(u, TAG_ON);
+
     tags.len++;
     
     return 0;
+}
+
+
+
+static int
+_tag_update_curdir(struct tagentry *u, enum tagopt what)
+{
+    int i;
+
+    if (strlen(curdir->path) == u->dirl
+	&& strncmp(curdir->path, u->name, u->dirl) == 0) {
+	i = dir_find(curdir, u->file);
+	
+	if (i >= 0
+	    && (curdir->line[i].line[0] !=
+		(what == TAG_ON) ? opt_tagchar : ' ')) {
+	    curdir->line[i].line[0] =
+		(what == TAG_ON) ? opt_tagchar : ' ';
+	    if (binding_state == bs_remote)
+		list_reline(i);
+	}
+    }
 }
 
 
