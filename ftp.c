@@ -713,7 +713,7 @@ ftp_resp(void)
     }
 
     if (conin == NULL) {
-	disp_status("not connectecd");
+	disp_status("not connected");
 	return -1;
     }
 
