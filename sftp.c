@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.15 2001/12/20 05:49:11 dillo Exp $
+  $NiH: sftp.c,v 1.16 2001/12/20 12:21:05 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001 Dieter Baron
@@ -277,7 +277,6 @@ _sftp_read_dir(struct handle *hnd)
     char *p;
     time_t oldt, newt;
     int n, pn;
-    int type, len;
 
     dir = dir_new();
     oldt = 0;
@@ -992,8 +991,6 @@ sftp_close(void)
 int
 sftp_send_init(int proto_version)
 {
-    int len;
-    
     _sftp_make_packet(_sftp_packet, SSH_FXP_INIT, _sftp_packet->dat);
     _sftp_packet->id = proto_version;
 
@@ -1016,7 +1013,6 @@ sftp_send_init(int proto_version)
 char *
 sftp_pwd(void)
 {
-    int len;
     char *dir;
     
     if (sftp_put_str(SSH_FXP_REALPATH, ftp_lcwd ? ftp_lcwd : "", 0,
@@ -1072,8 +1068,6 @@ _sftp_log_handle(char *buf, char *pre, char *cmd, char *data)
 }
 
 
-
-/*
 
 /*
   Send a packet of type TYPE, containing only string HND.
@@ -1196,7 +1190,7 @@ sftp_site(char *cmd)
 int
 sftp_cwd(char *path)
 {
-    int flags, len, off;
+    int flags, off;
     mode_t mode;
     
     if (sftp_put_str(SSH_FXP_STAT, path, 0, SFTP_FL_LOG|SFTP_FL_IS_PATH) < 0)
@@ -1233,7 +1227,6 @@ sftp_cwd(char *path)
 struct handle *
 sftp_file_open(char *file, int flags)
 {
-    struct handle *hnd;
     char *p;
 
     p = _sftp_packet->dat;
@@ -1290,7 +1283,7 @@ int
 sftp_xfer_read(void *buf, size_t nbytes, void *file)
 {
     struct sftp_file *f;
-    int n, type, nret, ret;
+    int n, nret, ret;
 
     f = file;
     nret = 0;
@@ -1309,7 +1302,7 @@ sftp_xfer_read(void *buf, size_t nbytes, void *file)
 				   SFTP_FL_NONBLOCK|SFTP_FL_CONT);
 
 	    if (ret < 0) {
-		f->state == SFTP_FS_ERROR;
+		f->state = SFTP_FS_ERROR;
 		break;
 	    }
 	    else if (ret == 1)
@@ -1405,7 +1398,7 @@ int
 sftp_xfer_stop(void *file, int aborting)
 {
     struct sftp_file *f;
-    int n, type;
+    int n;
 
     set_file_blocking(_conin, 1);
     set_file_blocking(_conout, 1);
@@ -1415,7 +1408,7 @@ sftp_xfer_stop(void *file, int aborting)
     if (aborting) {
 	/* don't send packet unless already begun */
 	if (f->state == SFTP_FS_SEND && _sftp_packet->pn == 0)
-	    f->state == SFTP_FS_EOF;
+	    f->state = SFTP_FS_EOF;
     }
     
     if ((f->flags & SSH_FXF_WRITE
@@ -1596,7 +1589,7 @@ _sftp_put_handle(char *buf, char **endp, struct handle *hnd)
 static int
 _sftp_read(int fd, void *buf, size_t nbytes, int flags)
 {
-    int early, n, nret;
+    int n, nret;
     fd_set fdset;
 
     nret = 0;

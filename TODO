@@ -2,7 +2,6 @@
 ! sftp: lost connection not reported
 ! sftp: ^c kills ssh subprocess (how to avoid?!)
 ! test ftp_cat error cases
-- fix --disable-sftp
 - avoid magic numbers in sftp xfer
 - finish _sftp_log_packet
 - move ftp_gets to util.c and rename

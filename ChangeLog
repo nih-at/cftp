@@ -1,5 +1,12 @@
 2001-12-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* sftp.c (sftp_xfer_read, sftp_xfer_stop): fix typo.
+	
+	* sftp.c: remove unused variables.
+	* ftp.c (ftp_cat, rftp_xfer_start): remove unused variables.
+
+	* main.c: ifdef USE_SFTP sftp options handling and usage.
+
 	* ftp.c (rftp_xfer_read): select fileno(f) for reading.
 
 2001-12-20  Dieter Baron  <dillo@danbala.tuwien.ac.at>
@@ -9,13 +16,13 @@
 	* ftp.c (_ftp_update_transfer): display time stalled in m:s when
 	more than 59 seconds.  Don't display total size if unknown.
 
-	* sftp.c: rewritten without stdio.
-	
 	* sftp.c (_sftp_start_ssh) send status packet in case of error.
 
+	* sftp.c: rewritten without stdio.
+	
 	* ftp.c: delete (now unused) function ftp_histf.
 
-	* sftp.c: rename SSH_FX_PROTO_VERSION with SFTP_PROTO_VERSION
+	* sftp.c: rename SSH_FX_PROTO_VERSION to SFTP_PROTO_VERSION
 	
 	* sftp.c: supersede SFTP_FFL_READ and SFTP_FFL_WRITE with
 	SSH_FXF_READ and SSH_FXF_WRITE, respectively.
@@ -69,7 +76,7 @@
 	(is_url): new function.
 	
 	* mkmethods-c.m4, mkmethods-h.m4, methods.mt: add framework for
-	protocl method redirection.
+	protocol method redirection.
 	* ftp.c: rename ftp protocol methods (change prefix to rftp_).
 	* sftp.c: new file.
 	

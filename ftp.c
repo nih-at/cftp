@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.68 2001/12/20 13:01:49 dillo Exp $
+  $NiH: ftp.c,v 1.69 2001/12/23 02:15:18 dillo Exp $
 
   ftp -- ftp protocol functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -953,7 +953,7 @@ ftp_cat(void *fin, void *fout, long start, long size, int upload)
     long got;
     struct itimerval itv;
     struct _ftp_transfer_stats trstat;
-    int flags, ret, do_read;
+    int do_read;
     int (*fn_read)(void *, size_t, void *);
     int (*fn_write)(void *, size_t, void *);
     int (*fn_eof)(void *);
@@ -1434,7 +1434,6 @@ int
 rftp_xfer_start(void *file)
 {
     FILE *f;
-    int flags;
 
     f = (FILE *)file;
 
