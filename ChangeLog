@@ -1,3 +1,10 @@
+2000-12-06  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* util.h: fix function name in prototype.
+	* getaddrinfo.c (getaddrinfo): don't free airet before it is
+	initialized.
+	* ftp.c (ftp_port): fix endianness bug.
+
 2000-12-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* sockets.c (sockaddr_ntop): work around mising sa_len.
