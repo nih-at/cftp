@@ -8,7 +8,6 @@ F tty.cw: (tty_readkey) make VTIME value user setable
 F readdir.cw: support other dir listing formats (vms, dos, descritpive, ...)
 F tag files: edit/clear tags, detached download
 F tag: if tagged is directory, try .tar.gz, .tar.Z, .tar
-F remember home dir, use in disp_header
 F fn_tag.cw: (fn_gettags) display tags list while downloading
 F use `size' to determine unkown size (of links and tags)
 F quiet if in background
@@ -31,11 +30,13 @@ P configure.in: add -posix for NeXTStep
 B propagate errors (conn hung or eof?) up to fn_gettags
 F cftp.texi: introduction, invoking, cftprc
 C fn_basic.cw: docu for bind
-B show cursor on linux console
 F fn_basic.cw (fn_help) help for `f'unktions, `k'eys, and `o'ptions
 B all output in first line outside screen
-B report resolv error, not errno
 ----------------------------------------------- done
+B show cursor
+B report resolv error, not errno
+F fn_isearch
+F .cftprc: alias
 P handle ftp servers unable to cd ~user (NetBSD)
 P configure.in: check for ncurses
 B configure.in: abort if no termcap can be found

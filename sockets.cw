@@ -31,15 +31,15 @@ sopen(char *host, char *service)
 	struct servent *serv;
 
 	if ((serv = getservbyname(service, "tcp")) == NULL) {
-		fprintf(stderr, "%s: can't get service %s: %s\n",
-			prg, service, strerror(errno));
+		fprintf(stderr, "%s: can't get service `%s'\n",
+			prg, service);
 		return(-1);
 	}
 	port = (u_short)serv->s_port;
 
         if ((hp = gethostbyname(host)) == NULL) {
                 fprintf(stderr, "%s: can't get host %s: %s\n",
-                        prg, host, strerror(errno));
+                        prg, host, hstrerror(h_errno));
                 return(-1);
         }
 	memcpy(&sa.sin_addr, hp->h_addr, hp->h_length);
