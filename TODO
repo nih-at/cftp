@@ -35,6 +35,7 @@ F user options
 P util.cw: (basename) conflicting with unistd.h on linux (const char * arg)
 C fn_basic.cw: docu for bind
 ----------------------------------------------- done
+Jun 25 (0.5a)
 F fn_basic.cw: (fn_bind) new function
 B fn_tags.cw: (fn_loadtag) relative names relative to current dir
 B tty.cw: (tty_readkey) don't discard chars by failed multibyte code
