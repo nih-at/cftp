@@ -1,4 +1,4 @@
-/*
+ /*
   fn_tag -- bindable functions: 
   Copyright (C) 1996, 1997 Dieter Baron
 
@@ -173,13 +173,21 @@ fn_savetags(char **args)
     FILE *f;
     char *name;
     int i;
+    int save_as_url;
 
+    save_as_url = 0;
+    
     if (!tag_anytags()) {
 	disp_status("no tags");
 	return;
     }
 
-    if (args)
+    if (args && args[0] != NULL && strcmp(args[0],"-u") == 0) {
+	save_as_url=1;
+	args++;
+    }
+    
+    if (args && args[0] != NULL)
 	name =  args[0];
     else {
 	name = read_string("File: ", 1);
@@ -194,16 +202,23 @@ fn_savetags(char **args)
 	return;
     }
 
-    for (i=0; i<tags.len && !ferror(f); i++)
-	fprintf(f, "%8ld  %c  %s\n",
-		tags.line[i].size,
-		tags.line[i].type,
-		tags.line[i].name);
+	for (i=0; i<tags.len && !ferror(f); i++)
+	    if (save_as_url)
+		fprintf(f,"ftp://%s%s\n",
+			status.host,
+			tags.line[i].name);
+	    else
+		fprintf(f, "%8ld  %c  %s\n",
+			tags.line[i].size,
+			tags.line[i].type,
+			tags.line[i].name);
 
     if (ferror(f))
 	disp_status("write error on `%s': %s", name, strerror(errno));
     else
-	disp_status("%d tag%s saved", tags.len, (tags.len == 1 ? "" : "s"));
+	disp_status("%d tag%s saved to `%s'%s", tags.len,
+		    (tags.len == 1 ? "" : "s"), name,
+		    (save_as_url ? " (as URL)" : ""));
 
     fclose(f);
 
