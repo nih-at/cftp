@@ -14,4 +14,23 @@ divert(-1)>>)
 
 define(endsec)
 
-define(endall)
+divert(0)dnl
+<</*
+   This file is automatically created from ``fntable.fn''; don't change
+   this file, change ``fntable.fn'' instead.
+*/
+
+#include "directory.h"
+#include "bindings.h"
+#include "functions.h"
+#include "fntable.h"
+
+function functions[] = {
+>>divert(-1)
+
+define(endall,
+<<divert(0)dnl
+/* end marker */
+  { 0, 0, 0, 0 }
+};
+divert(-1)>>)

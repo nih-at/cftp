@@ -21,7 +21,7 @@ mkbind_SOURCES=	mkbind.c keys.c rc.c fn_bind.c functions.c
 cftp_DEPENDENCIES=    @LIBOBJS@
 mkbind_DEPENDENCIES=    @LIBOBJS@
 
-EXTRA_DIST=	bindings.desc fntable.c.proto fntable.h.proto \
+EXTRA_DIST=	bindings.desc \
 		mkfntexi.m4 mkfntab-c.m4 mkfntab-h.m4 fntable.fn \
 		mkoptexi.m4 mkoptab-c.m4 mkoptab-h.m4 options.op
 
@@ -38,15 +38,11 @@ functions.texi : fntable.fn mkfntexi.m4
 	sed -e '1,/^------->/ d' functions.texi-unsort >> functions.texi
 	rm functions.texi-unsort
 
-fntable.c : fntable.fn fntable.c.proto mkfntab-c.m4
-	sed -e '/^----/,$$ d' $(srcdir)/fntable.c.proto > fntable.c
-	m4 $(srcdir)/mkfntab-c.m4 $(srcdir)/fntable.fn >> fntable.c
-	sed -e '1,/^----/ d' $(srcdir)/fntable.c.proto >> fntable.c
+fntable.c : fntable.fn mkfntab-c.m4
+	m4 $(srcdir)/mkfntab-c.m4 $(srcdir)/fntable.fn > fntable.c
 
-fntable.h : fntable.fn fntable.h.proto mkfntab-h.m4
-	sed -e '/^----/,$$ d' $(srcdir)/fntable.h.proto > fntable.h
-	m4 $(srcdir)/mkfntab-h.m4 $(srcdir)/fntable.fn >> fntable.h
-	sed -e '1,/^----/ d' $(srcdir)/fntable.h.proto >> fntable.h
+fntable.h : fntable.fn mkfntab-h.m4
+	m4 $(srcdir)/mkfntab-h.m4 $(srcdir)/fntable.fn > fntable.h
 
 bindings.c : mkbind bindings.desc fntable.c
 	./mkbind $(srcdir)

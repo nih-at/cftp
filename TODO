@@ -1,13 +1,13 @@
+* Makfile.am, mkbind: fix rules that create files with > (use tmp file)
+* ftp_cat: convert *to* netascii if uploading
 * fix -Wall warnings (option and function array, termcap functions, getopt.c)
 * fix compile on HPUX (struct sockaddr)
 * get-tags: recoginze global failure (e. g. connection lost) and abort
 * feature recognition and handling
 * complete getaddrinfo replacement
 * check warnings on NextSTEP
-* display progress when reading directory listing
 * rethink directory format auto detection logic
 * remove broken getdomain replacement, use user@
-* move fntable.[ch].proto into mkfntab-[ch].m4
 * improve check wheter lib{socket,nsl,resolv} are needed
 * ^[[O triggers bindings for left and O
 * fix transfer rate display

@@ -15,4 +15,18 @@ divert(-1)>>)
 
 define(endsec)
 
-define(endall)
+divert(0)dnl
+<<#ifndef HAD_FNTABLE_H
+#define HAD_FNTABLE_H
+
+/*
+   This file is automatically created from ``fntable.fn''; don't change
+   this file, change ``fntable.fn'' instead.
+*/
+
+>>divert(-1)
+
+define(endall,
+<<divert(0)
+#endif /* fntable.h */
+divert(-1)>>)
