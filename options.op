@@ -1,5 +1,7 @@
 dnl -*- text -*-
-
+dnl
+dnl  $NiH$
+dnl
 dnl  options.op -- definition and documentation for user settable options
 dnl  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
 dnl
@@ -21,6 +23,8 @@ dnl  along with this program; if not, write to the Free Software
 dnl  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
+
+rcsid(<<$NiH$>>)
 
 dnl option(name, short, variable, function, type, default, help, doku)
 

@@ -1,4 +1,4 @@
-dnl  $NiH$
+dnl  $NiH: mkoptab-c.m4,v 1.8 2001/12/13 21:14:54 dillo Exp $
 dnl
 dnl  mkoptab-c.m4 -- create options.c from options.op
 dnl  Copyright (C) 1996, 1997, 2000, 2001 Dieter Baron
@@ -23,18 +23,17 @@ dnl
 divert(-1)
 
 diverts:
-	0: declarations, definitions and initializations
 	1: options array
-	2: closing line of array
+	3: declarations, definitions and initializations
+	4: rcs ids
 
 changequote(<<,>>)
 
-divert(1)dnl
-struct uoption option[] = {
-divert(2)dnl
-};
-divert(-1)
+define(rcsid, dnl id
+<<divert(4)    $1
+divert(-1)>>)
 
+rcsid(<<$NiH$>>)
 
 dnl struct uoption {
 dnl     char *name, *short;
@@ -53,7 +52,7 @@ define(option,dnl name, short, variable, function, type, default, values, help, 
     type(<<$5>>, OPT_INT, OPT_CHR, OPT_STR, OPT_BOOL, OPT_ENUM), dnl
 (void *)&<<$3>>, <<$4>>, ifelse(<<$5>>, e, openum_<<$7>>, NULL) dnl
 },
-divert(0)dnl
+divert(3)dnl
 type(<<$5>>, <<int >>, <<int >>, <<char *>>, <<int >>, <<int >>)<<$3>> dnl
 = <<$6>>;
 ifelse(<<$4>>, NULL, , extern void <<$4>><<()>>;
@@ -61,24 +60,27 @@ ifelse(<<$4>>, NULL, , extern void <<$4>><<()>>;
 divert(-1)>>)
 
 define(values,dnl name, values
-<<divert(0)dnl
+<<divert(3)dnl
 char *openum_<<$1>>[] = { <<$2>>, NULL };
 divert(-1)>>)
 
-divert(0)dnl
+define(endall, dnl
+<<divert(0)dnl
 /*
    This file is automatically created from ``options.op''; don't make
    changes to this file, change ``options.op'' instead.
+
+  Created from:
+undivert(4)dnl
 */
 
 #include <stddef.h>
 #include "options.h"
 
-divert(-1)
+undivert(3)dnl
 
-define(endall,
-<<divert(0)
+<<struct uoption option[] = {>>
 undivert(1)dnl
-  NULL, NULL, NULL, 0, NULL, NULL
-undivert(2)dnl
+<<  NULL, NULL, NULL, 0, NULL, NULL
+};>>
 divert(-1)>>)

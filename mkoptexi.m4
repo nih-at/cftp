@@ -1,4 +1,4 @@
-dnl  $NiH$
+dnl  $NiH: mkoptexi.m4,v 1.5 2001/12/13 21:14:54 dillo Exp $
 dnl
 dnl  mkoptexi.m4 -- create options.texi from options.op
 dnl  Copyright (C) 1996, 1997, 2000, 2001 Dieter Baron
@@ -23,10 +23,18 @@ dnl
 divert(-1)
 
 diverts:
-	0  chapter menu
-	1  sections
+	1: chapter menu
+	2: sections
+	3: rcs ids
 
 changequote(<<,>>)
+
+define(rcsid, dnl id
+<<divert(3)@c   $1
+divert(-1)>>)
+
+rcsid(<<$NiH: mkoptab-h.m4,v 1.7 2001/12/13 21:14:54 dillo Exp $>>)
+
 
 define(menuentry, dnl node, description
 <<* <<$1>>::dnl
@@ -35,9 +43,9 @@ ifelse(eval(len(<<$1>>)<12), 1, <<	>>)dnl
 	<<$2>>>>)
 
 define(option,dnl name, short, variable, function, type, default, values, help, doku
-<<divert(0)dnl
+<<divert(1)dnl
 menuentry(<<$1>>, <<$8>>)
-divert(1)dnl
+divert(2)dnl
 @c ---------------------------------------------------------------------
 @node <<$1>>
 @section <<$1>> -- <<$8>>
@@ -56,19 +64,20 @@ Default: <<$6>>
 
 divert(-1)>>)
 
-divert(0)dnl
-@c This file is automatically created from ``options.op''; don't change
+define(endall,
+<<divert(0)dnl
+<<@c This file is automatically created from ``options.op''; don't change
 @c this file, change ``options.op'' instead.
-
+@c
+@c Created from:>>
+undivert(3)dnl
+<<
 @c *********************************************************************
 @node	 Options
 @chapter Options
 
-@menu
-divert(-1)
-
-define(endall,
-<<divert(0)dnl
-@end menu
-
-undivert>>)
+@menu>>
+undivert(1)dnl
+<<@end menu
+>>
+undivert(2)>>)
