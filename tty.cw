@@ -2,10 +2,16 @@
 
 @u
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 #include <termios.h>
 #include "keys.h"
 #include "tty.h"
+
+#ifndef VWERASE
+#define VWERASE	VWERSE
+#endif
 
 extern char *prg;
 
@@ -22,8 +28,6 @@ extern char *prg;
 @d<globals@>
 extern int tty_cols, tty_lines, tty_metap, tty_noLP, tty_am,
 	   tty_verase, tty_vwerase, tty_vkill;
-extern char *cap_cm, *cap_cl, *cap_cd, *cap_al, *cap_dl, *cap_ho,
-	    *cap_ce, *cap_so, *cap_se;
 
 @d<local globals@>
 int tty_cols, tty_lines, tty_metap, tty_noLP, tty_am,
@@ -36,12 +40,9 @@ char termcap_entry[4196];
 char termcap_area[4196], *termcap_str;
 struct termios tty_tio, tty_tio_ext;
 speed_t tty_baud;
-char *cap_ke, *cap_ks, *cap_mm, *cap_mo;
 char PC, *BC, *UP;
 short ospeed;
 
-char *cap_cm, *cap_cl, *cap_cd, *cap_al, *cap_dl, *cap_ho,
-     *cap_ce, *cap_so, *cap_se;
 
 @d<prototypes@>
 int tty_init(void);
@@ -72,10 +73,6 @@ tty_init(void)
 
 	/* meta and function keys */
 	tty_metap = tgetflag("km");
-	if (tty_metap) {
-		cap_mm = tty_getcap("mm");
-		cap_mo = tty_getcap("mo");
-	}
 	tty_keypad_init();
 
 	if (tcgetattr(0, &tty_tio_ext) < 0) {
@@ -99,15 +96,6 @@ tty_init(void)
 	/* other capabilities we need (mostly in the output macros) */
 	tty_am = tgetflag("am");
 	tty_noLP = !tgetflag("LP");
-	cap_cm = tty_getcap("cm");
-	cap_cl = tty_getcap("cl");
-	cap_cd = tty_getcap("cd");
-	cap_al = tty_getcap("al");
-	cap_dl = tty_getcap("dl");
-	cap_ho = tty_getcap("ho");
-	cap_ce = tty_getcap("ce");
-	cap_so = tty_getcap("so");
-	cap_se = tty_getcap("se");
 
 	/* screen size */
 	tty_cols = tgetnum("co");
@@ -130,9 +118,6 @@ tty_init(void)
 		return -1;
 	}
 
-	tty_clear();
-	fflush(stdout);
-
 	return 0;
 }
 
@@ -154,9 +139,6 @@ tty_keypad_init(void)
 	int i;
 	char *seq;
 	
-	cap_ks = tty_getcap("ks");
-	cap_ke = tty_getcap("ke");
-
 	for (i=0; i<256; i++)
 		keyflag[0] = 0;
 	for (i=0; i<max_fnkey; i++) {
@@ -179,44 +161,55 @@ int tty_restore(void);
 int
 tty_setup(void)
 {
-	if (cap_ks)
-		tty_puts(cap_ks, 1);
-	if (cap_mm)
-		tty_puts(cap_mm, 1);
+    tty_put("ks", 1);
+    tty_put("mm", 1);
 
-	return tcsetattr(0, TCSANOW, &tty_tio);
+    return tcsetattr(0, TCSANOW, &tty_tio);
 }
 
 int
 tty_restore(void)
 {
-	if (cap_ke)
-		tty_puts(cap_ke, 1);
-	if (cap_mo)
-		tty_puts(cap_mo, 1);
-
-	return tcsetattr(0, TCSANOW, &tty_tio_ext);
+    tty_put("ke", 1);
+    tty_put("mo", 1);
+	
+    return tcsetattr(0, TCSANOW, &tty_tio_ext);
 }
 
 
 @ outputing stuff.
 
 @d<prototypes@>
-int fputchar();
-
-#define tty_puts(s, l)	(tputs((s), (l), fputchar))
-#define tty_goto(x, y)	(tty_puts(tgoto(cap_cm, (x), (y)), 1))
-#define tty_clear()	(tty_puts(cap_cl, tty_lines))
-#define tty_clreos(l)	(tty_puts(cap_cd, (l)))
-#define tty_insline(l)	(tty_puts(cap_al, (l)))
-#define tty_delline(l)	(tty_puts(cap_dl, (l)))
-#define tty_home()	(tty_puts(cap_ho, 1))
-#define tty_clreol()	(tty_puts(cap_ce, 1))
-#define tty_standout()	(tty_puts(cap_so, 1))
-#define tty_standend()	(tty_puts(cap_se, 1))
+void tty_put(char *name, int lines);
+void tty_goto(int x, int y);
 
 @d<local prototypes@>
-#define tty_getcap(s)	(tgetstr((s), &termcap_str))
+int fputchar();
+
+@u
+void
+tty_put(char *name, int lines)
+{
+    tputs(tty_getcap(name), lines, fputchar);
+}
+
+void
+tty_goto(int x, int y)
+{
+    tputs(tgoto(tty_getcap("cm"), x, y), 1, fputchar);
+}
+
+@d<prototypes@>
+#define tty_clear()	(tty_put("cl", tty_lines))
+#define tty_home()	(tty_put("ho", 1))
+#define tty_clreos(l)	(tty_put("cd", (l)))
+#define tty_clreol()	(tty_put("ce", 1))
+#define tty_insline(l)	(tty_put("al", (l)))
+#define tty_delline(l)	(tty_put("dl", (l)))
+#define tty_standout()	(tty_put("so", 1))
+#define tty_standend()	(tty_put("se", 1))
+#define tty_hidecrsr()	(tty_put("vi", 1))
+#define tty_showcrsr()	(tty_put("vo", 1))
 
 
 @ turning echoing on and off
@@ -344,4 +337,53 @@ tty_vmin(int min, int tim)
 	}
 
 	return 0;
+}
+
+
+@ managing capability strings.
+
+@d<local globals@>
+struct cap {
+    char *name;
+    char *cap;
+};
+
+#define CAP_SIZE	253
+#define CAP_G		17
+struct cap cap[253];
+
+@d<prototypes@>
+char *tty_getcap(char *name);
+
+@u
+char *
+tty_getcap(char *name)
+{
+    int i, j;
+
+    i = j = (name[0]*name[1]) % CAP_SIZE;
+
+    while (cap[i].name) {
+	if (strcmp(cap[i].name, name) == 0)
+	    return cap[i].cap;
+	i = (i+CAP_G) % CAP_SIZE;
+	if (i == j)	/* cap array full! */
+	    return NULL;
+    }
+    if ((cap[i].name=strdup(name)) == NULL)
+	return NULL;
+    cap[i].cap = (char *)tgetstr(name, &termcap_str);
+
+    return cap[i].cap;
+}
+
+
+@d<prototypes@>
+int tty_iscap(char *name);
+
+@u
+int
+tty_iscap(char *name)
+{
+    return (tgetflag(name) == 1);
 }

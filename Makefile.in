@@ -1,102 +1,292 @@
+# Makefile.in generated automatically by automake 0.31 from Makefile.am
 
-TAR=	tar	# for making distribution only
-GZIP=	gzip	# for making distribution only
-CC=	@CC@
-INSTALL=@INSTALL@
-INSTALL_DATA=@INSTALL_DATA@
-INSTALL_PROGRAM=@INSTALL_PROGRAM@
+# Copyright (C) 1994, 1995, 1996 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy, distribute and modify it.
 
-CFLAGS=	@CFLAGS@
-LIBS=	@LIBS@ -ltermcap
-LIBOBJS=@LIBOBJS@
 
+SHELL = /bin/sh
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
 prefix = @prefix@
 exec_prefix = @exec_prefix@
-bindir = $(exec_prefix)/bin
 
-OBJS=	directory.o display.o readdir.o loop.o functions.o\
-	ftp.o sockets.o main.o version.o options.o keys.o tty.o rc.o\
-	bindings.o fntable.o\
-	fn_basic.o fn_prefix.o fn_scroll.o fn_select.o fn_options.o
-CLEANFLS=fntable.c fntable.h bindings.c make-bind make-bind.o
-SRCS=	directory.c display.c readdir.c loop.c functions.c\
-	ftp.c sockets.c main.c options.c keys.c tty.c rc.c\
-	directory.h display.h readdir.h loop.h functions.h\
-	ftp.h sockets.h options.h keys.h tty.h rc.h\
-	fn_basic.c fn_prefix.c fn_scroll.c fn_select.c fn_options.c
-AUXSRCS=make-bind.c
-LIBSRCS=strdup.c getcwd.c getdomainname.c strerror.c fputchar.c
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+
+top_builddir = .
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
+
+AUTOMAKE_OPTIONS=	no-dependencies foreign
+
+LDADD=	@LIBOBJS@
+
+bin_PROGRAMS=	cftp
+noinst_PROGRAMS=mkbind
+cftp_SOURCES=	directory.c display.c readdir.c loop.c functions.c \
+		ftp.c sockets.c main.c options.c keys.c tty.c rc.c \
+		version.c bindings.c fntable.c \
+		fn_basic.c fn_prefix.c fn_scroll.c fn_select.c fn_options.c
+noinst_HEADERS= directory.h display.h readdir.h loop.h functions.h \
+		ftp.h sockets.h options.h keys.h tty.h rc.h fntable.h
+mkbind_SOURCES=	mkbind.c keys.c rc.c
+
+cftp_DEPENDENCIES=    @LIBOBJS@
+mkbind_DEPENDENCIES=    @LIBOBJS@
+
+EXTRA_DIST=	bindings.desc fntable.c.proto fntable.h.proto \
+		caps.def
+
+CLEANFLS=fntable.c fntable.h bindings.c mkbind mkbind.o
 FUNCS=	fn_basic.fn fn_prefix.fn fn_scroll.fn fn_select.fn fn_options.fn
-FILES=	Makefile.in TODO \
-	bindings.desc fntable.c.proto fntable.h.proto version.c \
-	config.h.in configure configure.in install-sh mkinstalldirs
 WEBS=	directory.cw display.cw functions.cw loop.cw main.cw \
 	readdir.cw sockets.cw options.cw ftp.cw \
 	fn_basic.cw fn_prefix.cw fn_scroll.cw fn_select.cw fn_options.cw \
 	make-bind.cw additional.cw tag.cw
-WEBFILES=nolines
+CONFIG_HEADER_IN = config.h.in
+CONFIG_HEADER = ./config.h
+PROGRAMS = $(noinst_PROGRAMS) $(bin_PROGRAMS)
 
-PRG=	cftp
-VERS=	0.4
-DISTRIB=$(PRG)-$(VERS)
-WEBDISTRIB=$(PRG)-$(VERS)-web
 
-all: $(PRG)
+CC = @CC@
+LEX = @LEX@
+YACC = @YACC@
 
-$(PRG): $(OBJS) $(LIBOBJS)
-	$(CC) -o $(PRG) $(OBJS) $(LIBOBJS) $(LIBS)
+DEFS = @DEFS@ -I. -I$(srcdir) -I.
+CPPFLAGS = @CPPFLAGS@
+CFLAGS = @CFLAGS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
 
-dist: $(SRCS) $(FUNCS) $(AUXSRCS) $(LIBSRCS) configure
-	rm -rf $(DISTRIB)
-	mkdir $(DISTRIB)
-	for n in $(SRCS) $(FUNCS) $(AUXSRCS) $(LIBSRCS) $(FILES); \
-	do \
-		ln $$n $(DISTRIB)/; \
+COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
+LINK = $(CC) $(LDFLAGS) -o $@
+mkbind_OBJECTS = mkbind.o keys.o rc.o
+mkbind_LDADD = $(LDADD)
+cftp_OBJECTS = directory.o display.o readdir.o loop.o functions.o ftp.o \
+sockets.o main.o options.o keys.o tty.o rc.o version.o bindings.o \
+fntable.o fn_basic.o fn_prefix.o fn_scroll.o fn_select.o fn_options.o
+cftp_LDADD = $(LDADD)
+HEADERS = $(noinst_HEADERS)
+
+DIST_COMMON = Makefile.am Makefile.in TODO config.h.in configure \
+configure.in fputchar.c getcwd.c getdomainname.c install-sh \
+mkinstalldirs stamp-h.in strdup.c strerror.c
+
+
+PACKAGE = @PACKAGE@
+VERSION = @VERSION@
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(BUILT_SOURCES) $(HEADERS) \
+	$(TEXINFOS) $(INFOS) $(MANS) $(EXTRA_DIST) $(DATA)
+DEP_DISTFILES = $(DIST_COMMON) $(SOURCES) $(BUILT_SOURCES) $(HEADERS) \
+	$(TEXINFOS) $(INFO_DEPS) $(MANS) $(EXTRA_DIST) $(DATA)
+SOURCES = $(mkbind_SOURCES) $(cftp_SOURCES)
+OBJECTS = $(mkbind_OBJECTS) $(cftp_OBJECTS)
+
+default: all
+
+
+$(srcdir)/Makefile.in: Makefile.am configure.in
+	cd $(srcdir) && automake Makefile
+
+# For an explanation of the following Makefile rules, see node
+# `Automatic Remaking' in GNU Autoconf documentation.
+Makefile: Makefile.in config.status
+	CONFIG_FILES=$@ CONFIG_HEADERS= ./config.status
+config.status: configure
+	./config.status --recheck
+$(srcdir)/configure: configure.in $(ACLOCAL)
+	cd $(srcdir) && autoconf
+
+$(CONFIG_HEADER): stamp-h
+stamp-h: $(CONFIG_HEADER_IN) config.status
+	CONFIG_FILES= CONFIG_HEADERS=$(CONFIG_HEADER) ./config.status
+$(srcdir)/$(CONFIG_HEADER_IN): stamp-h.in
+$(srcdir)/stamp-h.in: configure.in $(ACLOCAL) $(ACCONFIG) $(CONFIG_TOP) $(CONFIG_BOT)
+	cd $(srcdir) && autoheader
+	echo timestamp > $(srcdir)/stamp-h.in
+
+mostlyclean-noinstPROGRAMS:
+
+clean-noinstPROGRAMS:
+	rm -f $(noinst_PROGRAMS)
+
+distclean-noinstPROGRAMS:
+
+maintainer-clean-noinstPROGRAMS:
+
+mostlyclean-binPROGRAMS:
+
+clean-binPROGRAMS:
+	rm -f $(bin_PROGRAMS)
+
+distclean-binPROGRAMS:
+
+maintainer-clean-binPROGRAMS:
+
+install-binPROGRAMS: $(bin_PROGRAMS)
+	$(top_srcdir)/mkinstalldirs $(bindir)
+	for p in $(bin_PROGRAMS); do		\
+	  if test -f $$p; then			\
+	    $(INSTALL_PROGRAM) $$p $(bindir)/`echo $$p|sed '$(transform)'`; \
+	  else :; fi				\
 	done
-	(cd $(DISTRIB); ../nolines $(SRCS) $(LIBSRCS) $(FUNCS) $(AUXSRCS))
-	rm $(DISTRIB)/Makefile.in
-	sed -e '/-WEB ONLY-START-$$/,/-WEB ONLY-END-$$/ d' Makefile.in > \
-		$(DISTRIB)/Makefile.in
-	$(TAR) -cf - $(DISTRIB) | $(GZIP) > ../$(DISTRIB).tar.gz
-	rm -rf $(DISTRIB)
 
-web-dist: 
-	rm -rf $(WEBDISTRIB)
-	mkdir $(WEBDISTRIB)
-	for n in $(WEBS) $(FILES) $(WEBFILES); \
-	do \
-		ln $$n $(WEBDISTRIB)/; \
+uninstall-binPROGRAMS:
+	for p in $(bin_PROGRAMS); do \
+	  rm -f $(bindir)/`echo $$p|sed '$(transform)'`; \
 	done
-	$(TAR) -cf - $(WEBDISTRIB) | $(GZIP) > ../$(WEBDISTRIB).tar.gz
-	rm -rf $(WEBDISTRIB)
 
-install: all installdirs
-	$(INSTALL_PROGRAM) $(PRG) $(bindir)/$(PRG)
+.c.o:
+	$(COMPILE) $<
 
-uninstall:
-	rm -f $(bindir)/$(PRG)
+mostlyclean-compile:
+	rm -f *.o core
 
-# -WEB ONLY-START-
-web-clean-echo:
-	@echo "This command is intended for maintainers to use; it"
-	@echo "deletes files that may require special tools to rebuild."
-web-clean: web-clean-echo clean
-	rm -f $(SRCS) $(LIBSRCS) $(AUXSRCS) $(FUNCS)
-# -WEB ONLY-END-
+clean-compile:
 
-distclean: clean
-	rm -f config.h Makefile config.status config.cache config.log
+distclean-compile:
+	rm -f *.tab.c
 
-clean:
-	rm -f $(OBJS) $(LIBOBJS) $(PRG) $(CLEANFLS) core core.*
+maintainer-clean-compile:
+$(mkbind_OBJECTS): ./config.h
 
-version:
-	echo 'char version[] = "Curses FTP (version '$(VERS)')";' > version.c
+mkbind: $(mkbind_OBJECTS) $(mkbind_DEPENDENCIES)
+	$(LINK) $(mkbind_OBJECTS) $(mkbind_LDADD) $(LIBS)
+$(cftp_OBJECTS): ./config.h
 
-# Make sure all installation directories (e.g. $(bindir))
-# actually exist by making them if necessary.
-installdirs: mkinstalldirs
-	./mkinstalldirs $(bindir)
+cftp: $(cftp_OBJECTS) $(cftp_DEPENDENCIES)
+	$(LINK) $(cftp_OBJECTS) $(cftp_LDADD) $(LIBS)
+
+ID: $(HEADERS) $(SOURCES)
+	here=`pwd` && cd $(srcdir) && mkid -f $$here/ID $(SOURCES) $(HEADERS)
+
+tags: TAGS
+
+TAGS:
+	here=`pwd` && cd $(srcdir) && etags $(ETAGS_ARGS) $(SOURCES) $(HEADERS) -o $$here/TAGS
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(PACKAGE)-$(VERSION)
+dist: $(DEP_DISTFILES)
+	rm -rf $(distdir)
+	mkdir $(distdir)
+	chmod 777 $(distdir)
+	distdir=`cd $(distdir) && pwd` \
+	  && cd $(srcdir) \
+	  && automake --include-deps --output-dir=$$distdir --strictness=foreign
+	@for file in `cd $(srcdir) && echo $(DISTFILES)`; do \
+	  test -f $(distdir)/$$file \
+	  || ln $(srcdir)/$$file $(distdir)/$$file 2> /dev/null \
+	  || cp -p $(srcdir)/$$file $(distdir)/$$file; \
+	done
+	chmod -R a+r $(distdir)
+	tar chozf $(distdir).tar.gz $(distdir)
+	rm -rf $(distdir)
+info:
+
+dvi:
+
+check: all
+
+installcheck:
+
+install-exec: install-binPROGRAMS
+
+install-data: 
+
+install: install-exec install-data
+	@:
+
+uninstall: uninstall-binPROGRAMS
+
+all: $(PROGRAMS) $(HEADERS) Makefile config.h
+
+install-strip:
+	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' install
+installdirs:
+	$(top_srcdir)/mkinstalldirs  $(bindir)
+
+
+mostlyclean-generic:
+	test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
+
+clean-generic:
+	test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
+
+distclean-generic:
+	rm -f Makefile $(DISTCLEANFILES)
+	rm -f config.cache config.log $(CONFIG_HEADER) stamp-h
+
+maintainer-clean-generic:
+	test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+	test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+mostlyclean:  mostlyclean-noinstPROGRAMS mostlyclean-binPROGRAMS \
+		mostlyclean-compile mostlyclean-tags \
+		mostlyclean-generic
+
+clean:  clean-noinstPROGRAMS clean-binPROGRAMS clean-compile clean-tags \
+		clean-generic mostlyclean 
+
+distclean:  distclean-noinstPROGRAMS distclean-binPROGRAMS \
+		distclean-compile distclean-tags distclean-generic \
+		clean 
+	rm -f config.status
+
+maintainer-clean:  maintainer-clean-noinstPROGRAMS \
+		maintainer-clean-binPROGRAMS maintainer-clean-compile \
+		maintainer-clean-tags maintainer-clean-generic \
+		distclean 
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+	rm -f config.status
+
+.PHONY: default mostlyclean-noinstPROGRAMS distclean-noinstPROGRAMS \
+clean-noinstPROGRAMS maintainer-clean-noinstPROGRAMS \
+mostlyclean-binPROGRAMS distclean-binPROGRAMS clean-binPROGRAMS \
+maintainer-clean-binPROGRAMS uninstall-binPROGRAMS install-binPROGRAMS \
+mostlyclean-compile distclean-compile clean-compile \
+maintainer-clean-compile tags mostlyclean-tags distclean-tags \
+clean-tags maintainer-clean-tags dist info dvi check installcheck \
+install-exec install-data install uninstall all installdirs \
+mostlyclean-generic distclean-generic clean-generic \
+maintainer-clean-generic clean mostlyclean distclean maintainer-clean
+
+
+# extra rules
+
+version.c: configure.in
+	echo "char version[] = \"$(PACKAGE) (version $(VERSION))\";" \
+		> version.c
 
 fntable.c : $(FUNCS) fntable.c.proto
 	sed -e '/^----/,$$ d' fntable.c.proto > fntable.c
@@ -113,25 +303,19 @@ fntable.h : $(FUNCS) fntable.h.proto
 	 -e '/^void / p' -e '/^\/\*/ p' $(FUNCS) >> fntable.h
 	sed -e '1,/^----/ d' fntable.h.proto >> fntable.h
 
-bindings.c : make-bind bindings.desc fntable.c
-	./make-bind
-
-make-bind: make-bind.o keys.o rc.o $(LIBOBJS)
-	$(CC) -o make-bind make-bind.o keys.o rc.o $(LIBOBJS)
+bindings.c : mkbind bindings.desc fntable.c
+	./mkbind
 
 getdomainname.o: getdomainname.c
 	$(CC) $(CFLAGS) -DDOMAINNAME=\"@DOMAINNAME@\" -c getdomainname.c
 
-configure: configure.in
-	autoconf
+# web rules
 
-# -WEB ONLY-START-
 %.fn %.c %.h : %.cw 
 	ctangle $<
 
 $(LIBSRCS): additional.cw
 	ctangle $<
-# -WEB ONLY-END-
 
 # dependencies
 
@@ -152,4 +336,10 @@ keys.o: keys.c keys.h
 tty.o: tty.c tty.h keys.h
 rc.o: rc.c rc.h
 
-make-bind.o: make-bind.c keys.h rc.h
+mkbind.o: mkbind.c keys.h rc.h
+.SUFFIXES:
+.SUFFIXES: .c .o
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

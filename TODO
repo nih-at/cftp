@@ -8,7 +8,7 @@ F forced reload of directory listing
 B handle immensly long lines in ftp_gets (malloc failure)
 F improve fn_lcd, add fn_show_ld
 F if url is file, download
-* catch signals and restore term
+B catch signals and restore term
 F save dir listing
 * handle ftp servers unable to cd ~user (NetBSD)
 F show multiline responses
@@ -16,18 +16,19 @@ F get .tar[.gz] files
 F optionally no bytecount at download / don't flood tty on fast connections
 F tag files (later download, save/load tags, detached download)
 F support for stor, dele
-F use automake
 F .cftprc 
 F display.cw: (disp_dir) make max no of lines to scroll user setable
 F tty.cw: (tty_readkey) make VTIME value user setable
-* display.cw: check for missing capabilities
-B tty.cw: (tty_init) VWERASE is VWERSE on AIX
+P display.cw: check for missing capabilities
+B Makefile.am: check what gets distributed
 ----------------------------------------------- done
+P tty.cw: (tty_init) VWERASE is VWERSE on AIX
+F use automake
 B display.cw: (win_line) problem with lines of length tty_lines-1 (e.g.
 	ftp.giga.or.at /)
 B display.cw: (disp_dir) problem with dirs of lenght win_lines+1 (e.g.
 	ftp.giga.or.at /pub/hacker)
-* support cursor keys
+F support cursor keys
 * display.cw: (read_string) use ERASE, WERASE, KILL instead of '\b' etc.
 * wrote key name parser/printer
 * rewrote without curses (termcap)

@@ -1,3 +1,7 @@
-/* Define if you have waddnstr.  */
-#undef HAVE_WADDNSTR
+/* config.h.in.  Generated automatically from configure.in by autoheader.  */
 
+/* Define if you have the nsl library (-lnsl).  */
+#undef HAVE_LIBNSL
+
+/* Define if you have the socket library (-lsocket).  */
+#undef HAVE_LIBSOCKET
