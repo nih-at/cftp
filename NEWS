@@ -1,3 +1,7 @@
+New in 0.13:
+
+* recognize sftp urls
+
 New in 0.12:
 
 * preliminary support for sftp (requires ssh protocol version 2)

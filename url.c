@@ -1,5 +1,5 @@
 /*
-  $NiH: url.c,v 1.5 2002/09/15 13:06:07 dillo Exp $
+  $NiH: url.c,v 1.6 2002/09/16 12:42:45 dillo Exp $
 
   url.c -- functions to parse and create URLs
   Copyright (C) 1996-2002 Dieter Baron
@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "config.h"
 #include "url.h"
 
 #define R URL_UCHAR
