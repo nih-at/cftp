@@ -1,3 +1,4 @@
+! check for <termcap.h> (needed for tgetstr() prototype)
 ! check for sockaddr_t and typedef to int if missing
 * find bug when viewing or piping rfc-index.txt
 * host specific rc file sections

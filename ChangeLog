@@ -1,5 +1,9 @@
 2001-07-30  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* list.c: include <string.h> for strlen(3) prototype.
+	* display.c: include <string.h> for strlen(3) prototype.
+	* fn_bind.c: include <string.h> for memcpy(3) prototype.
+
 	* options.op (stall-timeout): new option.
 
 	* main.c (main): if initial url is file, download before listing

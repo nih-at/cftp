@@ -22,6 +22,8 @@
 
 
 
+#include <string.h>
+
 #include "display.h"
 #include "list.h"
 #include "tty.h"

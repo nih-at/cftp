@@ -23,6 +23,7 @@
 
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "bindings.h"
 #include "functions.h"
