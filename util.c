@@ -1,5 +1,5 @@
 /*
-  $NiH: util.c,v 1.17 2001/12/13 21:14:57 dillo Exp $
+  $NiH: util.c,v 1.18 2001/12/14 07:04:06 dillo Exp $
 
   util -- auxiliary functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -24,6 +24,7 @@
 
 
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -273,7 +274,9 @@ mkhoststr(int passp, int urlp)
 int
 set_file_blocking(int fd, int blocking)
 {
-    if ((flags=fcntl(fileno(conin), F_GETFL, 0)) == -1)
+    int flags;
+    
+    if ((flags=fcntl(fd, F_GETFL, 0)) == -1)
 	return -1;
 
     if (blocking)
@@ -281,5 +284,5 @@ set_file_blocking(int fd, int blocking)
     else
 	flags |= O_NONBLOCK;
 
-    return fcntl(fileno(conin), F_SETFL, flags);
+    return fcntl(fd, F_SETFL, flags);
 }
