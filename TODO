@@ -38,6 +38,7 @@ B status.c: percentage wrong (all) in <tag>
 B fn_tag.c: taggin in an empty directory shouldn't tag
 B display ftp response when login failes
 ----------------------------------------------- done
+Oct  8 1997 (0.7)
 B main.c: (get_annon_passwd) check for domainname (none), for . in hostname
 P ftp.c: include <sys/select.h> only if it exists (aix vs. linux)
 B ftp.c: (ftp_reconnect) print message before reconnecting
