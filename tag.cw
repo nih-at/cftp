@@ -84,8 +84,9 @@ tag_file(char *dir, char *file, long size, char type, int flag)
 	tl = curtags->tags;
     }
     else {
-	dirtags *d = tag_insdir(dir);
-	if (d == NULL)
+	dirtags *d;
+
+	if ((d=tag_insdir(dir)) == NULL)
 	    return -1;
 	tl = d->tags;
     }
