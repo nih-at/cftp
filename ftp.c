@@ -973,6 +973,12 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size)
     itv.it_value.tv_sec = itv.it_interval.tv_sec = 1;
     itv.it_value.tv_usec = itv.it_interval.tv_usec = 0;
     setitimer(ITIMER_REAL, &itv, NULL);
+#if 0
+    if ((flags=fcntl(fileno(fin), F_GETFL, 0)) != -1) {
+	flags |= O_NONBLOCK;
+	fcntl(fileno(fin), F_SETFL, flags);
+    }
+#endif
 #else
     oldt = 0;
 #endif
