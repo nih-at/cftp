@@ -1,5 +1,5 @@
 /*
-  $NiH: display.c,v 1.21 2001/12/20 05:44:10 dillo Exp $
+  $NiH: display.c,v 1.22 2002/09/16 12:42:29 dillo Exp $
 
   display.c -- display functions
   Copyright (C) 1996-2002 Dieter Baron
@@ -41,7 +41,7 @@
 
 int disp_quiet = 0;
 int disp_active = 0;
-char d_status[8192];
+char *d_status;
 
 extern char *prg;
 
@@ -224,27 +224,33 @@ disp_prompt_char(void)
 void
 disp_status(int flags, char *fmt, ...)
 {
-    /* XXX: rewrite without static buffer */
-    char buf[8192];
+    char *buf;
     va_list argp;
 
     if (flags == 0)
 	return;
 
     va_start(argp, fmt);
-    vsprintf(buf, fmt, argp);
+    vasprintf(&buf, fmt, argp);
     va_end(argp);
-
-    if ((flags & DISP_STATUS) && disp_active) {
-	strcpy(d_status, buf);
-	disp_restat();
+    if (buf == NULL) {
+	/* XXX: handle out of mem error */
+	return;
     }
-    if (flags & DISP_HIST)
-	ftp_hist(strdup(buf));
+
     if ((flags & DISP_STDERR) && !disp_active) {
 	/* XXX: only if disp not started yet */
 	fprintf(stderr, "%s: %s\n", prg, buf);
     }
+    if (flags & DISP_HIST)
+	ftp_hist(strdup(buf));
+    if ((flags & DISP_STATUS) && disp_active) {
+	free(d_status);
+	d_status = buf;
+	disp_restat();
+    }
+    else
+	free(buf);
 }	
 
 
@@ -260,11 +266,13 @@ disp_restat(void)
 	tty_goto(0, tty_lines-1);
 	tty_clreol();
 
-	c = d_status[tty_cols-tty_noLP];
-	d_status[tty_cols-tty_noLP] = '\0';
-	fputs(d_status, stdout);
-	fflush(stdout);
-	d_status[tty_cols-tty_noLP] = c;
+	if (d_status) {
+	    c = d_status[tty_cols-tty_noLP];
+	    d_status[tty_cols-tty_noLP] = '\0';
+	    fputs(d_status, stdout);
+	    fflush(stdout);
+	    d_status[tty_cols-tty_noLP] = c;
+	}
 }
 
 
