@@ -92,7 +92,6 @@ extern char version[];
 
 
 void print_usage(FILE *f);
-char *get_anon_passwd(void);
 void read_netrc(char *host, char **user, char **pass, char **wdir);
 void sig_end(int i);
 void sig_escape(int i);
@@ -109,7 +108,6 @@ main(int argc, char **argv)
     directory *dir;
     char *host, *user = NULL, *port = NULL, *pass = NULL, *wdir = NULL;
     char *poss_fn;
-    int keep_pass = 1;
     int c, sel;
     char *b, *b2;
     int check_alias;
@@ -197,30 +195,13 @@ main(int argc, char **argv)
 	if (pass == NULL)
 	    pass = get_anon_passwd();
     }
-    else {
-	if (pass == NULL) {
-	    b = (char *)malloc(strlen(user)+strlen(host)+16);
-	    sprintf(b, "Password (%s@%s): ", user, host);
-	    pass = (char *)getpass(b);
-	    keep_pass = 0;
-	    free(b);
-	}
-    }
-    if (port == NULL)
-	port = "ftp";
-    
+
     if (tty_init() < 0)
 	exit(1);
 
     ftp_init();
 
-    ftp_host = host;
-    ftp_prt = port;
-    ftp_user = user;
-    if (keep_pass)
-	ftp_pass = pass;
-
-    if (ftp_open(ftp_host, ftp_prt) == -1)
+    if (ftp_open(host, port) == -1)
 	exit(1);
 
     if (init_disp() < 0)
@@ -232,7 +213,7 @@ main(int argc, char **argv)
 
     binding_state = bs_remote;
 
-    if (ftp_login(host, user, pass) == -1) {
+    if (ftp_login(user, pass) == -1) {
 	exit_disp();
 	exit(1);
     }
@@ -308,40 +289,6 @@ print_usage(FILE *f)
     for (i=0; usage[i]; i++)
 	fprintf(f, "%s %s %s\n", i ? "      " : "Usage:",
 		prg, usage[i]);
-}
-
-
-
-char *
-get_anon_passwd(void)
-{
-    char pass[8192], host[1024], domain[1024];
-    struct passwd *pwd;
-
-    pwd = getpwuid(getuid());
-
-    if (pwd)
-	sprintf(pass, "%s@", pwd->pw_name);
-    else
-	strcpy(pass, "unknown@");
-
-    gethostname(host, 1023);
-#ifdef HAVE_GETDOMAINNAME
-    getdomainname(domain, 1023);
-#else
-    domain[0] = '\0';
-#endif
-
-    if (strcmp(domain, "(none)") != 0 && domain[0] != '\0') {
-	if (domain[0] != '.')
-	    sprintf(pass+strlen(pass), "%s.%s", host, domain);
-	else
-	    sprintf(pass+strlen(pass), "%s%s", host, domain);
-    }
-    else if (strchr(host, '.'))
-	strcat(pass, host);
-    
-    return strdup(pass);
 }
 
 
