@@ -96,6 +96,15 @@ struct sockaddr *ftp_addr = (struct sockaddr *)&_ftp_addr;
 
 
 
+struct _ftp_transfer_stats {
+    long got, start, size;
+    int secs, stall_sec;
+    int ncur, ccur;
+    long *cur;
+};
+
+
+
 int ftp_put(char *fmt, ...);
 int ftp_abort(FILE *fin);
 int ftp_resp(void);
@@ -113,8 +122,11 @@ static int _ftp_host2ascii(char *buf, char *buf2, int n, int *trail_cr);
 #define ENABLE_TRANSFER_RATE
 
 #ifdef ENABLE_TRANSFER_RATE
-static void _ftp_update_transfer(char *fmt, long got, long *cur,
-				 int old_sec, int new_sec);
+static void _ftp_transfer_stats_init(struct _ftp_transfer_stats *tr,
+				     long start, long size, int ncur);
+static void _ftp_transfer_stats_cleanup(struct _ftp_transfer_stats *tr);
+static void _ftp_update_transfer(struct _ftp_transfer_stats *tr, long got,
+				 int secs);
 #endif
 
 
@@ -941,28 +953,19 @@ ftp_cwd(char *path)
 int
 ftp_cat(FILE *fin, FILE *fout, long start, long size, int upload)
 {
-    char buf[4096], buf2[8192], fmt[4096], *p;
+    char buf[4096], buf2[8192], *p;
     int nread, nwritten, err, trail_cr;
+    int old_alarm;
     long got;
     struct itimerval itv;
-    long cur[4];
-    int old_alarm;
+    struct _ftp_transfer_stats trstat;
     int flags, ret, do_read;
     fd_set fds;
-
-    if (size >= 0) {
-	sprintf(fmt, "transferred %%ld/%ld "
-		"(total: %%.2fkb/s, current: %%.2fkb/s)",
-		size);
-    }
-    else {
-	strcpy(fmt, "transferred %ld (total: %%.2fkb/s, current: %%.2fkb/s)");
-    }
 
     got = start;
     signal(SIGINT, sig_remember);
 
-    cur[0] = cur[1] = cur[2] = cur[3] = 0;
+    _ftp_transfer_stats_init(&trstat, start, size, 3);
     old_alarm = sig_alarm = sig_intr = 0;
     itv.it_value.tv_sec = itv.it_interval.tv_sec = 1;
     itv.it_value.tv_usec = itv.it_interval.tv_usec = 0;
@@ -1029,8 +1032,7 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size, int upload)
 	    break;
 	
 	if (old_alarm != sig_alarm) {
-	    _ftp_update_transfer(fmt, got-start, cur,
-				 old_alarm, sig_alarm);
+	    _ftp_update_transfer(&trstat, got, sig_alarm);
 	    old_alarm = sig_alarm;
 	}
     }
@@ -1039,6 +1041,8 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size, int upload)
     itv.it_value.tv_sec = itv.it_interval.tv_sec = 0;
     itv.it_value.tv_usec = itv.it_interval.tv_usec = 0;
     setitimer(ITIMER_REAL, &itv, NULL);
+
+    _ftp_transfer_stats_cleanup(&trstat);
 
     if (ferror(fin) || sig_intr) {
 	errno = 0;
@@ -1194,41 +1198,71 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size, int upload)
 
 #ifdef ENABLE_TRANSFER_RATE
 static void
-_ftp_update_transfer(char *fmt, long got, long *cur, int old_sec, int new_sec)
+_ftp_update_transfer(struct _ftp_transfer_stats *tr, long got, int secs)
 {
-    long step;
-    int nsec;
+    long base, step;
+    int nsec, i;
+    double rtot, rcur;
 
-    nsec = new_sec-old_sec;
+    nsec = secs-tr->secs;
 
-    switch (nsec) {
-    case 0:
-	break;
-
-    case 1:
-	cur[0] = cur[1];
-	cur[1] = cur[2];
-	cur[2] = cur[3];
-	break;
-
-    case 2:
-	cur[0] = cur[2];
-	cur[1] = cur[3];
-	cur[2] = cur[1] + (got-cur[1])/2;
-	break;
-
-    default:
-	step = (got-cur[3]) / nsec;
-	cur[0] = cur[3]+step*(nsec-3);
-	cur[1] = cur[3]+step*(nsec-2);
-	cur[2] = cur[3]+step*(nsec-1);
-	break;
+    if (nsec) {
+	base = tr->cur[tr->ccur];
+	step = (got-base) / nsec;
+	for (i=0; i<nsec-1; i++) {
+	    tr->ccur = (tr->ccur+1) % tr->ncur;
+	    tr->cur[tr->ccur] = base + step*i;
+	}
+	tr->ccur = (tr->ccur+1) % tr->ncur;
+	tr->cur[tr->ccur] = got;
     }
-    cur[3] = got;
+    if (tr->got != got) {
+	tr->got = got;
+	tr->stall_sec = secs;
+    }
+    tr->secs = secs;
 
-    disp_status(fmt, got, got/(float)(new_sec*1024),
-		(cur[3]-cur[0])/((float)3*1024));
+    rtot = (got-tr->start)/(double)(secs*1024);
+    rcur = ((tr->cur[tr->ccur] - tr->cur[(tr->ccur+1)%tr->ncur])
+	    / ((double)(secs < tr->ncur-1 ? secs : tr->ncur-1)*1024));
+
+    if (tr->size != -1)
+	disp_status("transferred %ld/%ld (total: %.2fkb/s, current: %.2fkb/s)",
+		    got, tr->size, rtot, rcur);
+    else
+	disp_status("transferred %ld (total: %.2fkb/s, current: %.2fkb/s)",
+		    got, rtot, rcur);
 }
+
+
+
+static void
+_ftp_transfer_stats_init(struct _ftp_transfer_stats *tr,
+			 long start, long size, int cur_secs)
+{
+    int i;
+
+    /* XXX: check return value */
+    tr->ncur = cur_secs+1;
+    tr->cur = malloc(tr->ncur*sizeof(long));
+    tr->ccur = 0;
+    for (i=0; i<tr->ncur; i++)
+	tr->cur[i] = start;
+
+    tr->got = tr->start = start;
+    tr->size = size;
+    tr->secs = tr->stall_sec = 0;
+}
+
+
+
+static void
+_ftp_transfer_stats_cleanup(struct _ftp_transfer_stats *tr)
+{
+    free(tr->cur);
+    tr->ncur = 0;
+}
+
 #endif /* ENABLE_TRANSFER_RATE */
 
 

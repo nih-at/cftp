@@ -13,8 +13,7 @@
 * rethink directory format auto detection logic
 * improve check wheter lib{socket,nsl,resolv} are needed
 * ^[[O triggers bindings for left and O
-* fix transfer rate display (verify correctness, stalled)
-* detect hung data connection
+* detect stalled and hung data connection
 * ftp_retr: check 150 format on different servers
 * handle 8 bit keys
 * <local> mode

@@ -5,6 +5,11 @@
 	(_ftp_host2ascii): new function.
 	(ftp_cat, _ftp_ascii2host): use two buffers in ASCII<->host
 	conversion.  chose ASCII conversion based on transfer direction.
+	(_ftp_transfer_stats_init, _ftp_transfer_stats_cleanup): new
+	functions.
+	(ftp_cat): use struct _ftp_transfer_stats.
+	(_ftp_update_transfer): rewritten to use struct _ftp_tranfer_stats
+	and to be correct.
 
 2001-03-20  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
