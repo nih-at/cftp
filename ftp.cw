@@ -140,10 +140,9 @@ int ftp_reconnect(void);
 int
 ftp_reconnect(void)
 {
-    char *path;
-    int keep_pass;
+    char *path, *pass;
 
-    keep_pass = 1;
+    pass = ftp_pass;
 
     if (ftp_host == NULL || ftp_prt == NULL || ftp_user == NULL)
 	return -1;
@@ -153,30 +152,24 @@ ftp_reconnect(void)
     if (conout)
 	fclose(conout);
 
-    if (ftp_pass == NULL) {
+    if (pass == NULL) {
 	char *b;
 	
 	b = (char *)malloc(strlen(ftp_user)+strlen(ftp_host)+16);
 	sprintf(b, "Password (%s@@%s): ", ftp_user, ftp_host);
-	ftp_pass = read_string(b, 0);
-	keep_pass = 0;
+	pass = read_string(b, 0);
 	free(b);
     }
 
     if (ftp_open(ftp_host, ftp_prt) == -1)
 	return -1;
 
-    if (ftp_login(ftp_host, ftp_user, ftp_pass) == -1)
+    if (ftp_login(ftp_host, ftp_user, pass) == -1)
 	return -1;
 
     disp_head("%s: %s", ftp_head, ftp_pcwd);
     free(ftp_pcwd);
     ftp_pcwd = NULL;
-
-    if (!keep_pass) {
-	free(ftp_pass);
-	ftp_pass = NULL;
-    }
 
     return 0;
 }
