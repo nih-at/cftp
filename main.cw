@@ -189,20 +189,21 @@ parse_url(char *url, char **user, char **host, char **port, char **dir)
 	return -1;
     url+=6;
 
-    if ((p=strchr(url, '/')) != NULL) {
+    if ((p=strchr(url, '/')) != NULL)
 	*(p++) = '\0';
+    else
+	p = url+strlen(url);
+    
+    if ((q=strchr(url, '@@')) != NULL) {
+	*q = '\0';
+	*user = url;
+	url = q+1;
+	userp = 1;
+    }
 
-	if ((q=strchr(url, '@@')) != NULL) {
-	    *q = '\0';
-	    *user = url;
-	    url = q+1;
-	    userp = 1;
-	}
-
-	if ((q=strchr(url, ':')) != NULL) {
-	    *q = '\0';
-	    *port = q+1;
-	}
+    if ((q=strchr(url, ':')) != NULL) {
+	*q = '\0';
+	*port = q+1;
     }
 	
     *host = url;
