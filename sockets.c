@@ -1,9 +1,3 @@
-@ socket interface.
-
-@(sockets.h@)
-@<prototypes@>
-
-@u
 #include <stdio.h>
 #include <netdb.h>
 #include <string.h>
@@ -14,13 +8,8 @@
 
 extern char *prg;
 
+
 
-@ opening an active socket.
-
-@d<prototypes@>
-int sopen(char *host, char *service);
-
-@u
 int
 sopen(char *host, char *service)
 {
@@ -58,13 +47,8 @@ sopen(char *host, char *service)
         return(s);
 }
 
+
 
-@ opening a passive socket (to any port).
-
-@d<prototypes@>
-int spassive(unsigned long *host, int *port);
-
-@u
 int
 spassive(unsigned long *host, int *port)
 {
@@ -107,4 +91,3 @@ spassive(unsigned long *host, int *port)
 
 	return s;
 }
-

@@ -68,13 +68,6 @@ else
 	DOMAINNAME=""
 fi
 
-
-dnl libsave="$LIBS"
-dnl LIBS="$LIBS $LCURSES"
-dnl AC_CHECK_FUNCS(waddnstr)
-dnl LIBS="$libsave"
-
-
 dnl system services
 
 dnl output
