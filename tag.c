@@ -202,7 +202,13 @@ _tag_insert(int n, struct tagentry *t, char *file, long size, char type)
     if ((line=(char *)malloc(strlen(file)+14)) == NULL)
 	return -1;
 
-    /* XXX: tags.line overflow */
+    if (tags.len >= tags.reallen) {
+	tags.reallen += 1024;
+	if ((tags.line=(struct tagentry *)realloc(tags.line, tags.reallen
+						  *sizeof(struct tagentry)))
+	    == NULL)
+	    return -1;
+    }
     
     for (i=tags.len; i>n; --i) {
 	tags.line[i].prev->next++;
