@@ -1,15 +1,23 @@
-This is Comfortable FTP, a full screen ftp client.
+  This is Comfortable FTP, a full screen ftp client.
 
-For generic installation instructions, see file `INSTALL'; for
+  Supported are FTP both with active and passive data connections,
+IPv4 and IPv6, and SFTP (a file transfer protocol using SSH for
+authorization and connection encryption).
+
+  SFTP support is somewhat preliminary: It requires SSH protocol
+version 2 with a configured sftp subsystem on the server.  Also,
+interrupting transfers doesn't work.
+
+  For generic installation instructions, see file `INSTALL'; for
 documentation read the info file `cftp.info'.  For key bindings, see
 the file `bindings.desc'.
 
-In cftp, press H for help.
+  In cftp, press H for help.
 
-The texinfo documentation is a mess; any help most welcome (especially
-the outline of a good structure).
+  The texinfo documentation is a mess; any help most welcome
+(especially the outline of a good structure).
 
-If you make a binary distribution, please include a pointer to the
+  If you make a binary distribution, please include a pointer to the
 distribution site:
 	ftp.giga.or.at /pub/nih/cftp
 	http://ftp.giga.or.at/pub/nih/cftp
@@ -17,4 +25,4 @@ The latest version can always be found there and on the backup site:
 	sunsite.univie.ac.at /pub/nih/cftp
 	http://sunsite.univie.ac.at/pub/nih/cftp
 
-Mail suggestions and bug reports to <dillo@giga.or.at>.
+  Mail suggestions and bug reports to <dillo@giga.or.at>.
