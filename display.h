@@ -28,7 +28,13 @@
 #include <stdio.h>
 
 extern int tty_lines;
-#define win_lines	(tty_lines-4)
+extern int opt_emacs_status;
+/* first line of scrolling region */
+#define win_top		(opt_emacs_status ? 0 : 2)
+/* last line of scrolling region */
+#define win_bottom	(tty_lines-3)
+/* number of lines in scrolling region */
+#define win_lines	(tty_lines-(opt_emacs_status ? 2 : 4))
 
 extern int disp_quiet;
 

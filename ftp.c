@@ -36,6 +36,8 @@
 #include "readdir.h"
 #include "options.h"
 #include "util.h"
+#include "bindings.h"
+#include "status.h"
 
 
 
@@ -98,35 +100,36 @@ ftp_open(char *host, char *port)
 int
 ftp_login(char *host, char *user, char *pass)
 {
-	int resp;
+    int resp;
 
-	if (ftp_resp() != 220)
-		return -1;
+    if (ftp_resp() != 220)
+	return -1;
 
-	if (strcmp(user, "ftp") != 0 && strcmp(user, "anonymous") != 0) {
-		ftp_head = (char *)malloc(strlen(user)+strlen(host)+2);
-		sprintf(ftp_head, "%s@%s", user, host);
-		ftp_anon = 0;
-	}
-	else {
-		ftp_head = strdup(host);
-		ftp_anon = 1;
-	}
+    if (strcmp(user, "ftp") != 0 && strcmp(user, "anonymous") != 0) {
+	status.host = (char *)malloc(strlen(user)+strlen(host)+2);
+	sprintf(status.host, "%s@%s", user, host);
+	ftp_anon = 0;
+    }
+    else {
+	status.host = strdup(host);
+	ftp_anon = 1;
+    }
 
-	ftp_put("user %s", user);
+    ftp_put("user %s", user);
+    resp = ftp_resp();
+	
+    if (resp == 331) {
+	ftp_put("pass %s", pass);
 	resp = ftp_resp();
-	
-	if (resp == 331) {
-		ftp_put("pass %s", pass);
-		resp = ftp_resp();
-	}
+    }
 
-	if (resp != 230)
-		return -1;
+    if (resp != 230)
+	return -1;
 
-	disp_head("%s", ftp_head);
+    free(status.remote.path);	
+    status_do(bs_none);
 	
-	return 0;
+    return 0;
 }
 
 
@@ -161,8 +164,8 @@ ftp_reconnect(void)
     if (ftp_login(ftp_host, ftp_user, pass) == -1)
 	return -1;
 
-    disp_head("%s: %s", ftp_head, ftp_pcwd);
-    free(ftp_pcwd);
+    status.remote.path = strdup(ftp_lcwd);
+    status_do(bs_remote);
     ftp_pcwd = NULL;
 
     return 0;
@@ -198,7 +201,9 @@ ftp_list(char *path)
 	if (ftp_mode('a') == -1 || ftp_cwd(path) == -1)
 		return NULL;
 
-	disp_head("%s: %s", ftp_head, path);
+	free(status.remote.path);
+	status.remote.path = strdup(path);
+	status_do(bs_remote);
 
 	if ((fd=ftp_port()) == -1)
 		return NULL;
@@ -242,7 +247,9 @@ ftp_cd(char *wd)
 		free(ftp_lcwd);
 		ftp_lcwd = nwd;
 		
-		disp_head("%s: %s", ftp_head, ftp_lcwd);
+		free(status.remote.path);
+		status.remote.path = strdup(ftp_lcwd);
+		status_do(bs_remote);
 	}
 	else
 		free(nwd);

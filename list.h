@@ -43,6 +43,7 @@ extern struct list *list;	/* currently displayed list */
 
 
 void list_do(int full);
+void list_reline(int line);
 
 #endif /* list.h */
 

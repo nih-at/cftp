@@ -24,6 +24,7 @@ bind		8	prefix 8
 bind		9	prefix 9
 
 bind		T	state <tag>
+bind		R	state <remote>
 
 bind	<remote> ^j	enter/get
 bind	<remote> ^m	enter/get

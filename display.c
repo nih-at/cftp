@@ -32,14 +32,15 @@
 #include "tty.h"
 #include "keys.h"
 #include "list.h"
+#include "bindings.h"
+#include "status.h"
 
 int disp_quiet = 0;
-char head[8192], status[8192];
+char d_status[8192];
 
 
 
 void disp_restat(void);
-void disp_rehead(void);
 void win_line(char *line, int sel);
 
 
@@ -115,8 +116,8 @@ disp_redraw(void)
 		return;
 
 	tty_clear();
-	disp_rehead();
 	list_do(1);
+	status_do(bs_none);
 	disp_restat();
 }
 
@@ -214,7 +215,7 @@ disp_status(char *fmt, ...)
 	va_list argp;
 
 	va_start(argp, fmt);
-	vsprintf(status, fmt, argp);
+	vsprintf(d_status, fmt, argp);
 	va_end(argp);
 	
 	disp_restat();
@@ -233,45 +234,11 @@ disp_restat(void)
 	tty_goto(0, tty_lines-1);
 	tty_clreol();
 
-	c = status[tty_cols-tty_noLP];
-	status[tty_cols-tty_noLP] = '\0';
-	fputs(status, stdout);
+	c = d_status[tty_cols-tty_noLP];
+	d_status[tty_cols-tty_noLP] = '\0';
+	fputs(d_status, stdout);
 	fflush(stdout);
-	status[tty_cols-tty_noLP] = c;
-}
-
-
-
-void
-disp_head(char *fmt, ...)
-{
-	va_list argp;
-
-	va_start(argp, fmt);
-	vsprintf(head, fmt, argp);
-	va_end(argp);
-	
-	disp_rehead();
-}	
-
-
-
-void
-disp_rehead(void)
-{
-	char c;
-	
-	if (disp_quiet)
-		return;
-
-	tty_home();
-	tty_clreol();
-
-	c = head[tty_cols];
-	head[tty_cols] = '\0';
-	puts(head);
-	fflush(stdout);
-	head[tty_cols] = c;
+	d_status[tty_cols-tty_noLP] = c;
 }
 
 

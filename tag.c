@@ -97,6 +97,7 @@ tag_file(char *dir, char *file, long size, char type, enum tagopt what)
 	    return 0;
 	}
 	freedirp = 1;
+	file = basename(canon);
     }
     else {
 	if ((canon=(char *)malloc(strlen(dir)+strlen(file)+2)) == NULL)
@@ -112,6 +113,8 @@ tag_file(char *dir, char *file, long size, char type, enum tagopt what)
 	t->name[t->dirl] = '\0';
 	cmp = strcmp(dir, t->name);
 	t->name[t->dirl] = c;
+	if (cmp == 0)
+	    cmp = strcmp(file, t->file);
     }
 
     if (t != &tags_s && cmp == 0) {

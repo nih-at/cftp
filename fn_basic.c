@@ -471,7 +471,7 @@ fn_state(char **args)
 	binding_state = bs_remote;
 	list = curdir;
 	list_do(1);
-	/* XXX: status line */
+	status_do(bs_none);
 	break;
 
     case bs_local:
@@ -485,7 +485,7 @@ fn_state(char **args)
 	binding_state = bs_tag;
 	list = &tags;
 	list_do(1);
-	/* XXX: status line */
+	status_do(bs_none);
 	break;
 
     case bs_none:

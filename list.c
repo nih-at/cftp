@@ -26,6 +26,8 @@
 #include "list.h"
 #include "tty.h"
 #include "options.h"
+#include "bindings.h"
+#include "status.h"
 
 struct list *list;
 
@@ -109,9 +111,11 @@ list_do(int full)
 void
 list_full(struct list *list)
 {
-    tty_goto(0, 2);
+    tty_goto(0, win_top);
     tty_clreos(win_lines+2);
     list_refill(list, list->top, win_lines);
+    if (opt_emacs_status)
+	status_do(bs_none);
     disp_restat();
 }
 
@@ -122,25 +126,25 @@ list_region(struct list *list, int up, int n)
 {
     /* 
     if (up)
-	tty_goto(0, 2+win_lines-1);
+	tty_goto(0, win_bottom);
     else
-	tty_goto(0, 2);
+	tty_goto(0, win_top);
     */
 	
-    tty_scregion(2, 2+win_lines-1);
+    tty_scregion(win_top, win_bottom);
     
     if (up) {
-	tty_goto(0, 2+win_lines-1);
+	tty_goto(0, win_bottom);
 	tty_scrollup(n, win_lines);
 	tty_scregion(0, tty_lines-1);
-	tty_goto(0, 2+win_lines-n);
+	tty_goto(0, win_bottom-n+1);
 	list_refill(list, list->top+win_lines-n, n);
     }
     else {
-	tty_goto(0, 2);
+	tty_goto(0, win_top);
 	tty_scrolldown(n, win_lines);
 	tty_scregion(0, tty_lines-1);
-	tty_goto(0, 2);
+	tty_goto(0, win_top);
 	list_refill(list, list->top, n);
     }
 
@@ -153,20 +157,20 @@ void
 list_scroll(struct list *list, int up, int n)
 {
     if (up) {
-	tty_goto(0, 2);
+	tty_goto(0, win_top);
 	tty_dellines(n, win_lines+2);
-	tty_goto(0, 2+win_lines);
+	tty_goto(0, win_bottom+1);
 	tty_clreos(2);
-	tty_goto(0, 2+win_lines-n);
+	tty_goto(0, win_lines-n+1);
 
 	list_refill(list, list->top+win_lines-n, n);
     }
     else {
-	tty_goto(0, 2);
+	tty_goto(0, win_top);
 	tty_inslines(n, win_lines+2);
-	tty_goto(0, 2+win_lines);
+	tty_goto(0, win_bottom+1);
 	tty_clreos(2);
-	tty_goto(0, 2);
+	tty_goto(0, win_top);
 	
 	list_refill(list, list->top, n);
     }
@@ -192,7 +196,7 @@ list_refill(struct list *list, int top, int n)
 void
 list_desel(struct list *list, int top, int sel)
 {
-    tty_goto(0, 2+sel-top);
+    tty_goto(0, win_top+sel-top);
     list_line(list, sel, 0);
 }
 
@@ -202,7 +206,7 @@ list_desel(struct list *list, int top, int sel)
 void
 list_sel(struct list *list)
 {
-    tty_goto(0, 2+list->cur-list->top);
+    tty_goto(0, win_top+list->cur-list->top);
     list_line(list, list->cur, 1);
 }
 
@@ -256,4 +260,16 @@ list_init(void)
 	list_scrolltype = LIST_SCLINE;
     else
 	list_scrolltype = LIST_SCNONE;
+}
+
+
+
+void
+list_reline(int n)
+{
+    if (n < last_top && n > last_top+win_lines)
+	return;
+
+    tty_goto(0, win_top+n-last_top);
+    list_line(last_list, n, (n == last_sel));
 }

@@ -97,6 +97,8 @@ main(int argc, char **argv)
 
     if (tag_init() < 0)
 	exit(1);
+    if (status_init() < 0)
+	exit(1);
 
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {

@@ -37,7 +37,7 @@
 void
 fn_tag(char **args)
 {
-    char *dir, *file;
+    char *dir, *file, *base;
     long size;
     char type;
     int tagged, i;
@@ -47,6 +47,16 @@ fn_tag(char **args)
 	file = canonical(args[0], NULL);
 	size = -1;
 	type = 'l';
+
+	base = basename(file);
+
+	i = strlen(curdir->path);
+	if ((base-file == 1 && i == 1)
+	    || i == base-file-1 && strncmp(curdir->path, file, i) == 0) {
+	    i = dir_find(curdir->path, base);
+	}
+	else
+	    i = -1;
     }
     else {
 	/* works in <remote> only */
@@ -55,9 +65,17 @@ fn_tag(char **args)
 	file = curdir->line[curdir->cur].name;
 	size = curdir->line[curdir->cur].size;
 	type = curdir->line[curdir->cur].type;
+
+	i = curdir->cur;
     }
 	
     tagged = tag_file(dir, file, size, type, TAG_TOGGLE);
+
+    if (tagged && i > 0 && binding_state == bs_remote) {
+	curdir->line[curdir->cur].line[0] =
+	    (tagged < 0 ? ' ' : opt_tagchar);
+	list_reline(i);
+    }
 
     if (tagged < -1)
 	disp_status("%d files untagged", -tagged);
