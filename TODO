@@ -1,38 +1,41 @@
-F fn_search
-* handle closed connections due to timeout
-F proper read line (editing)
 F abort transfer
-F deidle connection
-F forced reload of directory listing
 * handle cd ~user/.. in a better way
-B handle immensly long lines in ftp_gets (malloc failure)
 F improve fn_lcd, add fn_show_ld
-F if url is file, download
 F save dir listing
-* handle ftp servers unable to cd ~user (NetBSD)
+P handle ftp servers unable to cd ~user (NetBSD)
 F get .tar[.gz] files
 F support for stor, dele
-F .cftprc 
 F display.cw: (disp_dir) make max no of lines to scroll user setable
 F tty.cw: (tty_readkey) make VTIME value user setable
-P display.cw: check for missing capabilities
-B tty.cw: (tty_readkey) don't discard chars by failed multibyte code
-F display.cw: (disp_redir) don't clear screen, overwrite
-P configure.in: add -posix for NeXTStep
-F quiet if in background
 F readdir.cw: support other dir listing formats (vms, dos, descritpive, ...)
 F tag files: edit/clear tags, detached download
 F tag: if tagged is directory, try .tar.gz, .tar.Z, .tar
 F remember home dir, use in disp_header
-F tag files: tag regexp
 F fn_tag.cw: (fn_gettags) display tags list while downloading
+F use `size' to determine unkown size (of links and tags)
+F quiet if in background
+F automatically deidle connection
+---------------------------------------------------------------- till beta
+F fn_search
+* handle closed connections due to timeout
+F forced reload of directory listing
+B handle immensly long lines in ftp_gets (malloc failure)
+F if url is file, download
+F .cftprc 
+P display.cw: check for missing capabilities
+B tty.cw: (tty_readkey) don't discard chars by failed multibyte code
+F display.cw: (disp_redir) don't clear screen, overwrite
+P configure.in: add -posix for NeXTStep
+F tag files: tag regexp
 F fn_basic.cw: (fn_lcd) handle ~, ~user
 B functions.texi: fix bad next pointer in last section (to first command)
 B propagate errors (conn hung or eof?) up to fn_gettags
-F use `size' to determine unkown size (of links and tags)
 B display.cw: (disp_prompt_char) only returns after RET is pressed (but only
 	reads first char)
+F cftp.texi: introduction, invoking, cftprc
 ----------------------------------------------- done
+F fn_basic.cw: (fn_deidle) new function
+F ftp.cw: (ftp_noop) new function
 B ftp.cw: (ftp_list) don't call read_dir when ftp_accept failed
 B main.cw: (parse_url) ftp://user@host doesn't recognize user
 B fn_tag.cw: (fn_gettags) don't update screen if dir_find returns -1
