@@ -1,6 +1,7 @@
 New in 0.13:
 
 * recognize sftp urls
+* new option -i (--get-tags): download tags from file on startup
 
 New in 0.12:
 
