@@ -7,7 +7,7 @@ AM_INIT_AUTOMAKE(cftp, 0.9.3b)
 AM_CONFIG_HEADER(config.h)
 
 # We want these before the checks, so the checks can modify their values.
-test -z "$CFLAGS" && CFLAGS='-g -Wall' auto_cflags=1
+test -z "$CFLAGS" && CFLAGS='-g' auto_cflags=1
 
 AC_PROG_CC
 
