@@ -33,7 +33,7 @@
 #include "config.h"
 #include "sockets.h"
 
-#ifndef H_ERRNO_DECLARED
+#ifndef HAVE_DECL_H_ERRNO
 extern int h_errno;
 #endif
 
