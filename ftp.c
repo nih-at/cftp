@@ -226,6 +226,7 @@ ftp_reconnect(void)
     status.remote.path = strdup(ftp_lcwd);
     status_do(bs_remote);
     ftp_pcwd = NULL;
+    ftp_curmode = ' ';
 
     return 0;
 }
