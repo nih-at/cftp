@@ -6,6 +6,8 @@
 @u
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <pwd.h>
 
 
 @ canonifying pathnames; if current is NULL, relative to ftp_lcwd.
@@ -91,4 +93,52 @@ dirname(char *name)
     }
 
     return dir;
+}
+
+
+@ expand ~ and ~user, locally
+
+@d<prototypes@>
+char *local_exp(char *path);
+
+@u
+char *
+local_exp(char *path)
+{
+    char *home, *s, *p;
+    struct passwd *pw;
+	    
+    if (path[0] != '~')
+	return strdup(path);
+
+    if (path[1] == '/' || path[1] == '\0') {
+	s = path+1;
+
+	if ((home=getenv("HOME")) == NULL) {
+	    if ((pw=getpwuid(getuid())) == NULL
+		|| (home=pw->pw_dir) == NULL)
+		return NULL;
+	}
+    }
+    else {
+	if (s=strchr(path, '/'))
+	    *s = '\0';
+	if ((pw=getpwnam(path+1)) == NULL
+	    || (home=pw->pw_dir) == NULL) {
+	    if (s)
+		*s = '/';
+	    return NULL;
+	}
+	if (s)
+	    *s = '/';
+	else
+	    s = path+strlen(path);
+    }
+
+    if ((p=(char *)malloc(strlen(home)+strlen(s)+1)) == NULL)
+	return NULL;
+
+    sprintf(p, "%s%s", home, s);
+
+    return p;
 }
