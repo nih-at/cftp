@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.60 2001/12/11 19:52:07 dillo Exp $
+  $NiH: ftp.c,v 1.61 2001/12/12 05:32:44 dillo Exp $
 
   ftp -- ftp protocol functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -1073,6 +1073,8 @@ ftp_cat(FILE *fin, FILE *fout, long start, long size, int upload)
 	case ERR_FOUT:
 	    disp_status("write error: %s", strerror(errno_copy));
 	    break;
+	default:
+	    ;
 	}
 	return -1;
     }
