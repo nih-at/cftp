@@ -29,6 +29,7 @@
 #include "options.h"
 #include "list.h"
 #include "util.h"
+#include "bindings.h"
 
 struct taglist tags;
 struct tagentry tags_s;
@@ -55,27 +56,27 @@ tag_init(void)
 void
 change_curdir(directory *dir)
 {
-    /* XXX: rewrite to new structures */
-
-    extern struct dirtags *curtags;
-
-    struct filetags *tags;
-    int i;
+    struct tagentry *t;
+    int i, cmp, c;
 
     for (i=0; i<curdir->len; i++)
 	curdir->line[i].line[0] = ' ';
 
-/*    curtags = tag_getdir(dir, 0);
+    cmp = 1;
 
-    if (curtags) {
-	curtags = curtags->next;
-	for (tags=curtags->tags.next; tags; tags=tags->next)
-	    if ((i=dir_find(dir, tags->name)) >= 0)
-		dir->line[i].line[0] = opt_tagchar;
+    for (t=tags_s.next; t != &tags_s && cmp <= 0; t = t->next) {
+	c = t->name[t->dirl];
+	t->name[t->dirl] = '\0';
+	cmp = strcmp(dir->path, t->name);
+	t->name[t->dirl] = c;
+	if (cmp == 0 && (i=dir_find(dir, t->file)) >= 0) {
+	    dir->line[i].line[0] = opt_tagchar;
+	}
     }
-    */
+
     curdir = dir;
-    list = (struct list *)curdir;
+    if (binding_state == bs_remote)
+	list = (struct list *)curdir;
 }
 
 

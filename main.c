@@ -191,6 +191,8 @@ main(int argc, char **argv)
     signal(SIGTSTP, sig_escape);
     signal(SIGCONT, sig_reenter);
     
+    binding_state = bs_remote;
+
     if (ftp_login(host, user, pass) == -1) {
 	exit_disp();
 	exit(1);

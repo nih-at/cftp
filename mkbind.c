@@ -187,7 +187,7 @@ main(int argc, char **argv)
 	    for (b=binding[i].next; b; b=b->next) {
 		fprintf(fout, "    { ");
 		if (b->next) {
-		    fprintf(fout, "binding_pool+%3d, ", ++off);
+		    fprintf(fout, "binding_pool+%3d, ", off++);
 		}
 		else
 		    fprintf(fout, "NULL            , ");

@@ -71,15 +71,17 @@ status_do(enum state when)
 	switch (binding_state) {
 	case bs_remote:
 	    strcpy(status_line+cols-10, "<remote>--");
-	    l = strlen(status.remote.path);
-	    if (l > space) {
-		strncpy(status_line+cols-space-11, "...", 3);
-		strncpy(status_line+cols-space-8,
-			status.remote.path+l-space+3,
-			space-3);
+	    if (status.remote.path) {
+		l = strlen(status.remote.path);
+		if (l > space) {
+		    strncpy(status_line+cols-space-11, "...", 3);
+		    strncpy(status_line+cols-space-8,
+			    status.remote.path+l-space+3,
+			    space-3);
+		}
+		else
+		    strncpy(status_line+cols-space-11, status.remote.path, l);
 	    }
-	    else
-		strncpy(status_line+cols-space-11, status.remote.path, l);
 	    break;
 	    
 	case bs_tag:

@@ -39,9 +39,10 @@ loop()
     struct binding *binding;
     function *f;
 
-    binding_state = bs_remote;
     list_do(1);
-	
+    tty_lowleft();
+    fflush(stdout);
+    
     while ((c=tty_readkey()) != -1) {
 	binding = get_function(c, bs_none);
 	if (binding->fn != -1) {
@@ -64,6 +65,9 @@ loop()
 	    disp_status("");
 	    void_prefix();
 	}
+
+	tty_lowleft();
+	fflush(stdout);
     }
 }
 

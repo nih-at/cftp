@@ -42,11 +42,11 @@ void list_full(struct list *list);
 void list_region(struct list *list, int up, int n);
 void list_scroll(struct list *list, int up, int n);
 
-void list_refill(struct list *list, int st, int n);
+void list_refill(struct list *list, int st, int n, int clreolp);
 
 void list_desel(struct list *list, int top, int sel);
 void list_sel(struct list *list);
-void list_line(struct list *list, int i, int selp);
+void list_line(struct list *list, int i, int selp, int clreolp);
 
 
 
@@ -111,12 +111,22 @@ list_do(int full)
 void
 list_full(struct list *list)
 {
+    int i;
+    
+    if (!*TTY_CAP(ce)) {
+	tty_goto(0, win_top);
+	tty_clreos(win_lines+2);
+	if (opt_emacs_status)
+	    status_do(bs_none);
+	disp_restat();
+    }
     tty_goto(0, win_top);
-    tty_clreos(win_lines+2);
-    list_refill(list, list->top, win_lines);
-    if (opt_emacs_status)
-	status_do(bs_none);
-    disp_restat();
+    list_refill(list, list->top, win_lines, *TTY_CAP(ce));
+    if (*TTY_CAP(ce))
+	for (i=list->len; i<win_lines; i++) {
+	    tty_clreol();
+	    putc('\n', stdout);
+	}
 }
 
 
@@ -138,14 +148,14 @@ list_region(struct list *list, int up, int n)
 	tty_scrollup(n, win_lines);
 	tty_scregion(0, tty_lines-1);
 	tty_goto(0, win_bottom-n+1);
-	list_refill(list, list->top+win_lines-n, n);
+	list_refill(list, list->top+win_lines-n, n, 0);
     }
     else {
 	tty_goto(0, win_top);
 	tty_scrolldown(n, win_lines);
 	tty_scregion(0, tty_lines-1);
 	tty_goto(0, win_top);
-	list_refill(list, list->top, n);
+	list_refill(list, list->top, n, 0);
     }
 
     tty_lowleft();
@@ -163,7 +173,7 @@ list_scroll(struct list *list, int up, int n)
 	tty_clreos(2);
 	tty_goto(0, win_lines-n+1);
 
-	list_refill(list, list->top+win_lines-n, n);
+	list_refill(list, list->top+win_lines-n, n, 0);
     }
     else {
 	tty_goto(0, win_top);
@@ -172,7 +182,7 @@ list_scroll(struct list *list, int up, int n)
 	tty_clreos(2);
 	tty_goto(0, win_top);
 	
-	list_refill(list, list->top, n);
+	list_refill(list, list->top, n, 0);
     }
 
     disp_restat();
@@ -181,14 +191,14 @@ list_scroll(struct list *list, int up, int n)
 
 
 void
-list_refill(struct list *list, int top, int n)
+list_refill(struct list *list, int top, int n, int clreolp)
 {
     int i, end;
 
     end = top+n;
 
     for (i=top; i<end && i<list->len; i++)
-	list_line(list, i, list->cur == i);
+	list_line(list, i, list->cur == i, clreolp);
 }
 
 
@@ -197,7 +207,7 @@ void
 list_desel(struct list *list, int top, int sel)
 {
     tty_goto(0, win_top+sel-top);
-    list_line(list, sel, 0);
+    list_line(list, sel, 0, 0);
 }
 
 
@@ -207,13 +217,13 @@ void
 list_sel(struct list *list)
 {
     tty_goto(0, win_top+list->cur-list->top);
-    list_line(list, list->cur, 1);
+    list_line(list, list->cur, 1, 0);
 }
 
 
 
 void
-list_line(struct list *list, int i, int selp)
+list_line(struct list *list, int i, int selp, int clreolp)
 {
     int l, cols;
     char *s, save;
@@ -225,8 +235,14 @@ list_line(struct list *list, int i, int selp)
     if (selp)
 	tty_standout();
     
-    if (l < cols)
-	puts(s);
+    if (l < cols) {
+	fputs(s, stdout);
+	if (selp)
+	    tty_standend();
+	if (clreolp)
+	    tty_clreol();
+	putc('\n', stdout);
+    }
     else {
 	save = s[cols];
 	s[cols] = '\0';
@@ -241,10 +257,10 @@ list_line(struct list *list, int i, int selp)
 	}
 
 	s[cols] = save;
-    }
 
-    if (selp)
-	tty_standend();
+	if (selp)
+	    tty_standend();
+    }
 }
 
 
@@ -271,5 +287,5 @@ list_reline(int n)
 	return;
 
     tty_goto(0, win_top+n-last_top);
-    list_line(last_list, n, (n == last_sel));
+    list_line(last_list, n, (n == last_sel), 0);
 }

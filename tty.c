@@ -507,3 +507,14 @@ tty_putp(char *cap, int lines, int arg0, int arg1, int arg2, int arg3)
     if (s != buf)
 	free(s);
 }
+
+
+
+void
+tty_lowleft(void)
+{
+    if (*TTY_CAP(ll))
+	tty_put0(ll, 1);
+    else
+	tty_goto(0, tty_lines-1);
+}

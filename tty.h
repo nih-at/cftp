@@ -40,13 +40,14 @@ extern int fputchar();
 
 #define tty_clear()	(tty_put0(cl, tty_lines))
 #define tty_home()	(tty_put0(ho, 1))
-#define tty_lowleft()	(tty_put0(ll, 1))
 #define tty_clreos(l)	(tty_put0(cd, (l)))
 #define tty_clreol()	(tty_put0(ce, 1))
 #define tty_standout()	(tty_put0(so, 1))
 #define tty_standend()	(tty_put0(se, 1))
 #define tty_hidecrsr()	(tty_put0(vi, 1))
 #define tty_showcrsr()	(tty_put0(ve, 1))
+
+void tty_lowleft(void);
 
 #define tty_scregion(s, e)	(tty_putp(TTY_CAP(cs), 1, s, e, 0, 0))
 
