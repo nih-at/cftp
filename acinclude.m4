@@ -1,5 +1,5 @@
 dnl  acinclude.m4 -- test for autoconf
-dnl  Copyright (C) 2000 Dieter Baron
+dnl  Copyright (C) 2000, 2001 Dieter Baron
 dnl
 dnl  This file is part of cftp, a fullscreen ftp client
 dnl  The author can be contacted at <dillo@giga.or.at>

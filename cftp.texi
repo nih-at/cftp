@@ -19,7 +19,7 @@ END-INFO-DIR-ENTRY
 @ifinfo
 This file documents cftp @value{VERSION}
 
-Copyright 1996, 1997 Dieter Baron, Thomas Klausner
+Copyright 1996, 1997, 2001 Dieter Baron, Thomas Klausner
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -52,7 +52,7 @@ approved by the Free Software Foundation.
 @c copyright page
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1996, 1997 Dieter Baron, Thomas Klausner
+Copyright @copyright{} 1996, 1997, 2001 Dieter Baron, Thomas Klausner
 @sp 2
 This is a draft edition of the @sc{cftp} documentation,@*
 and is consistent with @sc{cftp} @value{VERSION}.@*

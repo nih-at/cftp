@@ -1,6 +1,6 @@
 /*
   getaddrinfo -- nodename-to-address translation in protocol-independent manner
-  Copyright (C) 2000 Dieter Baron
+  Copyright (C) 2000, 2001 Dieter Baron
 
   This file is a replacement for the following library functions:
     getaddrinfo, freeaddrinfo, gai_strerror.

@@ -3,7 +3,7 @@
 
 /*
   keys.h -- parse and print key specifications
-  Copyright (C) 1996, 1997, 1998, 1999, 2000 Dieter Baron
+  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>

@@ -1,6 +1,6 @@
 /*
   inet_aton -- replacement function (using inet_addr)
-  Copyright (C) 2000 Dieter Baron
+  Copyright (C) 2000, 2001 Dieter Baron
 
   The author can be contacted at <dillo@giga.or.at>
 
