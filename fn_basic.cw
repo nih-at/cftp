@@ -306,7 +306,7 @@ fn_bind(char **args)
 	    args += 2;
     }
     else {
-	line = p = read_string(": ");
+	line = p = read_string("bind ");
 
 	if ((kname=rc_token(&p)) == NULL) {
 	    disp_status("no key");
