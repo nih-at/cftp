@@ -259,6 +259,21 @@ ftp_retr(char *file, FILE *fout, long size, int mode)
 }
 
 
+@ noop
+
+@d<prototypes@>
+int ftp_noop(void);
+
+@u
+int
+ftp_noop(void)
+{
+    ftp_put("noop");
+    if (ftp_resp() != 200)
+	return -1;
+    
+    return 0;
+}
 
 
 @ low level interface.
