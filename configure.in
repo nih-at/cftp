@@ -62,6 +62,9 @@ fi
 
 dnl typedefs
 dnl structures
+
+NIH_CHECK_STRUCT([#include <sys/socket.h>], sockaddr_storage)
+
 dnl compiler characteristics
 
 dnl library functions
