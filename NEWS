@@ -1,4 +1,7 @@
 New in 0.10.1:
+* if initial url is file, download before listing directory
+* detect stalled connections and abort after stall-timeout seconds
+* display transfer rates
 * write proper URLs (encoding special chars, include user and port)
 * only ask for password if server wants one
 * display progress while reading directories
