@@ -183,7 +183,7 @@ sockaddr_ntop(struct sockaddr *sa)
 	len = sizeof(struct sockaddr_in6);
 #endif
 
-    if (getnameinfo(sa, sa->sa_len, addrbuf, sizeof(addrbuf),
+    if (getnameinfo(sa, len, addrbuf, sizeof(addrbuf),
             NULL, 0, niflags) == 0)
         return addrbuf;
     else
