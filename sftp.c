@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.16 2001/12/20 12:21:05 dillo Exp $
+  $NiH: sftp.c,v 1.17 2001/12/23 02:54:20 dillo Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001 Dieter Baron
@@ -289,7 +289,8 @@ _sftp_read_dir(struct handle *hnd)
 	    if (_sftp_parse_name(p, &p, &entry) == 0) {
 		if (strcmp(entry.name, ".") == 0
 		    || strcmp(entry.name, "..") == 0) {
-		    /* XXX: free strings in entry */
+		    free(entry.name);
+		    free(entry.line);
 		    continue;
 		}
 		dir_add(dir, &entry);
