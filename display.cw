@@ -75,6 +75,7 @@ void reenter_disp(void);
 void
 escape_disp(int clearp)
 {
+    if (disp_quiet >= 0) {
 	tty_showcrsr();
 	if (clearp) {
 		tty_clear();
@@ -85,16 +86,19 @@ escape_disp(int clearp)
 	tty_restore();
 	if (!clearp)
 		printf("\n");
-	disp_quiet = 1;
+    }
+    --disp_quiet;
 }
 
 void
 reenter_disp(void)
 {
+    if (++disp_quiet >= 0) {
 	disp_quiet = 0;
 	tty_setup();
 	tty_hidecrsr();
 	disp_redraw();
+    }
 }
 
 

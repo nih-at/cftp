@@ -21,8 +21,8 @@ F tty.cw: (tty_readkey) make VTIME value user setable
 P display.cw: check for missing capabilities
 B tty.cw: (tty_readkey) don't discard chars by failed multibyte code
 B tty.cw: check for window size & size change
-B don't redraw if disp_quiet
 ----------------------------------------------- done
+B display.cw (escape_disp, reenter_disp) don't redraw if disp_quiet
 B main.cw: doesn't suspend on SIG_TSTP
 B tty.cw: (tty_init) check for _POSIX_DISABLED in V...
 B Makefile.am: check what gets distributed
