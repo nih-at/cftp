@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: readdir.c,v 1.19 2001/12/11 14:37:39 dillo Exp $
 
   readdir -- read directory listing
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -54,14 +54,13 @@ directory *
 read_dir(FILE *f)
 {
     directory *dir;
-    direntry *list;
-    int i, n, sz, pf, ret;
+    direntry entry;
+    int i, n, pf, ret;
     char *line;
     time_t oldt, newt;
 
-    dir = malloc(sizeof(directory));
-    list = NULL;
-    sz = n = 0;
+    dir = dir_new();
+    n = 0;
 
     pf = 0;
     oldt = 0;
@@ -69,14 +68,7 @@ read_dir(FILE *f)
     init_parse_time();
 
     while ((line=ftp_gets(f)) != NULL) {
-	if (n >= sz) {
-	    sz += DIR_STEP;
-	    if (list == NULL)
-		list = malloc(sizeof(direntry)*sz);
-	    else
-		list = realloc(list, sizeof(direntry)*sz);
-	}
-	while ((ret=pfunc[pf](list+n, line)) == -1) {
+	while ((ret=pfunc[pf](&entry, line)) == -1) {
 	    pf++;
 	    if (pf >= npfunc) {
 		pf = 0;
@@ -84,10 +76,8 @@ read_dir(FILE *f)
 		break;
 	    }
 	}
-	if (ret == 0) {
-	    list[n].pos = n;
-	    n++;
-	}
+	if (ret == 0)
+	    dir_add(dir, &entry);
 	free(line);
 
 	if ((newt=time(NULL)) != oldt) {
@@ -96,6 +86,7 @@ read_dir(FILE *f)
 	}
     }
 
+#if 0
     if (n == 0) {
 	dir->line = (direntry *)malloc(sizeof(direntry));
 	dir->line->line = strdup("");
@@ -104,15 +95,7 @@ read_dir(FILE *f)
 	dir->line->link = NULL;
 	n = 1;
     }
-    else {
-	dir->line = malloc(sizeof(direntry)*n);
-	for (i=0; i<n; i++)
-	    dir->line[i] = list[i];
-    }
-    dir->sorted = 0;
-    dir->len = n;
-    dir->size = sizeof(struct direntry);
-    dir->top = dir->cur = 0;
+#endif
 
     return dir;
 }

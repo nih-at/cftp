@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: directory.c,v 1.17 2001/12/11 14:37:29 dillo Exp $
 
   direcotry -- handle directory cache
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -70,6 +70,58 @@ dir_free(directory *d)
     free(d->line);
     free(d->path);
     free(d);
+}
+
+
+
+directory *
+dir_new(void)
+{
+    directory *dir;
+
+    if ((dir=malloc(sizeof(*dir))) == NULL)
+	return NULL;
+
+    dir->alloc_len = dir->len = dir->top = dir->cur = 0;
+    dir->size = sizeof(direntry);
+    dir->line = NULL;
+    dir->path = NULL;
+    dir->sorted = 0;
+
+    return dir;
+}
+
+
+
+int
+dir_add(directory *dir, direntry *e)
+{
+    int n;
+    direntry *line;
+    
+    if (dir->len >= dir->alloc_len) {
+	if (dir->alloc_len == 0)
+	    n = 16;
+	else if (dir->alloc_len < 1024)
+	    n = dir->alloc_len * 2;
+	else
+	    n = dir->alloc_len + 512;
+
+	if (dir->line == NULL)
+	    line = malloc(sizeof(direntry)*n);
+	else
+	    line = realloc(dir->line, sizeof(direntry)*n);
+	if (line == NULL)
+	    return -1;
+	dir->alloc_len = n;
+	dir->line = line;
+    }
+
+    n = dir->len++;
+    dir->line[n] = *e;
+    dir->line[n].pos = n;
+
+    return 0;    
 }
 
 

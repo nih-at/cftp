@@ -1,3 +1,9 @@
+2001-12-12  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* readdir.c (read_dir): make use of new dir functions.
+	* directory.c (dir_new, dir_add): new functions.
+	* directory.h (struct directory): add member alloc_len.
+
 2001-12-11  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* configure.in: step version number to 0.11.2.

@@ -2,7 +2,7 @@
 #define HAD_DIRECTORY_Y
 
 /*
-  $NiH$
+  $NiH: directory.h,v 1.11 2001/12/11 14:37:29 dillo Exp $
 
   directory.h -- handle directory cache
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -45,6 +45,7 @@ struct directory {
     int size;
     struct direntry *line;
     char *path;
+    int alloc_len;
     int sorted;
 };
 
@@ -52,11 +53,12 @@ typedef struct directory directory;
 
 
 
-void dir_free(directory *d);
-directory *get_dir(char *path, int force);
+int dir_add(directory *dir, direntry *entry);
 int dir_find(directory *dir, char *entry);
-
+void dir_free(directory *d);
+directory *dir_new(void);
 void dir_sort(directory *dir, int sort_type);
+directory *get_dir(char *path, int force);
 
 
 
