@@ -155,7 +155,7 @@ fn_listtags(char **args)
 }
     
 
-@ getting taged files
+@ getting tagged files
 
 @d<functions@>
 function(get-tags, {download tagged files}, fn_gettags, 0,
@@ -203,6 +203,9 @@ fn_gettags(char **args)
 	}
 	else
 	    d = d->next;
+    }
+    if (tags.next && opt_beep) {
+	fputc('\a', stdout);
     }
 }
 
