@@ -56,7 +56,7 @@ AC_CACHE_CHECK([whether h_errno is declared in netdb.h],
 		[dlo_cv_decl_h_errno=yes],
 		[dlo_cv_decl_h_errno=no]))
 if test "$dlo_cv_decl_h_errno" = yes; then
-    AC_DEFINE(H_ERRNO_DECLARED)
+    AC_DEFINE(H_ERRNO_DECLARED, 1, [Define if netdb.h declares h_errno])
 fi
 
 
@@ -72,7 +72,7 @@ dnl compiler characteristics
 
 dnl library functions
 
-AC_REPLACE_FUNCS(strdup getcwd getdomainname strerror hstrerror basename fputchar fnmatch inet_aton getaddrinfo)
+AC_REPLACE_FUNCS(strdup getcwd getdomainname strerror basename fputchar fnmatch inet_aton getaddrinfo)
 
 AC_CHECK_FUNCS(tparam, [tparam=1], [tparam=0])
 if test "$tparam" -ne 1
