@@ -1,8 +1,5 @@
 ! tagging segfaults on linux
 ! abort doesn't work
-! sftp:// urls in aliases don't work
-! sftp: reconnect doesn't work
-! sftp: lost connection not reported
 ! stop when local disk is full during download
 + fix buffer overflows
 + sftp: ^c kills ssh subprocess (how to avoid?!)
@@ -12,7 +9,6 @@
 - add function comments
 - build failure on OSF 5.1 (struct addrinfo declared)
 - ctrl-s ctrl-s: re-use last search string
-- handle sftp:// urls
 
 * save current url as alias to .cftprc
 * ftp.univie.ac.at: abort hoses connection state
