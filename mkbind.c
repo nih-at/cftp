@@ -108,11 +108,12 @@ main(int argc, char **argv)
     while (fgets(line, 4096, fin) != NULL) {
 	rc_lineno++;
 	p = line;
-	if ((tok=rc_token(&p)) == NULL)
+	if ((tok=rc_token(&p)) == NULL || tok[0] == '#')
 	    continue;
 	if (strcasecmp(tok, "bind") != 0) {
-	    fprintf(stderr, "%s: non-bind command ignored: `%s'\n",
-		    prg, line);
+	    fprintf(stderr, "%s:" FNAME ".desc:%d: "
+		    "non-bind command ignored: `%s'\n",
+		    prg, line, tok);
 	    continue;
 	}
 	
@@ -180,15 +181,14 @@ main(int argc, char **argv)
 
     /* output: bindings_pool */
 
-    off = 0;
+    off = 1;
     fprintf(fout, "struct binding " NAME "_" POOL "[] = {\n");
     for (i=0; i<maxkey; i++)
 	if (binding[i].next) {
 	    for (b=binding[i].next; b; b=b->next) {
 		fprintf(fout, "    { ");
-		if (b->next) {
-		    fprintf(fout, "binding_pool+%3d, ", off++);
-		}
+		if (b->next)
+		    fprintf(fout, "binding_pool+%3d, ", off);
 		else
 		    fprintf(fout, "NULL            , ");
 		if (b->state+1 < nstates)
@@ -204,6 +204,8 @@ main(int argc, char **argv)
 		}
 		else
 		    fprintf(fout, "NULL },\n");
+
+		off++;
 	    }
 	}
     fprintf(fout, "};\n\n");

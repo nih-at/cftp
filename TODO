@@ -41,8 +41,9 @@ B ftp.c: (ftp_cat) don't use ftp_gets in ascii mode
 F display.c: (read_string) line editing, completion
 B fn_tag.c: (fn_tag) line[0] isn't updated if arg is given
 B fn_select.c: (aux_download) report `can't open file' errors
-B mkbind.c: binding_pool offsets wrong
+C mkbind.c: include file name and line number in error messages 
 ----------------------------------------------- done
+B mkbind.c: fixed offset bug in writing binding_pool
 F fn_select.c: (aux_scroll_page) rewrote behavior for more(?) consistency 
 B tag.c: (change_curdir) forget current position of old dir
 P tty.c: (tty_putp) use tparm for terminfo machines
