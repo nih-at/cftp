@@ -483,6 +483,13 @@ _tty_capinit()
 	if (_tty_caps[i] == NULL)
 	    _tty_caps[i] = "";
     }
+
+    /* screen removes `sf' capability, so we compensate */
+    if (!*TTY_CAP(sf)) {
+	TTY_CAP(sf) = tty_getcap("do");
+	if (TTY_CAP(sf) == NULL)
+	    TTY_CAP(sf) = "";
+    }
 }
 
 
