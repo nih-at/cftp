@@ -25,6 +25,8 @@
 
 
 
+#ifndef SWIG
+
 #include <stdio.h>
 
 struct ftp_hist {
@@ -39,23 +41,36 @@ extern char *ftp_host, *ftp_prt, *ftp_user, *ftp_pass;
 extern char **ftp_response;
 extern char *ftp_pcwd;
 
+#endif
+
 
 
+#ifndef SWIG
+
 void ftp_init(void);
-int ftp_open(char *host, char *port);
-int ftp_login(char *host, char *user, char *pass);
-int ftp_reconnect(void);
-int ftp_close(void);
+
 directory *ftp_list(char *path);
 directory *ftp_cd(char *wd, int force);
 FILE *ftp_retr(char *file, int mode, long *startp, long *sizep);
 FILE *ftp_stor(char *file, int mode);
 int ftp_fclose(FILE *f);
+char *ftp_gets(FILE *f);
+int ftp_cat(FILE *fin, FILE *fout, long start, long size);
+
+#endif
+
+#ifdef SWIG
+int ftp_open(char *host, char *port="ftp");
+#else
+int ftp_open(char *host, char *port);
+#endif
+
+int ftp_login(char *host, char *user, char *pass);
+int ftp_reconnect(void);
+int ftp_close(void);
 int ftp_mkdir(char *path);
 int ftp_site(char *cmd);
 int ftp_noop(void);
 char *ftp_pwd(void);
-char *ftp_gets(FILE *f);
-int ftp_cat(FILE *fin, FILE *fout, long start, long size);
 
 #endif /* ftp.h */

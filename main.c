@@ -142,7 +142,11 @@ real_main(int argc, char **argv)
 	fprintf(stderr, "%s: malloc failure\n", prg);
 	exit(1);
     }
-	
+
+#ifdef HAVE_GUILE
+    scripting();
+#endif
+
     if (tag_init() < 0)
 	exit(1);
     status_init(); /* can't fail */

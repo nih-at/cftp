@@ -1,3 +1,14 @@
+2000-00-11  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* main.c (real_main): call swig init function.
+	
+	* configure.in, Makefile.am: furst cut at rules for scripting
+	support.
+	* scripting.i: first version of interface file.
+	* ftp.h, display.h: prepared for swig inclusion.
+	
+	* display.h: disp_reline prototype deleted (function doesn't exist).
+
 1999-12-22  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* acconfig.h: define HAVE_SCRIPTING if any scripting language is

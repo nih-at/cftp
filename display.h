@@ -25,6 +25,8 @@
 
 
 
+#ifndef SWIG
+
 #include <stdio.h>
 
 extern volatile int tty_lines;
@@ -38,22 +40,31 @@ extern volatile int tty_lines;
 extern int disp_quiet;
 extern int disp_active;
 
+#endif
+
 
 
+#ifndef SWIG
 int init_disp(void);
 void exit_disp();
-void escape_disp(int clearp);
-void reenter_disp(void);
-void disp_redraw(void);
-void disp_reline(int line);
-char *read_string(char *prompt, int echop);
-int read_char(char *prompt);
-int disp_prompt_char(void);
+
 void disp_status(char *fmt, ...);
 void disp_head(char *fmt, ...);
 void disp_restat(void);
 FILE *disp_open(char *cmd, int quietp);
 int disp_close(FILE *f, int quietp);
+#endif
+
+void escape_disp(int clearp);
+void reenter_disp(void);
+void disp_redraw(void);
+#ifdef SWIG
+char *read_string(char *prompt, int echop=1);
+#else
+char *read_string(char *prompt, int echop);
+#endif
+int read_char(char *prompt);
+int disp_prompt_char(void);
 void disp_beep(void);
 
 #endif /* display.h */

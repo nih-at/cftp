@@ -1,3 +1,6 @@
+b catch guile exceptions
+b automake: cftp depends on SCRIPTING_OBJS
+
 * ^[[O triggers bindings for left and O
 * detect hung data connection
 * ftp_retr: check 150 format on different servers

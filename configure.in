@@ -90,9 +90,10 @@ dnl system services
 dnl guile kluge.  real code to follow
 
 CFLAGS="$CFLAGS `guile-config compile`"
-LDFLAGS="$LDFLAGS -L/usr/local/lib"
-LIBS="$LIBS  -lguile -lreadline -ltermcap -lm"
+LIBS="$LIBS `guile-config link`"
 AC_DEFINE(HAVE_GUILE)
+SCRIPTING_OBJS="fn_guile.o scripting_guile.o"
+AC_SUBST(SCRIPTING_OBJS)
 
 dnl output
 AC_OUTPUT(Makefile)
