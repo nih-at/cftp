@@ -12,6 +12,7 @@
 * feature recognition and handling
 * complete getaddrinfo replacement
 * check warnings on NextSTEP
+* note that building on NextSTEP requires -posix in CFLAGS and LDFLAGS
 * fix unix directory parsing (ftp://ftp.deva.net/)
 * rethink directory format auto detection logic
 * improve check wheter lib{socket,nsl,resolv} are needed
