@@ -32,6 +32,7 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <netinet/in.h>
 #include "directory.h"
 #include "display.h"
@@ -66,6 +67,7 @@ unsigned char ftp_addr[4];
 
 
 int ftp_put(char *fmt, ...);
+int ftp_abort(FILE *fin);
 int ftp_resp(void);
 void ftp_unresp(int resp);
 int ftp_port(void);
@@ -427,18 +429,19 @@ ftp_put(char *fmt, ...)
 
 
 int
-ftp_abort(void)
+ftp_abort(FILE *fin)
 {
-    int resp;
+    int resp, flags;
+    char buf[4096];
     fd_set ready;
     struct timeval poll;
     
     /* check wether abort is necessary (no data on control connection) */
     poll.tv_sec = poll.tv_usec = 0;
     FD_ZERO(&ready);
-    FD_SET(fileno(conout), &ready);
+    FD_SET(fileno(conin), &ready);
     /* XXX: error ignored */
-    if (select(fileno(conout)+1, &ready, NULL, NULL, &poll) == 1)
+    if (select(fileno(conin)+1, &ready, NULL, NULL, &poll) == 1)
 	return;
     
     /* do abort */
@@ -454,10 +457,25 @@ ftp_abort(void)
 
     ftp_put("abor");
 
+    /* read remaining bytes from data connection */
+    while (fread(buf, 4096, 1, fin) > 0)
+	;
+	
+    /* hanlde server response */
     resp = ftp_resp();
 
     if (resp == 226) {
 	ftp_unresp(226);
+
+	sleep(1);
+	/* check wether 226 is for us */
+	poll.tv_sec = poll.tv_usec = 0;
+	FD_ZERO(&ready);
+	FD_SET(fileno(conin), &ready);
+	/* XXX: error ignored */
+	if (select(fileno(conin)+1, &ready, NULL, NULL, &poll) == 1)
+	    ftp_resp();
+
 	return 0;
     }
     else if (resp == 426) {
@@ -638,10 +656,8 @@ ftp_cat(FILE *fin, FILE *fout, long size)
 	    else {
 		putc(c, fout);
 	    }
-	    if (ferror(fout)) {
-		ftp_histf("ftp_cat: write error: %s", strerror(errno));
+	    if (ferror(fout))
 		break;
-	    }
 
 	    if (got%512 == 0 && (newt=time(NULL)) != oldt) {
 		disp_status(fmt, got);
@@ -655,13 +671,13 @@ ftp_cat(FILE *fin, FILE *fout, long size)
     if (ferror(fin) || sig_intr) {
 	errno = 0;
 	sig_intr = 0;
-	ftp_abort();
+	ftp_abort(fin);
 	return -1;
     }
     else if (ferror(fout)) {
 	err = errno;
 	errno = 0;
-	ftp_abort();
+	ftp_abort(fin);
 	disp_status("write error: %s", strerror(err));
 	return -1;
     }

@@ -13,7 +13,6 @@ C display.c: (disp_prompt_char) return after first key, not after newline
 F functions.texi: include default bindings
 F display.c: (read_string) line editing, completion
 ---------------------------------------------------------------- till beta
-F abort transfer
 F tag files: globbing tag
 F handle closed connections due to timeout
 F cftp.texi: introduction, invoking, cftprc, binding states
@@ -35,7 +34,11 @@ F forced reload of directory listing
 F status.c: add support for head status line (old style, but smarter)
 C status.c: rewrite status line code (better abstraction of common elements)
 B fn_scroll.c: (fn_isearch) don't hardwire ^r/^s/^l (check binding)
+B ftp.c: (ftp_abort) abort on ascii connections hangs sometimes
+C fn_select.c: use :-syntax throughout
+B fn_basic.c: (fn_shell) command with args doesn't work when given via args
 ----------------------------------------------- done
+F ftp.c (ftp_abort, ftp_cat) abort transfer via SIGINT
 F fn_select.c (fn_pipe) new bindable
 B fn_select.c (aux_download, aux_pipe) create file after retr command
 C configure.in: use fn_bind.c for finding srcdir (not bindings.desc)
