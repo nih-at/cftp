@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.65 2001/12/17 05:44:43 dillo Exp $
+  $NiH: ftp.c,v 1.66 2001/12/20 05:44:12 dillo Exp $
 
   ftp -- ftp protocol functions
   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001 Dieter Baron
@@ -1164,25 +1164,6 @@ ftp_gethostaddr(int fd)
     }
     
     return 0;
-}
-
-
-
-void
-ftp_histf(char *fmt, ...)
-{
-    char buf[1024];
-    
-    va_list argp;
-
-    if (ftp_hist_size == 0)
-	return;
-
-    va_start(argp, fmt);
-    vsprintf(buf, fmt, argp);
-    va_end(argp);
-
-    ftp_hist(strdup(buf));
 }
 
 
