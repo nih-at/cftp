@@ -1,5 +1,5 @@
 /*
-  $NiH: loop.c,v 1.15 2001/12/20 05:44:13 dillo Exp $
+  $NiH: loop.c,v 1.16 2002/09/16 12:42:36 dillo Exp $
 
   loop.c -- main loop
   Copyright (C) 1996-2002 Dieter Baron
@@ -30,6 +30,7 @@
 #include "display.h"
 #include "tty.h"
 #include "list.h"
+#include "loop.h"
 #include "tag.h"
 
 int fnexit(void);

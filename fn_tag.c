@@ -1,5 +1,5 @@
  /*
-  $NiH: fn_tag.c,v 1.28 2001/12/20 05:44:12 dillo Exp $
+  $NiH: fn_tag.c,v 1.29 2002/09/16 12:42:31 dillo Exp $
 
   fn_tag.c -- bindable functions: 
   Copyright (C) 1996-2002 Dieter Baron
@@ -46,6 +46,7 @@ char *basename(char *);
 
 #include "directory.h"
 #include "bindings.h"
+#include "fntable.h"
 #include "functions.h"
 #include "display.h"
 #include "options.h"

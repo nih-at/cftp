@@ -1,5 +1,5 @@
 /*
-  $NiH: fn_select.c,v 1.26 2002/09/16 12:42:31 dillo Exp $
+  $NiH: fn_select.c,v 1.27 2002/09/17 11:52:24 dillo Exp $
 
   fn_select.c -- bindable functions: selecting
   Copyright (C) 1996-2002 Dieter Baron
@@ -43,6 +43,7 @@ char *basename(char *);
 
 #include "directory.h"
 #include "bindings.h"
+#include "fntable.h"
 #include "functions.h"
 #include "display.h"
 #include "ftp.h"

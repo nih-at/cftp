@@ -1,5 +1,5 @@
 /*
-  $NiH: fn_basic.c,v 1.27 2001/12/20 05:44:11 dillo Exp $
+  $NiH: fn_basic.c,v 1.28 2002/09/16 12:42:30 dillo Exp $
 
   fn_basic.c -- bindable functions: basics
   Copyright (C) 1996-2002 Dieter Baron
@@ -35,6 +35,7 @@
 #include "directory.h"
 #include "ftp.h"
 #include "bindings.h"
+#include "fntable.h"
 #include "functions.h"
 #include "display.h"
 #include "rc.h"

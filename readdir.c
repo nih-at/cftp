@@ -1,5 +1,5 @@
 /*
-  $NiH: readdir.c,v 1.23 2001/12/20 05:44:14 dillo Exp $
+  $NiH: readdir.c,v 1.24 2002/09/16 12:42:41 dillo Exp $
 
   readdir.c -- read directory listing
   Copyright (C) 1996-2002 Dieter Baron
@@ -33,6 +33,7 @@
 #include "ftp.h"
 #include "display.h"
 #include "options.h"
+#include "readdir.h"
 
 static int parse_unix(direntry *de, char *line);
 static int parse_ms(direntry *de, char *line);

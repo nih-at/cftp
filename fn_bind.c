@@ -1,5 +1,5 @@
 /*
-  $NiH: fn_bind.c,v 1.11 2001/12/20 05:44:11 dillo Exp $
+  $NiH: fn_bind.c,v 1.12 2002/09/16 12:42:30 dillo Exp $
 
   fn_bind.c -- bindable functions: bind
   Copyright (C) 1996-2002 Dieter Baron
@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include "bindings.h"
+#include "fntable.h"
 #include "functions.h"
 #include "display.h"
 #include "keys.h"

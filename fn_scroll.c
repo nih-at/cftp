@@ -1,5 +1,5 @@
 /*
-  $NiH: fn_scroll.c,v 1.21 2001/12/20 05:44:11 dillo Exp $
+  $NiH: fn_scroll.c,v 1.22 2002/09/16 12:42:31 dillo Exp $
 
   fn_scroll.c -- bindable functions: scrolling
   Copyright (C) 1996-2002 Dieter Baron
@@ -28,6 +28,7 @@
 
 #include "directory.h"
 #include "bindings.h"
+#include "fntable.h"
 #include "functions.h"
 #include "display.h"
 #include "tty.h"

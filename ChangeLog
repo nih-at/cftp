@@ -1,3 +1,12 @@
+2002-10-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* readdir.c: include readdir.h for prototypes.
+	* loop.c: include loop.h for prototypes.
+	* fn_basic.c, fn_bind.c, fn_scroll.c, fn_select.c, fn_tag.c:
+	include fntable.h for bindable function prototypes.
+
+	* ftp.c (rftp_cwd): remove unused variable.
+
 2002-10-10  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* main.c (main): print history if ftp_open() failes.

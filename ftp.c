@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.75 2002/09/27 16:48:42 dillo Exp $
+  $NiH: ftp.c,v 1.76 2002/10/10 08:50:27 dillo Exp $
 
   ftp.c -- ftp protocol functions
   Copyright (C) 1996-2002 Dieter Baron
@@ -904,7 +904,7 @@ ftp_mode(char m)
 int
 rftp_cwd(char *path)
 {
-    char *s, *e;
+    char *s;
     int off;
     
     if (ftp_pcwd && strcmp(path, ftp_pcwd) == 0)
@@ -927,7 +927,7 @@ rftp_cwd(char *path)
 
     if (ftp_dosnames == -1) {
 	if ((s=strchr(ftp_last_resp, '"')) != NULL
-	    && (e=strchr(s+1, '"')) != NULL) {
+	    && strchr(s+1, '"') != NULL) {
 	    if (isalpha(s[1]) && s[2] == ':' && s[3] == '\\')
 		ftp_dosnames = 1;
 	    else if (s[1] == '\\')
