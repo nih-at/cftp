@@ -1,5 +1,5 @@
 /*
-  $NiH: fn_select.c,v 1.25 2002/02/14 10:14:46 dillo Exp $
+  $NiH: fn_select.c,v 1.26 2002/09/16 12:42:31 dillo Exp $
 
   fn_select.c -- bindable functions: selecting
   Copyright (C) 1996-2002 Dieter Baron
@@ -256,7 +256,9 @@ fn_enter_view(char **args)
 
 
 
-void fn_enter(char **args) { char *name; int type;
+void fn_enter(char **args)
+{
+    char *name; int type;
 
     if (args) {
 	name = args[0];
