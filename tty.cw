@@ -284,7 +284,7 @@ int tty_readkey(void);
 int
 tty_readkey(void)
 {
-	char c;
+	int c;
 	char s[128];
 	int i, j;
 
