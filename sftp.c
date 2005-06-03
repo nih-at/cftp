@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.26 2004/03/08 12:22:06 dillo Exp $
+  $NiH: sftp.c,v 1.27 2005/06/03 11:55:16 wiz Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001, 2002 Dieter Baron
@@ -999,11 +999,7 @@ _sftp_start_ssh(int fdin, int fdout)
 int
 sftp_close(void)
 {
-    int status, valid;
-
-    status = valid = 0;
-    
-    return _sftp_close(0, status);
+    return _sftp_close(0, 0);
 }
 
 
