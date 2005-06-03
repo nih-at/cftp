@@ -2,10 +2,10 @@
 #define HAD_FUNCTIONS_H
 
 /*
-  $NiH: functions.h,v 1.12 2002/09/17 11:59:46 dillo Exp $
+  $NiH: functions.h,v 1.13 2004/03/08 12:22:06 dillo Exp $
 
   functions.h -- auxiliary functions for bindable function handling
-  Copyright (C) 1996-2002 Dieter Baron
+  Copyright (C) 1996-2002, 2005 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -26,6 +26,8 @@
 */
 
 
+
+#include <unistd.h>
 
 struct function {
 	void (*fn)(char **args);
