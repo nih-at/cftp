@@ -28,32 +28,21 @@ dnl programs
 
 dnl libraries
 
-TERMCAP=none
-AC_CHECK_FUNC(tgetent, [TERMCAP=""])
-if test "$TERMCAP" = none
-then
-	AC_CHECK_LIB(termcap, tgetent, [TERMCAP=-ltermcap])
-	AC_DEFINE(USE_TERMCAP, 1, [define if we're linking against -ltermcap])
+AC_SEARCH_LIBS([socket], [socket], [],
+	       [AC_ERROR([cannot find socket functions])],
+	       [-lnsl])
+if test "$ac_cv_search_socket" = "-lsocket"; then
+LIBS="$LIBS -lnsl"
 fi
-if test "$TERMCAP" = none
-then
-	AC_CHECK_LIB(curses, tgetent, [TERMCAP=-lcurses])
-	AC_DEFINE(USE_CURSES, 1, [define if we're linking against -lcurses])
-fi
-if test "$TERMCAP" = none
-then
-	AC_CHECK_LIB(ncurses, tgetent, [TERMCAP=-lncurses])
-	AC_DEFINE(USE_NCURSES, 1, [define if we're linking against -lncurses])
-fi
-if test "$TERMCAP" = none
-then
-	AC_MSG_ERROR([can't find termcap (emulation) library])
-fi
-LIBS="$LIBS $TERMCAP"
 
-AC_CHECK_LIB(socket, main)
-AC_CHECK_LIB(nsl, main)
-AC_CHECK_LIB(resolv, main)
+AC_SEARCH_LIBS([tgetent], [termcap curses ncurses], [],
+	       [AC_ERROR([cannot find termcap (emulation) library])])
+
+AC_SEARCH_LIBS([inet_aton], [resolv],
+	       [AC_DEFINE([HAVE_INET_ATON], 1,
+			 [Define to 1 if you have the `inet_aton' function.])])
+
+dnl AC_CHECK_LIB(resolv, main)
 
 
 dnl header files

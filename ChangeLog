@@ -1,3 +1,12 @@
+2005-06-03  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* functions.h: include <unistd.h> for off_t definition
+
+	* configure.in: only link against -lsocket, -lnsl, and -lresolv if
+	necessary.
+	* configure.in: use AC_SEARCH_LIBS to find termcap (emulation)
+	library.
+
 2004-03-08  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* directory.h, fn_select.c, fn_tag.c, ftp.c, functions.h,
