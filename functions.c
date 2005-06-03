@@ -1,5 +1,5 @@
 /*
-  $NiH: functions.c,v 1.12 2001/12/20 05:44:13 dillo Exp $
+  $NiH: functions.c,v 1.13 2002/09/16 12:42:34 dillo Exp $
 
   functions.c -- auxiliary functions for bindable function handling
   Copyright (C) 1996-2002 Dieter Baron
@@ -151,7 +151,7 @@ parse_state(char *name)
 
     for (i=0; binding_statename[i]; i++)
 	if (strcasecmp(name, binding_statename[i]) == 0)
-	    return i;
+	    return (enum state)i;
 
     return bs_unknown;
 }
