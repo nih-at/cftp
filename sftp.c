@@ -1,5 +1,5 @@
 /*
-  $NiH: sftp.c,v 1.27 2005/06/03 11:55:16 wiz Exp $
+  $NiH: sftp.c,v 1.28 2005/06/03 11:56:16 wiz Exp $
 
   sftp.c -- sftp protocol functions
   Copyright (C) 2001, 2002 Dieter Baron
@@ -1570,7 +1570,7 @@ int
 sftp_xfer_write(void *buf, size_t nbytes, void *file)
 {
     struct sftp_file *f;
-    int n, type, nret, ret;
+    int n, nret, ret;
 
     f = file;
     nret = 0;
@@ -1624,8 +1624,6 @@ sftp_xfer_write(void *buf, size_t nbytes, void *file)
 	    }
 	    else if (ret == 1)
 		return nret;
-	    
-	    type = _sftp_buffer[4];
 	    
 	    if (_sftp_parse_status(_sftp_packet) != SSH_FX_OK) {
 		_sftp_log_packet(1, _sftp_packet);
