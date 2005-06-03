@@ -1,5 +1,5 @@
 /*
-  $NiH: mkbind.c,v 1.23 2002/09/17 11:46:23 dillo Exp $
+  $NiH: mkbind.c,v 1.24 2003/04/16 00:54:22 dillo Exp $
 
   mkbind.c -- make binding table
   Copyright (C) 1996-2002 Dieter Baron
@@ -89,7 +89,7 @@ main(int argc, char **argv)
     char line[4096], *p, *tok, **args;
     char tmp[128];
     struct binding *b;
-    int i, j, off, argoff, len;
+    int i, j, off, argoff;
     int maxkey;
 
     prg = argv[0];
@@ -236,7 +236,6 @@ main(int argc, char **argv)
     
     /* output: binding_argpool */
 
-    len = 3;
     fprintf(fout, "char *" NAME "_" ARGS "[] = {\n   ");
     for (i=0; i<maxkey; i++)
 	if (binding[i].args)
