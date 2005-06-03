@@ -20,9 +20,6 @@ noinst_HEADERS=	bindings.h directory.h display.h fnmatch_repl.h fntable.h \
 	ftp.h functions.h getopt.h keys.h list.h loop.h methods.h options.h \
 	rc.h readdir.h signals.h sockets.h status.h tag.h tty.h url.h util.h
 
-cftp_DEPENDENCIES=    @LIBOBJS@
-mkbind_DEPENDENCIES=    @LIBOBJS@
-
 EXTRA_DIST=	bindings.desc \
 		mkfntexi.m4 mkfntab-c.m4 mkfntab-h.m4 fntable.fn \
 		mkoptexi.m4 mkoptab-c.m4 mkoptab-h.m4 options.op \
