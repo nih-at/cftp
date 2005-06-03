@@ -1,5 +1,5 @@
 /*
-  $NiH: ftp.c,v 1.83 2003/12/30 20:11:37 dillo Exp $
+  $NiH: ftp.c,v 1.84 2004/03/08 12:22:05 dillo Exp $
 
   ftp.c -- ftp protocol functions
   Copyright (C) 1996-2002 Dieter Baron
@@ -246,10 +246,6 @@ rftp_site(char *cmd)
 int
 ftp_reconnect(void)
 {
-    char *pass;
-
-    pass = _ftp_pass;
-
     if (_ftp_host == NULL)
 	return -1;
 
