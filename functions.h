@@ -2,7 +2,7 @@
 #define HAD_FUNCTIONS_H
 
 /*
-  $NiH: functions.h,v 1.13 2004/03/08 12:22:06 dillo Exp $
+  $NiH: functions.h,v 1.14 2005/06/03 10:46:19 dillo Exp $
 
   functions.h -- auxiliary functions for bindable function handling
   Copyright (C) 1996-2002, 2005 Dieter Baron
@@ -27,7 +27,10 @@
 
 
 
+#include "config.h"
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 
 struct function {
 	void (*fn)(char **args);
