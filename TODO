@@ -43,3 +43,4 @@
 * decent documentation
 * segfault while tagging on GNU/Linux
 * try again if connect/login fails
+* cwd: if path does not exist and ends with `/', it is tried twice
