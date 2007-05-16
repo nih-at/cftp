@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 dnl init
 
-AC_INIT([cftp],[0.12a],[dillo@giga.or.at])
+AC_INIT([cftp],[0.12a],[cftp@nih.at])
 AC_CONFIG_SRCDIR([fn_bind.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
