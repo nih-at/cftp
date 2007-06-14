@@ -5,7 +5,7 @@
   $NiH: directory.h,v 1.13 2002/09/16 12:42:29 dillo Exp $
 
   directory.h -- handle directory cache
-  Copyright (C) 1996-2002 Dieter Baron
+  Copyright (C) 1996-2007 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -27,6 +27,7 @@
 
 
 
+#include <sys/types.h>
 #include <time.h>
 
 struct direntry {
