@@ -1,8 +1,6 @@
 /*
-  $NiH: readrc.c,v 1.16 2001/12/13 21:14:55 dillo Exp $
-
   readrc.c -- read .cftprc file
-  Copyright (C) 1996-2002 Dieter Baron
+  Copyright (C) 1996-2007 Dieter Baron
 
   This file is part of cftp, a fullscreen ftp client
   The author can be contacted at <dillo@giga.or.at>
@@ -57,7 +55,7 @@ readrc(char **userp, char **passp, char **hostp, char **portp, char **wdirp,
     char b[8192], *p, *tok, *q, *home;
     char *user, *pass, *host, *port, *wdir;
 
-    if ((home=getenv("HOME")) == NULL)
+    if ((home=getenv("HOME")) == NULL || strlen(home) > sizeof(b)-9)
 	home = "";
     sprintf(b, "%s/.cftprc", home);
     
