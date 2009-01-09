@@ -6,19 +6,30 @@ dnl
 dnl  This file is part of cftp, a fullscreen ftp client
 dnl  The author can be contacted at <dillo@giga.or.at>
 dnl
-dnl  This program is free software; you can redistribute it and/or modify
-dnl  it under the terms of the GNU General Public License as published by
-dnl  the Free Software Foundation; either version 2 of the License, or
-dnl  (at your option) any later version.
-dnl
-dnl  This program is distributed in the hope that it will be useful,
-dnl  but WITHOUT ANY WARRANTY; without even the implied warranty of
-dnl  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-dnl  GNU General Public License for more details.
-dnl
-dnl  You should have received a copy of the GNU General Public License
-dnl  along with this program; if not, write to the Free Software
-dnl  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+dnl  Redistribution and use in source and binary forms, with or without
+dnl  modification, are permitted provided that the following conditions
+dnl  are met:
+dnl  1. Redistributions of source code must retain the above copyright
+dnl     notice, this list of conditions and the following disclaimer.
+dnl  2. Redistributions in binary form must reproduce the above copyright
+dnl     notice, this list of conditions and the following disclaimer in
+dnl     the documentation and/or other materials provided with the
+dnl     distribution.
+dnl  3. The name of the author may not be used to endorse or promote
+dnl     products derived from this software without specific prior
+dnl     written permission.
+dnl 
+dnl  THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
+dnl  OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+dnl  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+dnl  ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY
+dnl  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+dnl  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+dnl  GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+dnl  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+dnl  IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+dnl  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+dnl  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 dnl Usage:
 dnl NIH_CHECK_STRUCT(includes, struct, action-if-found, action-if-not-found)

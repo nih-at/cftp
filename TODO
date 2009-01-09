@@ -1,3 +1,4 @@
+! non-GPL getopt_long and tparam replacment
 ! time out in ftp_gets
 + option -i: don't load listing before download
 ! sftp: lost connection during download causes tight loop
