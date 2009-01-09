@@ -4,6 +4,7 @@
 ! tagging segfaults on linux
 ! abort doesn't work
 ! stop when local disk is full during download
+! core dump when sorting empty directory by date
 + option: maximum transfer rate
 + display transfer rate at end of transfer
 + fix buffer overflows
