@@ -3,6 +3,7 @@
 + option -i: don't load listing before download
 ! sftp: lost connection during download causes tight loop
 ! tagging segfaults on linux
+! sorting by data segfaults on empty directories
 ! abort doesn't work
 ! stop when local disk is full during download
 ! core dump when sorting empty directory by date
