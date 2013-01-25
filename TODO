@@ -7,6 +7,7 @@
 ! abort doesn't work
 ! stop when local disk is full during download
 ! core dump when sorting empty directory by date
+! core dump when scrolling on NetBSD-6
 + option: maximum transfer rate
 + display transfer rate at end of transfer
 + fix buffer overflows
