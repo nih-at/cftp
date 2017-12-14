@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS=foreign
 
+EXTRA_DIST=README.md
+
 MAKEINFOFLAGS = --no-validate
 
 LDADD=	@LIBOBJS@
