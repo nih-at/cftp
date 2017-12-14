@@ -21,6 +21,6 @@ The texinfo documentation is a mess; any help most welcome
 
 If you make a binary distribution, please include a pointer to the
 distribution site:
-	[https://nih.at/ckmame/](https://nih.at/ckmame/)
+	[https://nih.at/cftp](https://nih.at/cftp)
 
   Mail suggestions and bug reports to <dillo@nih.at>.
