@@ -1,4 +1,4 @@
-** *Development on this project has stopped. It will no longer be updated.* **
+**Development on this project has stopped. It will no longer be updated.**
 
 This is Comfortable FTP, a full screen ftp client.
 
